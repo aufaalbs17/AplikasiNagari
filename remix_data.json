@@ -1,0 +1,551 @@
+{
+  "url": "/berita",
+  "basename": "/",
+  "state": {
+    "loaderData": {
+      "root": {
+        "env": {
+          "VITE_GA_ID": "G-FLQYW0G73E",
+          "VITE_GRAPHQL_ENDPOINT": "https://api-profil-v2.digitaldesa.id/grapher",
+          "VITE_MAIN_BASE_URL": "https://assets.digitaldesa.id",
+          "VITE_ASSET_BASE_URL": "https://cdn.digitaldesa.com/statics",
+          "VITE_CONTENT_BASE_URL": "https://cdn.digitaldesa.com/uploads"
+        },
+        "serverEnv": {
+          "GRAPHQL_ACCESS_WEBTOKEN": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkRHRFNXVCJ9.eyJyb2wiOiJzdXBlcl9hZG1pbiIsInN1YiI6ImRpZ2lkZXMuaWQiLCJmbGciOiJWRVJJRklFRCIsImV4cCI6NDcwNzY5NTM5OCwidmVyIjoicHJvZmlsQGRpZ2l0YWxkZXNhLmlkIn0.cBtPCrQY-r3tdfnjfD2WrOFqj9mwuuJVrG-7QPAU7mE",
+          "GOOGLE_OAUTH_CLIENT_ID": "262708630123-dm8t5c0leauujuvru4okrcuhe8upvbmt.apps.googleusercontent.com",
+          "FACEBOOK_OAUTH_CLIENT_ID": "",
+          "RECAPTCHA_SITE_KEY": "6Lep520pAAAAABk2APNkzFY9wrK-buVGiaJb2tkP",
+          "MAPTILER_KEY": "RUGYo8N5o2hX7uHO5q6H",
+          "ENABLE_TICK": "true"
+        },
+        "slug": "sakoselatanpasiatalang",
+        "schema": "13_11_02_2009",
+        "host": {
+          "host": "sakoselatanpasiatalang.{domain}",
+          "code": "13.11.02.2009",
+          "schema": "13_11_02_2009",
+          "slug": "sakoselatanpasiatalang",
+          "canonHost": "sakoselatanpasiatalang.digitaldesa.id",
+          "canonUrl": "http://sakoselatanpasiatalang.digitaldesa.id/berita"
+        },
+        "profile": {
+          "postalCode": "27774",
+          "welcome": {
+            "backgroundURL": "",
+            "__typename": "SettingWelcome"
+          },
+          "alias": {
+            "dusun": "Jorong",
+            "kadus": "Wali Jorong",
+            "deskel": "Nagari",
+            "kades": "Wali Nagari",
+            "kecamatan": "Kecamatan",
+            "camat": "Camat",
+            "kabkota": "Kabupaten",
+            "bupati": "Bupati",
+            "provinsi": "Provinsi",
+            "gubernur": "Gubernur",
+            "BPD": "Badan Permusyawaratan Desa",
+            "__typename": "SettingAlias"
+          },
+          "name": {
+            "deskel": "Sako Selatan Pasia Talang",
+            "ibukota": "Sako Selatan Pasia Talang",
+            "kabkota": "Solok Selatan",
+            "kecamatan": "Sungai Pagu",
+            "provinsi": "Sumatera Barat",
+            "__typename": "SettingName"
+          },
+          "serviceEmail": "sakoselatan2025@gmail.com",
+          "socialMedia": {
+            "facebook": "#",
+            "instagram": "#",
+            "tiktok": "#",
+            "twitter": "#",
+            "youtube": "#",
+            "__typename": "SettingSocialMedia"
+          },
+          "phone": "082174899901",
+          "servicePhone": "082174899901",
+          "workHour": "08.00 - 16.00 wib",
+          "contact": "",
+          "email": "sakoselatan2025@gmail.com",
+          "logoURL": "solselkab.png",
+          "officeAddress": "Jln. Pulau Alai",
+          "description": "Nagari Sako Selatan Pasia Talang adalah salah satu nagari di Kecamatan Sungai Pagu, Kabupaten Solok Selatan, Provinsi Sumatera Barat. Nagari ini memiliki luas wilayah sekitar 35,41 km",
+          "timezone": 7,
+          "primaryPalette": [],
+          "landingLayout": [
+            {
+              "ID": "jelajahi_desa",
+              "visible": true,
+              "order": 1,
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "sambutan",
+              "visible": true,
+              "order": 2,
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "peta_desa",
+              "visible": true,
+              "order": 3,
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "sotk",
+              "visible": true,
+              "order": 4,
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "administrasi_penduduk",
+              "visible": true,
+              "order": 5,
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "apb_desa",
+              "visible": true,
+              "order": 6,
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "berita_desa",
+              "visible": true,
+              "order": 7,
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "potensi_desa",
+              "visible": true,
+              "order": 8,
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "wisata_desa",
+              "visible": true,
+              "order": 9,
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "beli_dari_desa",
+              "visible": true,
+              "order": 10,
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "galeri_desa",
+              "visible": true,
+              "order": 11,
+              "__typename": "SettingLayout"
+            }
+          ],
+          "profileLayout": [
+            {
+              "ID": "visi_misi",
+              "visible": true,
+              "order": 1,
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "bagan_desa",
+              "visible": true,
+              "order": 2,
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "sejarah_desa",
+              "visible": true,
+              "order": 3,
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "peta_lokasi",
+              "visible": true,
+              "order": 4,
+              "__typename": "SettingLayout"
+            }
+          ],
+          "infographyLayout": [
+            {
+              "ID": "infografis/penduduk",
+              "visible": true,
+              "order": 1,
+              "title": "Penduduk",
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "infografis/apbdes",
+              "visible": true,
+              "order": 2,
+              "title": "APBDes",
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "infografis/stunting",
+              "visible": true,
+              "order": 3,
+              "title": "Stunting",
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "infografis/bansos",
+              "visible": true,
+              "order": 4,
+              "title": "Bansos",
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "infografis/idm",
+              "visible": true,
+              "order": 5,
+              "title": "IDM",
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "infografis/sdgs",
+              "visible": true,
+              "order": 6,
+              "title": "SDGs",
+              "__typename": "SettingLayout"
+            }
+          ],
+          "navbarLayout": [
+            {
+              "ID": "profil",
+              "visible": true,
+              "order": 1,
+              "title": "Profil Nagari",
+              "type": "fixed",
+              "url": null,
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "infografis",
+              "visible": true,
+              "order": 2,
+              "title": "Infografis",
+              "type": "fixed",
+              "url": null,
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "url/69562340",
+              "visible": true,
+              "order": 3,
+              "title": "Portal PPID",
+              "type": "external",
+              "url": "https://sites.google.com/view/ppidsakoselatan/portal-ppid",
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "berita",
+              "visible": true,
+              "order": 4,
+              "title": "Berita",
+              "type": "fixed",
+              "url": null,
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "ppid",
+              "visible": true,
+              "order": 5,
+              "title": "PPID",
+              "type": "fixed",
+              "url": null,
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "d/desa-cantik",
+              "visible": true,
+              "order": 6,
+              "title": "Desa Cantik",
+              "type": "dynamic",
+              "url": null,
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "url/99016853",
+              "visible": true,
+              "order": 7,
+              "title": "Profil Pejabat Wali Nagari",
+              "type": "external",
+              "url": "https://sites.google.com/view/profilpejabatwalinagari/profil-pejabat-wali-nagari",
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "d/video-profil",
+              "visible": true,
+              "order": 9,
+              "title": "Video Profil",
+              "type": "dynamic",
+              "url": null,
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "url/11345029",
+              "visible": true,
+              "order": 10,
+              "title": "Simsalabim",
+              "type": "external",
+              "url": "https://simpkk.solselkab.go.id/",
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "infografis/apbdes",
+              "visible": false,
+              "order": 0,
+              "title": "APBDes",
+              "type": "fixed",
+              "url": null,
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "infografis/penduduk",
+              "visible": false,
+              "order": 0,
+              "title": "Penduduk",
+              "type": "fixed",
+              "url": null,
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "infografis/stunting",
+              "visible": false,
+              "order": 0,
+              "title": "Stunting",
+              "type": "fixed",
+              "url": null,
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "infografis/bansos",
+              "visible": false,
+              "order": 0,
+              "title": "Bansos",
+              "type": "fixed",
+              "url": null,
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "infografis/idm",
+              "visible": false,
+              "order": 0,
+              "title": "IDM",
+              "type": "fixed",
+              "url": null,
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "infografis/sdgs",
+              "visible": false,
+              "order": 0,
+              "title": "SDGs",
+              "type": "fixed",
+              "url": null,
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "listing",
+              "visible": false,
+              "order": 0,
+              "title": "Listing",
+              "type": "fixed",
+              "url": null,
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "belanja",
+              "visible": false,
+              "order": 0,
+              "title": "Belanja",
+              "type": "fixed",
+              "url": null,
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "pemerintah",
+              "visible": false,
+              "order": 0,
+              "title": "SOTK",
+              "type": "fixed",
+              "url": null,
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "galeri",
+              "visible": false,
+              "order": 0,
+              "title": "Galeri",
+              "type": "fixed",
+              "url": null,
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "custom_page",
+              "visible": false,
+              "order": 0,
+              "title": "Halaman",
+              "type": "dynamic",
+              "url": null,
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "custom_url",
+              "visible": false,
+              "order": 0,
+              "title": "Pranala Luar",
+              "type": "external",
+              "url": null,
+              "__typename": "SettingLayout"
+            }
+          ],
+          "navmenuLayout": [
+            {
+              "ID": "profil",
+              "visible": true,
+              "order": 1,
+              "title": "Profil Desa",
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "infografis",
+              "visible": true,
+              "order": 2,
+              "title": "Infografis",
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "infografis/idm",
+              "visible": true,
+              "order": 3,
+              "title": "IDM",
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "ppid",
+              "visible": true,
+              "order": 4,
+              "title": "PPID",
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "berita",
+              "visible": true,
+              "order": 5,
+              "title": "Berita",
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "belanja",
+              "visible": true,
+              "order": 6,
+              "title": "Belanja",
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "infografis/bansos",
+              "visible": true,
+              "order": 7,
+              "title": "Bansos",
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "galeri",
+              "visible": true,
+              "order": 8,
+              "title": "Galeri",
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "infografis/apbdes",
+              "visible": false,
+              "order": 0,
+              "title": "APBDes",
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "infografis/penduduk",
+              "visible": false,
+              "order": 0,
+              "title": "Penduduk",
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "infografis/stunting",
+              "visible": false,
+              "order": 0,
+              "title": "Stunting",
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "infografis/sdgs",
+              "visible": false,
+              "order": 0,
+              "title": "SDGs",
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "listing",
+              "visible": false,
+              "order": 0,
+              "title": "Listing",
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "pemerintah",
+              "visible": false,
+              "order": 0,
+              "title": "SOTK",
+              "__typename": "SettingLayout"
+            },
+            {
+              "ID": "bumdes",
+              "visible": false,
+              "order": 0,
+              "title": "BUMDes",
+              "__typename": "SettingLayout"
+            }
+          ],
+          "sliderThemes": "default",
+          "sliderAlign": "center",
+          "sliderLayout": [
+            {
+              "ID": "spanduk/12345678",
+              "order": 1,
+              "type": "slider",
+              "judul1": "Selamat Datang",
+              "judul2": "Website Resmi Nagari Sako Selatan Pasia Talang",
+              "subJudul": "Sumber informasi terbaru tentang pemerintahan di Nagari Sako Selatan Pasia Talang",
+              "gambar": "29735338913b62e6995369d2efcf579a.jpg",
+              "url": "",
+              "__typename": "SliderInfo"
+            }
+          ],
+          "__typename": "Profile"
+        },
+        "baseDomain": "digitaldesa.id",
+        "url": "http://sakoselatanpasiatalang.digitaldesa.id/berita",
+        "locale": "ID",
+        "user": {}
+      },
+      "routes/_": null,
+      "routes/_.berita._index": null
+    },
+    "actionData": null,
+    "errors": null
+  },
+  "future": {
+    "v3_fetcherPersist": false,
+    "v3_relativeSplatPath": false,
+    "v3_throwAbortReason": false,
+    "unstable_singleFetch": false,
+    "unstable_fogOfWar": false
+  },
+  "isSpaMode": false
+}
