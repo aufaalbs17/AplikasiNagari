@@ -1,5 +1,7 @@
 package com.example.aplikasinagarikkn.ui.screens
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -14,18 +16,20 @@ import androidx.compose.material.icons.filled.Campaign
 import androidx.compose.material.icons.filled.ChildCare
 import androidx.compose.material.icons.filled.LocalHospital
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -44,6 +48,8 @@ fun UserDashboardScreen(
     viewModel: DashboardViewModel = viewModel()
 ) {
     val newsState by viewModel.newsState.collectAsState()
+    val context = LocalContext.current
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -90,14 +96,37 @@ fun UserDashboardScreen(
             }
 
             // --- Banner Pengumuman ---
-            Text(
-                text = "Kabar Nagari",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.padding(start = 24.dp, end = 24.dp, bottom = 12.dp)
-            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp, vertical = 4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Kabar Nagari",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+                Text(
+                    text = "Website Resmi ↗",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.clickable {
+                        try {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://sakoselatanpasiatalang.digitaldesa.id/berita"))
+                            context.startActivity(intent)
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+                )
+            }
             
+            Spacer(modifier = Modifier.height(8.dp))
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -120,10 +149,10 @@ fun UserDashboardScreen(
                     }
                     is NewsState.Success -> {
                         val colors = listOf(
-                            Color(0xFF4CAF50) to Color(0xFF81C784),
-                            Color(0xFF1976D2) to Color(0xFF64B5F6),
-                            Color(0xFFFF9800) to Color(0xFFFFB74D),
-                            Color(0xFF9C27B0) to Color(0xFFBA68C8)
+                            Color(0xFF2E7D32) to Color(0xFF4CAF50),
+                            Color(0xFF1565C0) to Color(0xFF1976D2),
+                            Color(0xFFE65100) to Color(0xFFFF9800),
+                            Color(0xFF6A1B9A) to Color(0xFF9C27B0)
                         )
                         
                         state.news.forEachIndexed { index, news ->
@@ -131,7 +160,17 @@ fun UserDashboardScreen(
                             AnnouncementCard(
                                 news = news,
                                 color1 = colorPair.first,
-                                color2 = colorPair.second
+                                color2 = colorPair.second,
+                                onClick = {
+                                    if (news.link.isNotEmpty()) {
+                                        try {
+                                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(news.link))
+                                            context.startActivity(intent)
+                                        } catch (e: Exception) {
+                                            e.printStackTrace()
+                                        }
+                                    }
+                                }
                             )
                         }
                     }
@@ -222,48 +261,89 @@ fun UserDashboardScreen(
 }
 
 @Composable
-fun AnnouncementCard(news: NewsItem, color1: Color, color2: Color) {
+fun AnnouncementCard(
+    news: NewsItem,
+    color1: Color,
+    color2: Color,
+    onClick: () -> Unit
+) {
     Box(
         modifier = Modifier
             .width(280.dp)
-            .height(140.dp)
+            .height(150.dp)
             .clip(RoundedCornerShape(20.dp))
             .background(Brush.horizontalGradient(listOf(color1, color2)))
-            .clickable { /* TODO: Buka link web (news.link) */ }
+            .clickable { onClick() }
     ) {
-        // Jika ada gambar asli, kita jadikan background transparan
+        // Background Image jika ada
         if (news.imageUrl.isNotEmpty()) {
             AsyncImage(
                 model = news.imageUrl,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize(),
-                alpha = 0.3f // Agar teks tetap terbaca
+                alpha = 0.25f // Transparan agar teks tetap kontras
             )
         }
         
+        // Dark overlay gradient untuk keterbacaan teks
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color.Black.copy(alpha = 0.2f),
+                            Color.Black.copy(alpha = 0.6f)
+                        )
+                    )
+                )
+        )
+
+        // Content & External Icon
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(20.dp),
-            verticalArrangement = Arrangement.Center
+                .padding(16.dp),
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(
-                text = news.title,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                color = Color.White,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = news.subtitle,
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.White.copy(alpha = 0.9f),
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(28.dp)
+                        .background(Color.Black.copy(alpha = 0.3f), CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.OpenInNew,
+                        contentDescription = "Buka Berita Web",
+                        tint = Color.White,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
+            }
+
+            Column {
+                Text(
+                    text = news.title,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = news.subtitle,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.White.copy(alpha = 0.9f),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
         }
     }
 }
