@@ -11,13 +11,17 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.AddAlert
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Campaign
 import androidx.compose.material.icons.filled.ChildCare
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.LocalHospital
 import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.Security
+import androidx.compose.material.icons.filled.Store
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -34,6 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.aplikasinagarikkn.model.NewsItem
@@ -53,16 +58,36 @@ fun UserDashboardScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Aplikasi Nagari", fontWeight = FontWeight.Bold) },
+                title = {
+                    Column {
+                        Text(
+                            text = "Aplikasi Nagari",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp
+                        )
+                        Text(
+                            text = "Sako Selatan Pasia Talang",
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.85f)
+                        )
+                    }
+                },
                 actions = {
                     IconButton(onClick = onNavigateToNotifikasi) {
-                        Icon(Icons.Filled.Notifications, contentDescription = "Notifikasi")
+                        BadgedBox(
+                            badge = { Badge { Text("2") } }
+                        ) {
+                            Icon(
+                                Icons.Filled.Notifications,
+                                contentDescription = "Notifikasi",
+                                tint = MaterialTheme.colorScheme.onPrimary
+                            )
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary
                 )
             )
         }
@@ -74,87 +99,108 @@ fun UserDashboardScreen(
                 .padding(paddingValues)
                 .verticalScroll(rememberScrollState())
         ) {
-            // --- Welcoming Header ---
-            Column(
+            // --- Header Banner Greeting ---
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 24.dp, vertical = 24.dp),
-                horizontalAlignment = Alignment.Start
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(
+                                MaterialTheme.colorScheme.primary,
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.85f)
+                            )
+                        )
+                    )
+                    .padding(horizontal = 24.dp, vertical = 20.dp)
             ) {
-                Text(
-                    text = "Halo, Budi!",
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "Ada yang bisa kami bantu hari ini?",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-
-            // --- Banner Pengumuman ---
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp, vertical = 4.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Kabar Nagari",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-                Text(
-                    text = "Website Resmi ↗",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.clickable {
-                        try {
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://sakoselatanpasiatalang.digitaldesa.id/berita"))
-                            context.startActivity(intent)
-                        } catch (e: Exception) {
-                            e.printStackTrace()
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.15f)
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "Selamat Datang, Budi 👋",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = "Layanan informasi & pengaduan publik Nagari dalam satu genggaman.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color.White.copy(alpha = 0.9f)
+                            )
                         }
                     }
-                )
+                }
             }
-            
-            Spacer(modifier = Modifier.height(8.dp))
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // --- Kabar Nagari Carousel ---
+            Text(
+                text = "Kabar Nagari",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier.padding(horizontal = 24.dp)
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
 
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .horizontalScroll(rememberScrollState())
                     .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                horizontalArrangement = Arrangement.spacedBy(14.dp)
             ) {
-                Spacer(modifier = Modifier.width(4.dp)) // padding start
-                
+                Spacer(modifier = Modifier.width(2.dp))
+
                 when (val state = newsState) {
                     is NewsState.Loading -> {
-                        CircularProgressIndicator(modifier = Modifier.padding(32.dp))
+                        Box(
+                            modifier = Modifier
+                                .width(280.dp)
+                                .height(150.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
                     }
                     is NewsState.Error -> {
-                        Text(
-                            text = "Gagal memuat berita: ${state.message}", 
-                            modifier = Modifier.padding(32.dp),
-                            color = MaterialTheme.colorScheme.error
-                        )
+                        Card(
+                            modifier = Modifier
+                                .width(280.dp)
+                                .height(150.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
+                        ) {
+                            Box(modifier = Modifier.fillMaxSize().padding(16.dp), contentAlignment = Alignment.Center) {
+                                Text(
+                                    text = "Gagal memuat kabar: ${state.message}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onErrorContainer
+                                )
+                            }
+                        }
                     }
                     is NewsState.Success -> {
                         val colors = listOf(
-                            Color(0xFF2E7D32) to Color(0xFF4CAF50),
-                            Color(0xFF1565C0) to Color(0xFF1976D2),
-                            Color(0xFFE65100) to Color(0xFFFF9800),
-                            Color(0xFF6A1B9A) to Color(0xFF9C27B0)
+                            Color(0xFF0F9D58) to Color(0xFF00695C),
+                            Color(0xFF1565C0) to Color(0xFF0D47A1),
+                            Color(0xFFE65100) to Color(0xFFBF360C),
+                            Color(0xFF6A1B9A) to Color(0xFF4A148C)
                         )
-                        
+
                         state.news.forEachIndexed { index, news ->
                             val colorPair = colors[index % colors.size]
                             AnnouncementCard(
@@ -175,33 +221,35 @@ fun UserDashboardScreen(
                         }
                     }
                 }
-                
-                Spacer(modifier = Modifier.width(8.dp)) // padding end
+
+                Spacer(modifier = Modifier.width(4.dp))
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(28.dp))
 
-            // --- Utama: Buat Laporan ---
+            // --- Banner Layanan Utama: Lapor Cepat ---
             Box(modifier = Modifier.padding(horizontal = 24.dp)) {
-                ElevatedCard(
+                Card(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable { onNavigateToBuatLaporan() },
                     shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
-                    elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp)
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(24.dp),
+                            .padding(20.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Box(
                             modifier = Modifier
-                                .size(64.dp)
+                                .size(56.dp)
                                 .background(
-                                    MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.1f), 
+                                    MaterialTheme.colorScheme.primary,
                                     shape = RoundedCornerShape(16.dp)
                                 ),
                             contentAlignment = Alignment.Center
@@ -209,30 +257,35 @@ fun UserDashboardScreen(
                             Icon(
                                 imageVector = Icons.Filled.AddAlert,
                                 contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                                modifier = Modifier.size(32.dp)
+                                tint = Color.White,
+                                modifier = Modifier.size(28.dp)
                             )
                         }
-                        Spacer(modifier = Modifier.width(20.dp))
+                        Spacer(modifier = Modifier.width(16.dp))
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 text = "Lapor Cepat!",
-                                style = MaterialTheme.typography.titleLarge,
+                                style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer
                             )
-                            Spacer(modifier = Modifier.height(4.dp))
+                            Spacer(modifier = Modifier.height(2.dp))
                             Text(
-                                text = "Laporkan kejadian, masalah fasilitas, atau darurat.",
-                                style = MaterialTheme.typography.bodyMedium,
+                                text = "Sampaikan laporan fasilitas, kendala, atau darurat.",
+                                style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
                             )
                         }
+                        Icon(
+                            imageVector = Icons.Filled.ArrowForward,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary
+                        )
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(28.dp))
 
             // --- Akses Cepat ---
             Text(
@@ -240,8 +293,10 @@ fun UserDashboardScreen(
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.padding(start = 24.dp, end = 24.dp, bottom = 16.dp)
+                modifier = Modifier.padding(horizontal = 24.dp)
             )
+
+            Spacer(modifier = Modifier.height(14.dp))
 
             Row(
                 modifier = Modifier
@@ -250,9 +305,51 @@ fun UserDashboardScreen(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 QuickActionItem(icon = Icons.Filled.LocalHospital, title = "Ambulans", color = Color(0xFFE53935), onClick = {})
-                QuickActionItem(icon = Icons.Filled.Security, title = "Desa Siaga", color = Color(0xFF1E88E5), onClick = {})
+                QuickActionItem(icon = Icons.Filled.Security, title = "Siaga", color = Color(0xFF1E88E5), onClick = {})
                 QuickActionItem(icon = Icons.Filled.ChildCare, title = "Posyandu", color = Color(0xFF8E24AA), onClick = {})
                 QuickActionItem(icon = Icons.Filled.Campaign, title = "Informasi", color = Color(0xFFF4511E), onClick = {})
+            }
+
+            Spacer(modifier = Modifier.height(28.dp))
+
+            // --- Stats Summary ---
+            Text(
+                text = "Ringkasan Layanan",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier.padding(horizontal = 24.dp)
+            )
+
+            Spacer(modifier = Modifier.height(14.dp))
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                StatCard(
+                    modifier = Modifier.weight(1f),
+                    title = "Laporan Selesai",
+                    count = "128",
+                    icon = Icons.Filled.CheckCircle,
+                    color = Color(0xFF0F9D58)
+                )
+                StatCard(
+                    modifier = Modifier.weight(1f),
+                    title = "Surat Diproses",
+                    count = "45",
+                    icon = Icons.Filled.Description,
+                    color = Color(0xFF1976D2)
+                )
+                StatCard(
+                    modifier = Modifier.weight(1f),
+                    title = "UMKM Aktif",
+                    count = "24",
+                    icon = Icons.Filled.Store,
+                    color = Color(0xFFFF6F00)
+                )
             }
 
             Spacer(modifier = Modifier.height(32.dp))
@@ -267,82 +364,85 @@ fun AnnouncementCard(
     color2: Color,
     onClick: () -> Unit
 ) {
-    Box(
+    Card(
         modifier = Modifier
             .width(280.dp)
             .height(150.dp)
-            .clip(RoundedCornerShape(20.dp))
-            .background(Brush.horizontalGradient(listOf(color1, color2)))
-            .clickable { onClick() }
+            .clickable { onClick() },
+        shape = RoundedCornerShape(18.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
     ) {
-        // Background Image jika ada
-        if (news.imageUrl.isNotEmpty()) {
-            AsyncImage(
-                model = news.imageUrl,
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize(),
-                alpha = 0.25f // Transparan agar teks tetap kontras
-            )
-        }
-        
-        // Dark overlay gradient untuk keterbacaan teks
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(
-                    Brush.verticalGradient(
-                        colors = listOf(
-                            Color.Black.copy(alpha = 0.2f),
-                            Color.Black.copy(alpha = 0.6f)
-                        )
-                    )
-                )
-        )
-
-        // Content & External Icon
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.SpaceBetween
+                .background(Brush.horizontalGradient(listOf(color1, color2)))
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(28.dp)
-                        .background(Color.Black.copy(alpha = 0.3f), CircleShape),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.OpenInNew,
-                        contentDescription = "Buka Berita Web",
-                        tint = Color.White,
-                        modifier = Modifier.size(16.dp)
-                    )
-                }
+            if (news.imageUrl.isNotEmpty()) {
+                AsyncImage(
+                    model = news.imageUrl,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize(),
+                    alpha = 0.28f
+                )
             }
 
-            Column {
-                Text(
-                    text = news.title,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = news.subtitle,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.White.copy(alpha = 0.9f),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Black.copy(alpha = 0.2f),
+                                Color.Black.copy(alpha = 0.65f)
+                            )
+                        )
+                    )
+            )
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(28.dp)
+                            .background(Color.Black.copy(alpha = 0.35f), CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.OpenInNew,
+                            contentDescription = "Buka Berita",
+                            tint = Color.White,
+                            modifier = Modifier.size(15.dp)
+                        )
+                    }
+                }
+
+                Column {
+                    Text(
+                        text = news.title,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = news.subtitle,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.White.copy(alpha = 0.9f),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
             }
         }
     }
@@ -359,14 +459,14 @@ fun QuickActionItem(icon: ImageVector, title: String, color: Color, onClick: () 
         Box(
             modifier = Modifier
                 .size(56.dp)
-                .background(color.copy(alpha = 0.15f), shape = CircleShape),
+                .background(color.copy(alpha = 0.12f), shape = CircleShape),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = title,
                 tint = color,
-                modifier = Modifier.size(28.dp)
+                modifier = Modifier.size(26.dp)
             )
         }
         Spacer(modifier = Modifier.height(8.dp))
@@ -376,6 +476,46 @@ fun QuickActionItem(icon: ImageVector, title: String, color: Color, onClick: () 
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onBackground
         )
+    }
+}
+
+@Composable
+fun StatCard(
+    modifier: Modifier = Modifier,
+    title: String,
+    count: String,
+    icon: ImageVector,
+    color: Color
+) {
+    Card(
+        modifier = modifier,
+        shape = RoundedCornerShape(14.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(12.dp),
+            horizontalAlignment = Alignment.Start
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = color,
+                modifier = Modifier.size(20.dp)
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = count,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Text(
+                text = title,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
     }
 }
 
