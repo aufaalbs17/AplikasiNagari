@@ -1,5 +1,8 @@
 package com.example.aplikasinagarikkn.ui.screens
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Description
@@ -103,7 +106,11 @@ fun UserMainScreen(
         NavHost(
             navController = navController,
             startDestination = BottomNavItem.Home.route,
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier.padding(innerPadding),
+            enterTransition = { fadeIn(animationSpec = tween(180)) },
+            exitTransition = { fadeOut(animationSpec = tween(180)) },
+            popEnterTransition = { fadeIn(animationSpec = tween(180)) },
+            popExitTransition = { fadeOut(animationSpec = tween(180)) }
         ) {
             composable(BottomNavItem.Home.route) {
                 UserDashboardScreen(

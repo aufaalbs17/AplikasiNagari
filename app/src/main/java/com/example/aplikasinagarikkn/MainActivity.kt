@@ -4,6 +4,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -36,7 +41,14 @@ class MainActivity : ComponentActivity() {
 fun NagariApp() {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = "login") {
+    NavHost(
+        navController = navController,
+        startDestination = "login",
+        enterTransition = { slideInHorizontally(initialOffsetX = { 300 }, animationSpec = tween(240)) + fadeIn(animationSpec = tween(240)) },
+        exitTransition = { slideOutHorizontally(targetOffsetX = { -300 }, animationSpec = tween(240)) + fadeOut(animationSpec = tween(240)) },
+        popEnterTransition = { slideInHorizontally(initialOffsetX = { -300 }, animationSpec = tween(240)) + fadeIn(animationSpec = tween(240)) },
+        popExitTransition = { slideOutHorizontally(targetOffsetX = { 300 }, animationSpec = tween(240)) + fadeOut(animationSpec = tween(240)) }
+    ) {
         composable("login") {
             LoginScreen(
                 onNavigateToUserDashboard = { navController.navigate("user_dashboard") },
