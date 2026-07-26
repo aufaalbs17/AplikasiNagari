@@ -2,15 +2,23 @@ package com.example.aplikasinagarikkn.ui.screens
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Store
+import androidx.compose.material.icons.outlined.Description
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Storefront
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
@@ -18,11 +26,16 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 
-sealed class BottomNavItem(val route: String, val title: String, val icon: ImageVector) {
-    object Home : BottomNavItem("home_tab", "Beranda", Icons.Filled.Home)
-    object Surat : BottomNavItem("surat_tab", "Surat", Icons.Filled.Description)
-    object UMKM : BottomNavItem("umkm_tab", "UMKM", Icons.Filled.Store)
-    object Akun : BottomNavItem("akun_tab", "Akun", Icons.Filled.Person)
+sealed class BottomNavItem(
+    val route: String,
+    val title: String,
+    val selectedIcon: ImageVector,
+    val unselectedIcon: ImageVector
+) {
+    object Home : BottomNavItem("home_tab", "Beranda", Icons.Filled.Home, Icons.Outlined.Home)
+    object Surat : BottomNavItem("surat_tab", "Surat", Icons.Filled.Description, Icons.Outlined.Description)
+    object UMKM : BottomNavItem("umkm_tab", "UMKM", Icons.Filled.Store, Icons.Outlined.Storefront)
+    object Akun : BottomNavItem("akun_tab", "Akun", Icons.Filled.Person, Icons.Outlined.Person)
 }
 
 @Composable
@@ -44,27 +57,41 @@ fun UserMainScreen(
         bottomBar = {
             NavigationBar(
                 containerColor = MaterialTheme.colorScheme.surface,
-                contentColor = MaterialTheme.colorScheme.primary
+                tonalElevation = 8.dp
             ) {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentDestination = navBackStackEntry?.destination
 
                 items.forEach { screen ->
+                    val isSelected = currentDestination?.hierarchy?.any { it.route == screen.route } == true
                     NavigationBarItem(
-                        icon = { Icon(screen.icon, contentDescription = screen.title) },
-                        label = { Text(screen.title) },
-                        selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
+                        icon = {
+                            Icon(
+                                imageVector = if (isSelected) screen.selectedIcon else screen.unselectedIcon,
+                                contentDescription = screen.title
+                            )
+                        },
+                        label = {
+                            Text(
+                                text = screen.title,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                fontSize = 11.sp
+                            )
+                        },
+                        selected = isSelected,
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = MaterialTheme.colorScheme.primary,
+                            selectedTextColor = MaterialTheme.colorScheme.primary,
+                            indicatorColor = MaterialTheme.colorScheme.primaryContainer,
+                            unselectedIconColor = Color.Gray,
+                            unselectedTextColor = Color.Gray
+                        ),
                         onClick = {
                             navController.navigate(screen.route) {
-                                // Pop up to the start destination of the graph to
-                                // avoid building up a large stack of destinations
                                 popUpTo(navController.graph.findStartDestination().id) {
                                     saveState = true
                                 }
-                                // Avoid multiple copies of the same destination when
-                                // reselecting the same item
                                 launchSingleTop = true
-                                // Restore state when reselecting a previously selected item
                                 restoreState = true
                             }
                         }
@@ -79,7 +106,6 @@ fun UserMainScreen(
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(BottomNavItem.Home.route) {
-                // Halaman Dashboard Utama
                 UserDashboardScreen(
                     onNavigateToBuatLaporan = onNavigateToBuatLaporan,
                     onNavigateToNotifikasi = onNavigateToNotifikasi

@@ -11,17 +11,14 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.AddAlert
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Campaign
 import androidx.compose.material.icons.filled.ChildCare
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.LocalHospital
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Security
-import androidx.compose.material.icons.filled.Store
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -135,7 +132,7 @@ fun UserDashboardScreen(
                             )
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
-                                text = "Layanan informasi & pengaduan publik Nagari dalam satu genggaman.",
+                                text = "Layanan publik & pengaduan Nagari dalam satu genggaman.",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = Color.White.copy(alpha = 0.9f)
                             )
@@ -145,6 +142,91 @@ fun UserDashboardScreen(
             }
 
             Spacer(modifier = Modifier.height(20.dp))
+
+            // --- Banner Utama: Lapor Cepat ---
+            Box(modifier = Modifier.padding(horizontal = 24.dp)) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onNavigateToBuatLaporan() },
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(20.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(56.dp)
+                                .background(
+                                    MaterialTheme.colorScheme.primary,
+                                    shape = RoundedCornerShape(16.dp)
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.AddAlert,
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.size(28.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "Lapor Cepat!",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = "Sampaikan laporan fasilitas, kendala, atau darurat.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
+                            )
+                        }
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // --- Akses Cepat ---
+            Text(
+                text = "Akses Cepat",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier.padding(horizontal = 24.dp)
+            )
+
+            Spacer(modifier = Modifier.height(14.dp))
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                QuickActionItem(icon = Icons.Filled.LocalHospital, title = "Ambulans", color = Color(0xFFE53935), onClick = {})
+                QuickActionItem(icon = Icons.Filled.Security, title = "Siaga", color = Color(0xFF1E88E5), onClick = {})
+                QuickActionItem(icon = Icons.Filled.ChildCare, title = "Posyandu", color = Color(0xFF8E24AA), onClick = {})
+                QuickActionItem(icon = Icons.Filled.Campaign, title = "Informasi", color = Color(0xFFF4511E), onClick = {})
+            }
+
+            Spacer(modifier = Modifier.height(28.dp))
 
             // --- Kabar Nagari Carousel ---
             Text(
@@ -223,133 +305,6 @@ fun UserDashboardScreen(
                 }
 
                 Spacer(modifier = Modifier.width(4.dp))
-            }
-
-            Spacer(modifier = Modifier.height(28.dp))
-
-            // --- Banner Layanan Utama: Lapor Cepat ---
-            Box(modifier = Modifier.padding(horizontal = 24.dp)) {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { onNavigateToBuatLaporan() },
-                    shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer
-                    ),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(20.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(56.dp)
-                                .background(
-                                    MaterialTheme.colorScheme.primary,
-                                    shape = RoundedCornerShape(16.dp)
-                                ),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.AddAlert,
-                                contentDescription = null,
-                                tint = Color.White,
-                                modifier = Modifier.size(28.dp)
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = "Lapor Cepat!",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
-                            )
-                            Spacer(modifier = Modifier.height(2.dp))
-                            Text(
-                                text = "Sampaikan laporan fasilitas, kendala, atau darurat.",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
-                            )
-                        }
-                        Icon(
-                            imageVector = Icons.Filled.ArrowForward,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(28.dp))
-
-            // --- Akses Cepat ---
-            Text(
-                text = "Akses Cepat",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.padding(horizontal = 24.dp)
-            )
-
-            Spacer(modifier = Modifier.height(14.dp))
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                QuickActionItem(icon = Icons.Filled.LocalHospital, title = "Ambulans", color = Color(0xFFE53935), onClick = {})
-                QuickActionItem(icon = Icons.Filled.Security, title = "Siaga", color = Color(0xFF1E88E5), onClick = {})
-                QuickActionItem(icon = Icons.Filled.ChildCare, title = "Posyandu", color = Color(0xFF8E24AA), onClick = {})
-                QuickActionItem(icon = Icons.Filled.Campaign, title = "Informasi", color = Color(0xFFF4511E), onClick = {})
-            }
-
-            Spacer(modifier = Modifier.height(28.dp))
-
-            // --- Stats Summary ---
-            Text(
-                text = "Ringkasan Layanan",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.padding(horizontal = 24.dp)
-            )
-
-            Spacer(modifier = Modifier.height(14.dp))
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                StatCard(
-                    modifier = Modifier.weight(1f),
-                    title = "Laporan Selesai",
-                    count = "128",
-                    icon = Icons.Filled.CheckCircle,
-                    color = Color(0xFF0F9D58)
-                )
-                StatCard(
-                    modifier = Modifier.weight(1f),
-                    title = "Surat Diproses",
-                    count = "45",
-                    icon = Icons.Filled.Description,
-                    color = Color(0xFF1976D2)
-                )
-                StatCard(
-                    modifier = Modifier.weight(1f),
-                    title = "UMKM Aktif",
-                    count = "24",
-                    icon = Icons.Filled.Store,
-                    color = Color(0xFFFF6F00)
-                )
             }
 
             Spacer(modifier = Modifier.height(32.dp))
@@ -476,46 +431,6 @@ fun QuickActionItem(icon: ImageVector, title: String, color: Color, onClick: () 
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onBackground
         )
-    }
-}
-
-@Composable
-fun StatCard(
-    modifier: Modifier = Modifier,
-    title: String,
-    count: String,
-    icon: ImageVector,
-    color: Color
-) {
-    Card(
-        modifier = modifier,
-        shape = RoundedCornerShape(14.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(12.dp),
-            horizontalAlignment = Alignment.Start
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = color,
-                modifier = Modifier.size(20.dp)
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = count,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-            Text(
-                text = title,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
     }
 }
 
