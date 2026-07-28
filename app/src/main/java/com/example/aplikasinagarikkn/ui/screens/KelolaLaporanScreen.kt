@@ -1,5 +1,7 @@
 package com.example.aplikasinagarikkn.ui.screens
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -13,6 +15,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
@@ -27,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -45,6 +50,8 @@ fun KelolaLaporanScreen(
 ) {
     var searchQuery by remember { mutableStateOf("") }
     var selectedStatusFilter by remember { mutableStateOf("Semua") }
+    var showExportDialog by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     // Filter logic
     val filteredLaporan = remember(searchQuery, selectedStatusFilter) {
@@ -96,6 +103,15 @@ fun KelolaLaporanScreen(
                         )
                     }
                 },
+                actions = {
+                    IconButton(onClick = { showExportDialog = true }) {
+                        Icon(
+                            imageVector = Icons.Filled.FileDownload,
+                            contentDescription = "Export Rekap Excel",
+                            tint = EmeraldMedium
+                        )
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface
                 )
@@ -108,11 +124,65 @@ fun KelolaLaporanScreen(
                 .background(Color(0xFFF8FAFC))
                 .padding(paddingValues)
         ) {
-            // --- 1. Search Bar Input ---
+            // --- 1. Top Banner Action (Export Excel Button) ---
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                border = BorderStroke(1.dp, BorderSubtle),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column {
+                        Text(
+                            text = "Rekap Laporan Bulanan",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 13.sp,
+                            color = Color(0xFF0F172A)
+                        )
+                        Text(
+                            text = "Format file Microsoft Excel (.csv)",
+                            fontSize = 11.sp,
+                            color = Color(0xFF64748B)
+                        )
+                    }
+
+                    Button(
+                        onClick = { showExportDialog = true },
+                        colors = ButtonDefaults.buttonColors(containerColor = EmeraldDark),
+                        shape = RoundedCornerShape(10.dp),
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Download,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp),
+                            tint = Color.White
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "Export Excel",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+                    }
+                }
+            }
+
+            // --- 2. Search Bar Input ---
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 10.dp)
+                    .padding(horizontal = 16.dp, vertical = 6.dp)
             ) {
                 OutlinedTextField(
                     value = searchQuery,
@@ -148,11 +218,11 @@ fun KelolaLaporanScreen(
                 )
             }
 
-            // --- 2. Filter Status Chips Row ---
+            // --- 3. Filter Status Chips Row ---
             LazyRow(
                 contentPadding = PaddingValues(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.padding(bottom = 12.dp)
+                modifier = Modifier.padding(bottom = 10.dp, top = 4.dp)
             ) {
                 items(filterOptions) { (status, count) ->
                     val isSelected = selectedStatusFilter == status
@@ -199,47 +269,33 @@ fun KelolaLaporanScreen(
                 }
             }
 
-            // --- 3. Filtered Laporan List ---
+            // --- 4. List Laporan Warga ---
             if (filteredLaporan.isEmpty()) {
-                // Empty Search Result View
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(32.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(64.dp)
-                                .clip(CircleShape)
-                                .background(Color(0xFFF1F5F9)),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.SearchOff,
-                                contentDescription = null,
-                                tint = Color.Gray,
-                                modifier = Modifier.size(32.dp)
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(14.dp))
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Icon(
+                            imageVector = Icons.Default.SearchOff,
+                            contentDescription = null,
+                            modifier = Modifier.size(54.dp),
+                            tint = Color.Gray
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
                         Text(
-                            text = "Tidak Ada Laporan Ditemukan",
+                            text = "Laporan Tidak Ditemukan",
                             fontWeight = FontWeight.Bold,
                             fontSize = 15.sp,
-                            color = Color(0xFF1E293B)
+                            color = Color(0xFF334155)
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "Coba ubah kata kunci pencarian atau pilih filter status yang berbeda.",
+                            text = "Coba ubah pencarian atau filter status laporan di atas.",
                             fontSize = 12.sp,
-                            color = Color(0xFF64748B),
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                            color = Color(0xFF64748B)
                         )
                     }
                 }
@@ -250,28 +306,69 @@ fun KelolaLaporanScreen(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     items(filteredLaporan) { laporan ->
-                        KelolaLaporanCard(
+                        AdminLaporanCard(
                             laporan = laporan,
                             onClick = { onNavigateToDetail(laporan.id) }
                         )
-                    }
-
-                    item {
-                        Spacer(modifier = Modifier.height(16.dp))
                     }
                 }
             }
         }
     }
+
+    if (showExportDialog) {
+        AlertDialog(
+            onDismissRequest = { showExportDialog = false },
+            icon = {
+                Icon(
+                    imageVector = Icons.Filled.FileDownload,
+                    contentDescription = null,
+                    tint = EmeraldMedium,
+                    modifier = Modifier.size(44.dp)
+                )
+            },
+            title = {
+                Text(
+                    text = "Export Rekap Laporan Excel?",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 17.sp
+                )
+            },
+            text = {
+                Text(
+                    text = "File 'Rekap_Pengaduan_Nagari_Sako_Selatan_2026.csv' berisi total 12 data laporan pengaduan warga akan diunduh ke perangkat Anda.",
+                    fontSize = 13.sp
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showExportDialog = false
+                        Toast.makeText(context, "Rekap Laporan Berhasil Diunduh! (Rekap_Pengaduan_Nagari.csv)", Toast.LENGTH_LONG).show()
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = EmeraldDark)
+                ) {
+                    Text("Unduh File Excel", fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showExportDialog = false }) {
+                    Text("Batal", color = Color.Gray)
+                }
+            }
+        )
+    }
 }
 
 @Composable
-fun KelolaLaporanCard(laporan: Laporan, onClick: () -> Unit) {
-    val (statusBgColor, statusTextColor) = when (laporan.status) {
-        "Menunggu" -> Pair(Color(0xFFFFFBEB), Color(0xFFD97706)) // Amber
-        "Diproses" -> Pair(Color(0xFFEFF6FF), Color(0xFF2563EB)) // Blue
-        "Selesai" -> Pair(Color(0xFFECFDF5), Color(0xFF059669))  // Emerald
-        else -> Pair(Color.LightGray, Color.Black)
+fun AdminLaporanCard(
+    laporan: Laporan,
+    onClick: () -> Unit
+) {
+    val (statusBg, statusTextColor) = when (laporan.status) {
+        "Selesai" -> Pair(Color(0xFFECFDF5), Color(0xFF047857))
+        "Diproses" -> Pair(Color(0xFFEFF6FF), Color(0xFF2563EB))
+        else -> Pair(Color(0xFFFFFBEB), Color(0xFFD97706))
     }
 
     Card(
@@ -283,11 +380,7 @@ fun KelolaLaporanCard(laporan: Laporan, onClick: () -> Unit) {
         border = BorderStroke(1.dp, BorderSubtle),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
+        Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -295,39 +388,29 @@ fun KelolaLaporanCard(laporan: Laporan, onClick: () -> Unit) {
             ) {
                 Text(
                     text = laporan.judul,
-                    style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp,
                     color = Color(0xFF0F172A),
                     modifier = Modifier.weight(1f),
-                    maxLines = 2,
+                    maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                // Status Badge
                 Surface(
-                    color = statusBgColor,
+                    color = statusBg,
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Text(
                         text = laporan.status,
-                        style = MaterialTheme.typography.labelSmall,
+                        fontSize = 11.sp,
                         fontWeight = FontWeight.Bold,
                         color = statusTextColor,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                     )
                 }
             }
-            Spacer(modifier = Modifier.height(8.dp))
 
-            Text(
-                text = "Pengaduan Layanan Masyarakat • Nagari Sako Selatan Pasia Talang",
-                fontSize = 12.sp,
-                color = Color(0xFF475569),
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -336,31 +419,30 @@ fun KelolaLaporanCard(laporan: Laporan, onClick: () -> Unit) {
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        imageVector = Icons.Filled.Person,
+                        imageVector = Icons.Default.Person,
                         contentDescription = null,
-                        modifier = Modifier.size(15.dp),
-                        tint = Color(0xFF64748B)
+                        tint = Color(0xFF64748B),
+                        modifier = Modifier.size(14.dp)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "Budi (Warga)",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color(0xFF64748B),
-                        fontWeight = FontWeight.Medium
+                        text = "Pelapor: Budi Santoso",
+                        fontSize = 12.sp,
+                        color = Color(0xFF64748B)
                     )
                 }
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        imageVector = Icons.Filled.DateRange,
+                        imageVector = Icons.Default.DateRange,
                         contentDescription = null,
-                        modifier = Modifier.size(15.dp),
-                        tint = Color(0xFF64748B)
+                        tint = Color(0xFF64748B),
+                        modifier = Modifier.size(14.dp)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = laporan.tanggal,
-                        style = MaterialTheme.typography.bodySmall,
+                        fontSize = 12.sp,
                         color = Color(0xFF64748B)
                     )
                 }
@@ -376,4 +458,3 @@ fun KelolaLaporanPreview() {
         KelolaLaporanScreen({}, {})
     }
 }
-
