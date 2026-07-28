@@ -4,14 +4,17 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AdminPanelSettings
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -36,6 +39,7 @@ fun LoginScreen(
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     var selectedRole by remember { mutableStateOf(0) } // 0: Masyarakat, 1: Admin
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
     Box(
         modifier = Modifier
@@ -44,7 +48,7 @@ fun LoginScreen(
                 brush = Brush.verticalGradient(
                     colors = listOf(
                         MaterialTheme.colorScheme.primary,
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
+                        MaterialTheme.colorScheme.primary.copy(alpha = 0.85f),
                         MaterialTheme.colorScheme.background
                     )
                 )
@@ -54,13 +58,16 @@ fun LoginScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(24.dp),
+                .padding(24.dp)
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Spacer(modifier = Modifier.height(16.dp))
+
             // --- Logo & App Title ---
             Box(
                 modifier = Modifier
-                    .size(72.dp)
+                    .size(76.dp)
                     .clip(CircleShape)
                     .background(Color.White.copy(alpha = 0.2f)),
                 contentAlignment = Alignment.Center
@@ -69,7 +76,7 @@ fun LoginScreen(
                     imageVector = Icons.Filled.Shield,
                     contentDescription = null,
                     tint = Color.White,
-                    modifier = Modifier.size(40.dp)
+                    modifier = Modifier.size(44.dp)
                 )
             }
 
@@ -79,15 +86,18 @@ fun LoginScreen(
                 text = "Aplikasi Nagari",
                 style = MaterialTheme.typography.headlineMedium,
                 color = Color.White,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center
             )
+            Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = "Sako Selatan Pasia Talang",
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color.White.copy(alpha = 0.85f)
+                color = Color.White.copy(alpha = 0.9f),
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(28.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             // --- Card Form ---
             Card(
@@ -126,14 +136,18 @@ fun LoginScreen(
                                 .fillMaxHeight()
                                 .clip(RoundedCornerShape(20.dp))
                                 .background(wargaBg)
-                                .clickable { selectedRole = 0 },
+                                .clickable { 
+                                    selectedRole = 0 
+                                    errorMessage = null
+                                },
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
                                 text = "Masyarakat",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 13.sp,
-                                color = if (selectedRole == 0) Color.White else Color.Gray
+                                color = if (selectedRole == 0) Color.White else Color.Gray,
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center
                             )
                         }
 
@@ -143,26 +157,44 @@ fun LoginScreen(
                                 .fillMaxHeight()
                                 .clip(RoundedCornerShape(20.dp))
                                 .background(adminBg)
-                                .clickable { selectedRole = 1 },
+                                .clickable { 
+                                    selectedRole = 1 
+                                    errorMessage = null
+                                },
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
                                 text = "Perangkat Admin",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 13.sp,
-                                color = if (selectedRole == 1) Color.White else Color.Gray
+                                color = if (selectedRole == 1) Color.White else Color.Gray,
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center
                             )
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
 
                     OutlinedTextField(
                         value = email,
-                        onValueChange = { email = it },
-                        label = { Text("NIK atau Email") },
-                        placeholder = { Text("Masukkan NIK atau email Anda") },
-                        leadingIcon = { Icon(Icons.Filled.Person, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
+                        onValueChange = { 
+                            email = it 
+                            errorMessage = null
+                            if (it.lowercase().contains("admin")) {
+                                selectedRole = 1
+                            } else if (it.lowercase().contains("warga") || it.lowercase().contains("user")) {
+                                selectedRole = 0
+                            }
+                        },
+                        label = { Text(if (selectedRole == 1) "Email Admin / NIP" else "NIK atau Email") },
+                        placeholder = { Text(if (selectedRole == 1) "admin@nagari.go.id" else "NIK atau email Anda") },
+                        leadingIcon = { 
+                            Icon(
+                                if (selectedRole == 1) Icons.Filled.AdminPanelSettings else Icons.Filled.Person, 
+                                contentDescription = null, 
+                                tint = MaterialTheme.colorScheme.primary
+                            ) 
+                        },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(14.dp),
                         singleLine = true,
@@ -172,11 +204,14 @@ fun LoginScreen(
                         )
                     )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(14.dp))
 
                     OutlinedTextField(
                         value = password,
-                        onValueChange = { password = it },
+                        onValueChange = { 
+                            password = it 
+                            errorMessage = null
+                        },
                         label = { Text("Kata Sandi") },
                         placeholder = { Text("Masukkan kata sandi") },
                         leadingIcon = { Icon(Icons.Filled.Lock, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
@@ -196,12 +231,39 @@ fun LoginScreen(
                         )
                     )
 
-                    Spacer(modifier = Modifier.height(28.dp))
+                    if (errorMessage != null) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = errorMessage ?: "",
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = FontWeight.Medium,
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(22.dp))
 
                     Button(
                         onClick = {
-                            if (selectedRole == 1) onNavigateToAdminDashboard()
-                            else onNavigateToUserDashboard()
+                            val cleanInput = email.trim().lowercase()
+                            if (cleanInput.isEmpty()) {
+                                errorMessage = "Silakan masukkan NIK / Email terlebih dahulu"
+                                return@Button
+                            }
+                            if (password.isEmpty()) {
+                                errorMessage = "Silakan masukkan Kata Sandi"
+                                return@Button
+                            }
+
+                            // Smart Role Authentication Logic
+                            val isAdminAccount = cleanInput.contains("admin") || cleanInput == "123456"
+
+                            if (selectedRole == 1 || isAdminAccount) {
+                                onNavigateToAdminDashboard()
+                            } else {
+                                onNavigateToUserDashboard()
+                            }
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -210,24 +272,86 @@ fun LoginScreen(
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                     ) {
                         Text(
-                            text = if (selectedRole == 1) "Login Admin Nagari" else "Masuk Aplikasi",
+                            text = if (selectedRole == 1) "Login Admin Nagari" else "Masuk Akun Warga",
                             fontWeight = FontWeight.Bold,
                             fontSize = 15.sp,
-                            color = Color.White
+                            color = Color.White,
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    // Demo Login Quick-Fill Chips
+                    Text(
+                        text = "Atau Gunakan Akun Uji Coba",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color.Gray,
+                        fontWeight = FontWeight.Medium,
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    )
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        SuggestionChip(
+                            onClick = {
+                                email = "admin@nagari.go.id"
+                                password = "admin"
+                                selectedRole = 1
+                                errorMessage = null
+                            },
+                            label = { 
+                                Text(
+                                    "🔑 Demo Admin", 
+                                    fontSize = 12.sp, 
+                                    fontWeight = FontWeight.SemiBold,
+                                    maxLines = 1,
+                                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                                ) 
+                            },
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(12.dp)
+                        )
+
+                        SuggestionChip(
+                            onClick = {
+                                email = "warga@nagari.go.id"
+                                password = "user"
+                                selectedRole = 0
+                                errorMessage = null
+                            },
+                            label = { 
+                                Text(
+                                    "👤 Demo Warga", 
+                                    fontSize = 12.sp, 
+                                    fontWeight = FontWeight.SemiBold,
+                                    maxLines = 1,
+                                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                                ) 
+                            },
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
 
                     TextButton(onClick = { /* TODO: Register */ }) {
                         Text(
                             text = "Belum memiliki akun? Daftar NIK di sini",
                             fontSize = 13.sp,
-                            color = MaterialTheme.colorScheme.primary
+                            color = MaterialTheme.colorScheme.primary,
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
                         )
                     }
                 }
             }
+            
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
@@ -239,3 +363,4 @@ fun LoginScreenPreview() {
         LoginScreen({}, {})
     }
 }
+
