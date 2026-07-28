@@ -1,6 +1,6 @@
 package com.example.aplikasinagarikkn.ui.screens
 
-import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -25,9 +25,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+
+private val EmeraldDark = Color(0xFF064E3B)
+private val EmeraldMedium = Color(0xFF047857)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,7 +42,7 @@ fun LoginScreen(
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
-    var selectedRole by remember { mutableStateOf(0) } // 0: Masyarakat, 1: Admin
+    var selectedRole by remember { mutableStateOf(0) } // 0: Warga, 1: Admin
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
     Box(
@@ -47,9 +51,9 @@ fun LoginScreen(
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        MaterialTheme.colorScheme.primary,
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.85f),
-                        MaterialTheme.colorScheme.background
+                        EmeraldDark,
+                        EmeraldMedium,
+                        Color(0xFF022C22)
                     )
                 )
             ),
@@ -62,204 +66,246 @@ fun LoginScreen(
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             // --- Logo & App Title ---
             Box(
                 modifier = Modifier
-                    .size(76.dp)
+                    .size(80.dp)
                     .clip(CircleShape)
-                    .background(Color.White.copy(alpha = 0.2f)),
+                    .background(Color.White.copy(alpha = 0.15f)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Filled.Shield,
                     contentDescription = null,
                     tint = Color.White,
-                    modifier = Modifier.size(44.dp)
+                    modifier = Modifier.size(46.dp)
                 )
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
             Text(
-                text = "Aplikasi Nagari",
+                text = "Aplikasi Nagari Digital",
                 style = MaterialTheme.typography.headlineMedium,
                 color = Color.White,
-                fontWeight = FontWeight.Bold,
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                fontWeight = FontWeight.ExtraBold,
+                textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "Sako Selatan Pasia Talang",
+                text = "Pemerintahan Nagari Sako Selatan Pasia Talang",
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color.White.copy(alpha = 0.9f),
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                color = Color.White.copy(alpha = 0.88f),
+                textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(28.dp))
 
-            // --- Card Form ---
+            // --- Form Card ---
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(24.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                        .padding(24.dp)
                 ) {
-                    // Role Segmented Switcher
+                    Text(
+                        text = "Masuk Akun",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF0F172A)
+                    )
+                    Text(
+                        text = "Pilih peran & masukkan akun Anda",
+                        fontSize = 12.sp,
+                        color = Color(0xFF64748B)
+                    )
+
+                    Spacer(modifier = Modifier.height(18.dp))
+
+                    // --- Role Switcher (Warga vs Admin) ---
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(46.dp)
-                            .clip(RoundedCornerShape(24.dp))
-                            .background(MaterialTheme.colorScheme.background)
-                            .padding(4.dp)
+                            .height(48.dp)
+                            .clip(RoundedCornerShape(14.dp))
+                            .background(Color(0xFFF1F5F9))
+                            .padding(4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        val wargaBg by animateColorAsState(
-                            if (selectedRole == 0) MaterialTheme.colorScheme.primary else Color.Transparent,
-                            label = "wargaBg"
-                        )
-                        val adminBg by animateColorAsState(
-                            if (selectedRole == 1) MaterialTheme.colorScheme.primary else Color.Transparent,
-                            label = "adminBg"
-                        )
-
-                        Box(
+                        Surface(
                             modifier = Modifier
                                 .weight(1f)
                                 .fillMaxHeight()
-                                .clip(RoundedCornerShape(20.dp))
-                                .background(wargaBg)
-                                .clickable { 
-                                    selectedRole = 0 
+                                .clickable {
+                                    selectedRole = 0
                                     errorMessage = null
                                 },
-                            contentAlignment = Alignment.Center
+                            shape = RoundedCornerShape(10.dp),
+                            color = if (selectedRole == 0) EmeraldMedium else Color.Transparent
                         ) {
-                            Text(
-                                text = "Masyarakat",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 13.sp,
-                                color = if (selectedRole == 0) Color.White else Color.Gray,
-                                textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                            )
+                            Row(
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.Person,
+                                    contentDescription = null,
+                                    tint = if (selectedRole == 0) Color.White else Color(0xFF64748B),
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(
+                                    text = "Masyarakat",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 13.sp,
+                                    color = if (selectedRole == 0) Color.White else Color(0xFF64748B)
+                                )
+                            }
                         }
 
-                        Box(
+                        Surface(
                             modifier = Modifier
                                 .weight(1f)
                                 .fillMaxHeight()
-                                .clip(RoundedCornerShape(20.dp))
-                                .background(adminBg)
-                                .clickable { 
-                                    selectedRole = 1 
+                                .clickable {
+                                    selectedRole = 1
                                     errorMessage = null
                                 },
-                            contentAlignment = Alignment.Center
+                            shape = RoundedCornerShape(10.dp),
+                            color = if (selectedRole == 1) EmeraldMedium else Color.Transparent
                         ) {
-                            Text(
-                                text = "Perangkat Admin",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 13.sp,
-                                color = if (selectedRole == 1) Color.White else Color.Gray,
-                                textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                            )
+                            Row(
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.AdminPanelSettings,
+                                    contentDescription = null,
+                                    tint = if (selectedRole == 1) Color.White else Color(0xFF64748B),
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(
+                                    text = "Ibu Wali / Admin",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 13.sp,
+                                    color = if (selectedRole == 1) Color.White else Color(0xFF64748B)
+                                )
+                            }
                         }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // --- Quick Fill Demo Chips ---
+                    Text(
+                        text = "Akses Cepat Mode Demo:",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color(0xFF64748B)
+                    )
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        OutlinedButton(
+                            onClick = {
+                                selectedRole = 1
+                                email = "admin@nagari.go.id"
+                                password = "admin"
+                                errorMessage = null
+                            },
+                            shape = RoundedCornerShape(12.dp),
+                            border = BorderStroke(1.dp, EmeraldMedium.copy(alpha = 0.5f)),
+                            modifier = Modifier.weight(1f),
+                            contentPadding = PaddingValues(vertical = 6.dp)
+                        ) {
+                            Text("🔑 Demo Admin", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = EmeraldMedium)
+                        }
+
+                        OutlinedButton(
+                            onClick = {
+                                selectedRole = 0
+                                email = "warga@nagari.go.id"
+                                password = "user"
+                                errorMessage = null
+                            },
+                            shape = RoundedCornerShape(12.dp),
+                            border = BorderStroke(1.dp, Color(0xFF2563EB).copy(alpha = 0.5f)),
+                            modifier = Modifier.weight(1f),
+                            contentPadding = PaddingValues(vertical = 6.dp)
+                        ) {
+                            Text("👤 Demo Warga", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Color(0xFF2563EB))
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Email Field
+                    OutlinedTextField(
+                        value = email,
+                        onValueChange = { email = it; errorMessage = null },
+                        label = { Text("Email / Username", fontSize = 13.sp) },
+                        placeholder = { Text("Masukkan email akun Anda", fontSize = 13.sp) },
+                        leadingIcon = { Icon(Icons.Filled.Person, contentDescription = null, tint = EmeraldMedium) },
+                        singleLine = true,
+                        shape = RoundedCornerShape(14.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    // Password Field
+                    OutlinedTextField(
+                        value = password,
+                        onValueChange = { password = it; errorMessage = null },
+                        label = { Text("Kata Sandi", fontSize = 13.sp) },
+                        placeholder = { Text("Masukkan kata sandi", fontSize = 13.sp) },
+                        leadingIcon = { Icon(Icons.Filled.Lock, contentDescription = null, tint = EmeraldMedium) },
+                        trailingIcon = {
+                            IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                Icon(
+                                    imageVector = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                                    contentDescription = null
+                                )
+                            }
+                        },
+                        singleLine = true,
+                        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                        shape = RoundedCornerShape(14.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    if (errorMessage != null) {
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Text(
+                            text = errorMessage ?: "",
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.error,
+                            fontWeight = FontWeight.SemiBold
+                        )
                     }
 
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    OutlinedTextField(
-                        value = email,
-                        onValueChange = { 
-                            email = it 
-                            errorMessage = null
-                            if (it.lowercase().contains("admin")) {
-                                selectedRole = 1
-                            } else if (it.lowercase().contains("warga") || it.lowercase().contains("user")) {
-                                selectedRole = 0
-                            }
-                        },
-                        label = { Text(if (selectedRole == 1) "Email Admin / NIP" else "NIK atau Email") },
-                        placeholder = { Text(if (selectedRole == 1) "admin@nagari.go.id" else "NIK atau email Anda") },
-                        leadingIcon = { 
-                            Icon(
-                                if (selectedRole == 1) Icons.Filled.AdminPanelSettings else Icons.Filled.Person, 
-                                contentDescription = null, 
-                                tint = MaterialTheme.colorScheme.primary
-                            ) 
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(14.dp),
-                        singleLine = true,
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = MaterialTheme.colorScheme.primary,
-                            unfocusedBorderColor = Color.LightGray
-                        )
-                    )
-
-                    Spacer(modifier = Modifier.height(14.dp))
-
-                    OutlinedTextField(
-                        value = password,
-                        onValueChange = { 
-                            password = it 
-                            errorMessage = null
-                        },
-                        label = { Text("Kata Sandi") },
-                        placeholder = { Text("Masukkan kata sandi") },
-                        leadingIcon = { Icon(Icons.Filled.Lock, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(14.dp),
-                        singleLine = true,
-                        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                        trailingIcon = {
-                            val image = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
-                            IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                                Icon(imageVector = image, contentDescription = "Toggle password")
-                            }
-                        },
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = MaterialTheme.colorScheme.primary,
-                            unfocusedBorderColor = Color.LightGray
-                        )
-                    )
-
-                    if (errorMessage != null) {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = errorMessage ?: "",
-                            color = MaterialTheme.colorScheme.error,
-                            style = MaterialTheme.typography.bodySmall,
-                            fontWeight = FontWeight.Medium,
-                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(22.dp))
-
+                    // Submit Button
                     Button(
                         onClick = {
-                            val cleanInput = email.trim().lowercase()
-                            if (cleanInput.isEmpty()) {
-                                errorMessage = "Silakan masukkan NIK / Email terlebih dahulu"
-                                return@Button
-                            }
-                            if (password.isEmpty()) {
-                                errorMessage = "Silakan masukkan Kata Sandi"
+                            if (email.isBlank() || password.isBlank()) {
+                                errorMessage = "Email dan Kata Sandi wajib diisi."
                                 return@Button
                             }
 
-                            // Smart Role Authentication Logic
-                            val isAdminAccount = cleanInput.contains("admin") || cleanInput == "123456"
-
-                            if (selectedRole == 1 || isAdminAccount) {
+                            if (selectedRole == 1 || email.contains("admin", ignoreCase = true)) {
                                 onNavigateToAdminDashboard()
                             } else {
                                 onNavigateToUserDashboard()
@@ -268,90 +314,20 @@ fun LoginScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(52.dp),
-                        shape = RoundedCornerShape(16.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                        shape = RoundedCornerShape(14.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = EmeraldDark)
                     ) {
                         Text(
-                            text = if (selectedRole == 1) "Login Admin Nagari" else "Masuk Akun Warga",
+                            text = if (selectedRole == 1) "Masuk Panel Ibu Wali Nagari" else "Masuk Aplikasi Nagari",
                             fontWeight = FontWeight.Bold,
-                            fontSize = 15.sp,
-                            color = Color.White,
-                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(20.dp))
-
-                    // Demo Login Quick-Fill Chips
-                    Text(
-                        text = "Atau Gunakan Akun Uji Coba",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = Color.Gray,
-                        fontWeight = FontWeight.Medium,
-                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                    )
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        SuggestionChip(
-                            onClick = {
-                                email = "admin@nagari.go.id"
-                                password = "admin"
-                                selectedRole = 1
-                                errorMessage = null
-                            },
-                            label = { 
-                                Text(
-                                    "🔑 Demo Admin", 
-                                    fontSize = 12.sp, 
-                                    fontWeight = FontWeight.SemiBold,
-                                    maxLines = 1,
-                                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
-                                ) 
-                            },
-                            modifier = Modifier.weight(1f),
-                            shape = RoundedCornerShape(12.dp)
-                        )
-
-                        SuggestionChip(
-                            onClick = {
-                                email = "warga@nagari.go.id"
-                                password = "user"
-                                selectedRole = 0
-                                errorMessage = null
-                            },
-                            label = { 
-                                Text(
-                                    "👤 Demo Warga", 
-                                    fontSize = 12.sp, 
-                                    fontWeight = FontWeight.SemiBold,
-                                    maxLines = 1,
-                                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
-                                ) 
-                            },
-                            modifier = Modifier.weight(1f),
-                            shape = RoundedCornerShape(12.dp)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    TextButton(onClick = { /* TODO: Register */ }) {
-                        Text(
-                            text = "Belum memiliki akun? Daftar NIK di sini",
-                            fontSize = 13.sp,
-                            color = MaterialTheme.colorScheme.primary,
-                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                            fontSize = 14.sp,
+                            color = Color.White
                         )
                     }
                 }
             }
-            
-            Spacer(modifier = Modifier.height(16.dp))
+
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }
@@ -363,4 +339,3 @@ fun LoginScreenPreview() {
         LoginScreen({}, {})
     }
 }
-

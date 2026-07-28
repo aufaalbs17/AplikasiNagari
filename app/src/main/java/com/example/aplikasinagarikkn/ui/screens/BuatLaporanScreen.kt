@@ -1,7 +1,7 @@
 package com.example.aplikasinagarikkn.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -13,9 +13,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -27,6 +24,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+private val EmeraldDark = Color(0xFF064E3B)
+private val EmeraldMedium = Color(0xFF047857)
+private val BorderSubtle = Color(0xFFE2E8F0)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BuatLaporanScreen(
@@ -36,7 +37,6 @@ fun BuatLaporanScreen(
     var judul by remember { mutableStateOf("") }
     var deskripsi by remember { mutableStateOf("") }
     var kategoriTerpilih by remember { mutableStateOf("Fasilitas Umum") }
-    var lokasiTerpilih by remember { mutableStateOf(false) }
     var fotoTerpilih by remember { mutableStateOf(false) }
     var showSuccessDialog by remember { mutableStateOf(false) }
 
@@ -53,13 +53,26 @@ fun BuatLaporanScreen(
             TopAppBar(
                 title = {
                     Column {
-                        Text("Buat Laporan Baru", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = MaterialTheme.colorScheme.onSurface)
-                        Text("Layanan Pengaduan Publik", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(
+                            text = "Buat Pengaduan Warga",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = "Layanan Aspirasi & Pengaduan Nagari",
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Kembali", tint = MaterialTheme.colorScheme.onSurface)
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Kembali",
+                            tint = MaterialTheme.colorScheme.onSurface
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -71,7 +84,7 @@ fun BuatLaporanScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
+                .background(Color(0xFFF8FAFC))
                 .padding(paddingValues)
                 .verticalScroll(rememberScrollState())
         ) {
@@ -80,202 +93,204 @@ fun BuatLaporanScreen(
                     .fillMaxWidth()
                     .padding(20.dp)
             ) {
-                // --- Kategori Selection ---
-                Text(
-                    text = "Kategori Laporan",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(kategoriList) { kategori ->
-                        val isSelected = kategori == kategoriTerpilih
-                        FilterChip(
-                            selected = isSelected,
-                            onClick = { kategoriTerpilih = kategori },
-                            label = { Text(kategori, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal) },
-                            colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = MaterialTheme.colorScheme.primary,
-                                selectedLabelColor = Color.White,
-                                containerColor = MaterialTheme.colorScheme.surface
-                            ),
-                            shape = RoundedCornerShape(16.dp)
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                // --- Form Inputs ---
-                OutlinedTextField(
-                    value = judul,
-                    onValueChange = { judul = it },
-                    label = { Text("Judul Laporan") },
-                    placeholder = { Text("mis: Lampu jalan mati di Jorong Alai") },
+                // Form Card Container
+                Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(14.dp),
-                    singleLine = true,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        unfocusedBorderColor = Color.LightGray
-                    )
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                OutlinedTextField(
-                    value = deskripsi,
-                    onValueChange = { deskripsi = it },
-                    label = { Text("Detail Deskripsi Kejadian") },
-                    placeholder = { Text("Ceritakan kondisi lokasi dan detail kendala yang ditemukan...") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(130.dp),
-                    shape = RoundedCornerShape(14.dp),
-                    maxLines = 5,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        unfocusedBorderColor = Color.LightGray
-                    )
-                )
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                // --- Upload Bukti Foto ---
-                Text(
-                    text = "Bukti Foto",
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(125.dp)
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(MaterialTheme.colorScheme.surface)
-                        .border(
-                            width = 1.5.dp,
-                            color = if (fotoTerpilih) MaterialTheme.colorScheme.primary else Color.LightGray,
-                            shape = RoundedCornerShape(16.dp)
-                        )
-                        .clickable { fotoTerpilih = !fotoTerpilih },
-                    contentAlignment = Alignment.Center
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    border = BorderStroke(1.dp, BorderSubtle),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
-                    if (fotoTerpilih) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(16.dp)
+                    Column(modifier = Modifier.padding(20.dp)) {
+                        // Kategori Selector
+                        Text(
+                            text = "Pilih Kategori Pengaduan",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF0F172A)
+                        )
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        LazyRow(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            Icon(
-                                Icons.Outlined.Image,
-                                contentDescription = null,
-                                modifier = Modifier.size(36.dp),
-                                tint = MaterialTheme.colorScheme.primary
-                            )
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text("foto_bukti_laporan.jpg", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = MaterialTheme.colorScheme.primary)
-                                Text("Dokumen foto siap diunggah", fontSize = 12.sp, color = Color.Gray)
-                            }
-                            IconButton(onClick = { fotoTerpilih = false }) {
-                                Icon(Icons.Filled.Close, contentDescription = "Hapus Foto", tint = Color.Red)
+                            items(kategoriList) { kategori ->
+                                val isSelected = kategori == kategoriTerpilih
+                                val bg = if (isSelected) EmeraldDark else Color(0xFFF1F5F9)
+                                val textColor = if (isSelected) Color.White else Color(0xFF475569)
+
+                                Surface(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(12.dp))
+                                        .clickable { kategoriTerpilih = kategori },
+                                    color = bg,
+                                    shape = RoundedCornerShape(12.dp)
+                                ) {
+                                    Text(
+                                        text = kategori,
+                                        fontSize = 12.sp,
+                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                        color = textColor,
+                                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp)
+                                    )
+                                }
                             }
                         }
-                    } else {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Icon(
-                                Icons.Filled.CameraAlt,
-                                contentDescription = null,
-                                modifier = Modifier.size(32.dp),
-                                tint = MaterialTheme.colorScheme.primary
+
+                        Spacer(modifier = Modifier.height(20.dp))
+
+                        // Judul Laporan
+                        Text(
+                            text = "Judul Pengaduan",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF0F172A)
+                        )
+                        Spacer(modifier = Modifier.height(6.dp))
+                        OutlinedTextField(
+                            value = judul,
+                            onValueChange = { judul = it },
+                            placeholder = { Text("misal: Lampu jalan mati di Jorong Pasia", fontSize = 13.sp) },
+                            singleLine = true,
+                            shape = RoundedCornerShape(14.dp),
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = EmeraldMedium,
+                                unfocusedBorderColor = BorderSubtle
                             )
-                            Spacer(modifier = Modifier.height(6.dp))
-                            Text("Tap untuk Ambil Foto / Pilih dari Galeri", fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        )
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        // Deskripsi Laporan
+                        Text(
+                            text = "Detail Laporan & Lokasi",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF0F172A)
+                        )
+                        Spacer(modifier = Modifier.height(6.dp))
+                        OutlinedTextField(
+                            value = deskripsi,
+                            onValueChange = { deskripsi = it },
+                            placeholder = { Text("Jelaskan rincian keluhan & patokan lokasi kejadian secara lengkap...", fontSize = 13.sp) },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(120.dp),
+                            shape = RoundedCornerShape(14.dp),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = EmeraldMedium,
+                                unfocusedBorderColor = BorderSubtle
+                            )
+                        )
+
+                        Spacer(modifier = Modifier.height(20.dp))
+
+                        // Photo Upload Container Placeholder
+                        Text(
+                            text = "Bukti Foto (Opsional)",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF0F172A)
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Surface(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(110.dp)
+                                .clip(RoundedCornerShape(14.dp))
+                                .clickable { fotoTerpilih = !fotoTerpilih },
+                            color = if (fotoTerpilih) Color(0xFFECFDF5) else Color(0xFFF8FAFC),
+                            border = BorderStroke(1.5.dp, if (fotoTerpilih) EmeraldMedium else BorderSubtle),
+                            shape = RoundedCornerShape(14.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(16.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Icon(
+                                    imageVector = if (fotoTerpilih) Icons.Filled.CheckCircle else Icons.Filled.CameraAlt,
+                                    contentDescription = null,
+                                    tint = if (fotoTerpilih) EmeraldMedium else Color.Gray,
+                                    modifier = Modifier.size(28.dp)
+                                )
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Column {
+                                    Text(
+                                        text = if (fotoTerpilih) "Foto Bukti Terpilih" else "Ambil / Unggah Foto Bukti",
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 13.sp,
+                                        color = if (fotoTerpilih) EmeraldDark else Color(0xFF334155)
+                                    )
+                                    Text(
+                                        text = if (fotoTerpilih) "Ketuk untuk mengubah foto" else "Format: JPG, PNG (Max 5MB)",
+                                        fontSize = 11.sp,
+                                        color = Color(0xFF64748B)
+                                    )
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        // Submit Button
+                        Button(
+                            onClick = {
+                                if (judul.isNotBlank()) {
+                                    showSuccessDialog = true
+                                }
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(52.dp),
+                            shape = RoundedCornerShape(14.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = EmeraldDark)
+                        ) {
+                            Text(
+                                text = "Kirim Pengaduan Sekarang",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 14.sp,
+                                color = Color.White
+                            )
                         }
                     }
-                }
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                // --- GPS Location ---
-                Text(
-                    text = "Lokasi Kejadian",
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                OutlinedButton(
-                    onClick = { lokasiTerpilih = !lokasiTerpilih },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp),
-                    shape = RoundedCornerShape(14.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = if (lokasiTerpilih) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f) else MaterialTheme.colorScheme.surface
-                    )
-                ) {
-                    Icon(
-                        Icons.Filled.LocationOn,
-                        contentDescription = null,
-                        tint = if (lokasiTerpilih) MaterialTheme.colorScheme.primary else Color.Gray
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = if (lokasiTerpilih) "Lokasi GPS Terdeteksi (Jorong Sako, Solok Selatan)" else "Deteksi Lokasi GPS Otomatis",
-                        fontWeight = FontWeight.SemiBold,
-                        color = if (lokasiTerpilih) MaterialTheme.colorScheme.primary else Color.DarkGray,
-                        fontSize = 13.sp
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(32.dp))
-
-                // --- Submit Button ---
-                Button(
-                    onClick = { showSuccessDialog = true },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(52.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    enabled = judul.isNotBlank() && deskripsi.isNotBlank(),
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                ) {
-                    Text("Kirim Laporan Sekarang", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = Color.White)
                 }
             }
         }
+    }
 
-        if (showSuccessDialog) {
-            AlertDialog(
-                onDismissRequest = { showSuccessDialog = false },
-                icon = { Icon(Icons.Filled.CheckCircle, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(48.dp)) },
-                title = { Text("Laporan Berhasil Dikirikan!", fontWeight = FontWeight.Bold) },
-                text = { Text("Terima kasih atas laporan Anda. Tim Perangkat Nagari akan segera menindaklanjuti lokasi kejadian.") },
-                confirmButton = {
-                    Button(
-                        onClick = {
-                            showSuccessDialog = false
-                            onSubmit()
-                        },
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Text("Kembali ke Beranda")
-                    }
+    if (showSuccessDialog) {
+        AlertDialog(
+            onDismissRequest = { showSuccessDialog = false },
+            title = {
+                Text(
+                    text = "Laporan Berhasil Dikirim!",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp
+                )
+            },
+            text = {
+                Text(
+                    text = "Laporan Anda telah diteruskan ke Panel Ibu Wali Nagari Sako Selatan Pasia Talang untuk ditindaklanjuti.",
+                    fontSize = 13.sp
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showSuccessDialog = false
+                        onSubmit()
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = EmeraldDark)
+                ) {
+                    Text("OK", fontWeight = FontWeight.Bold)
                 }
-            )
-        }
+            }
+        )
     }
 }
 

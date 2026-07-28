@@ -1,5 +1,6 @@
 package com.example.aplikasinagarikkn.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -27,6 +28,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+
+private val EmeraldDark = Color(0xFF064E3B)
+private val EmeraldMedium = Color(0xFF047857)
+private val BorderSubtle = Color(0xFFE2E8F0)
+private val UrgentRed = Color(0xFFDC2626)
 
 @Composable
 fun AkunScreen(
@@ -38,7 +45,7 @@ fun AkunScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(Color(0xFFF8FAFC))
             .verticalScroll(scrollState),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -46,23 +53,23 @@ fun AkunScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(220.dp)
+                .height(200.dp)
                 .background(
                     brush = Brush.verticalGradient(
                         colors = listOf(
-                            MaterialTheme.colorScheme.primary,
-                            MaterialTheme.colorScheme.primaryContainer
+                            EmeraldDark,
+                            EmeraldMedium
                         )
                     )
                 ),
             contentAlignment = Alignment.TopCenter
         ) {
             Text(
-                text = "Profil Akun",
+                text = "Profil Akun Warga",
                 style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onPrimary,
+                color = Color.White,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(top = 48.dp)
+                modifier = Modifier.padding(top = 40.dp)
             )
         }
 
@@ -70,14 +77,15 @@ fun AkunScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 24.dp)
-                .offset(y = (-60).dp) // Overlap the header
+                .padding(horizontal = 20.dp)
+                .offset(y = (-65).dp)
         ) {
-            ElevatedCard(
+            Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(24.dp),
-                elevation = CardDefaults.elevatedCardElevation(defaultElevation = 8.dp),
-                colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.surface)
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                border = BorderStroke(1.dp, BorderSubtle),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
             ) {
                 Column(
                     modifier = Modifier
@@ -85,184 +93,208 @@ fun AkunScreen(
                         .padding(24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // Avatar Image/Icon
+                    // Avatar Box
                     Box(
                         modifier = Modifier
-                            .size(90.dp)
+                            .size(86.dp)
                             .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.secondaryContainer)
-                            .border(4.dp, MaterialTheme.colorScheme.surface, CircleShape),
+                            .background(Color(0xFFECFDF5))
+                            .border(3.dp, EmeraldMedium, CircleShape),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "B", // Inisial
-                            style = MaterialTheme.typography.displaySmall,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSecondaryContainer
+                            text = "B",
+                            fontSize = 32.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = EmeraldDark
                         )
                     }
-                    
-                    Spacer(modifier = Modifier.height(16.dp))
-                    
+
+                    Spacer(modifier = Modifier.height(14.dp))
+
                     Text(
                         text = "Budi Santoso",
-                        style = MaterialTheme.typography.headlineSmall,
+                        style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.ExtraBold,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = Color(0xFF0F172A)
                     )
-                    Spacer(modifier = Modifier.height(4.dp))
+
+                    Spacer(modifier = Modifier.height(2.dp))
+
                     Text(
-                        text = "Masyarakat Nagari",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.SemiBold
+                        text = "NIK: 1303012807980001",
+                        fontSize = 12.sp,
+                        color = Color(0xFF64748B)
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    
-                    // NIK Badge
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
                     Surface(
-                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                        shape = RoundedCornerShape(8.dp)
+                        color = EmeraldMedium.copy(alpha = 0.12f),
+                        shape = RoundedCornerShape(20.dp)
                     ) {
                         Text(
-                            text = "NIK: 1371234567890001",
-                            style = MaterialTheme.typography.bodySmall,
-                            fontWeight = FontWeight.Medium,
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            text = "Warga Nagari Sako Selatan Pasia Talang",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = EmeraldDark,
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 5.dp)
                         )
                     }
                 }
             }
         }
 
-        // --- Settings Menu Section ---
+        // --- Options Menu Section ---
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 24.dp)
-                .offset(y = (-20).dp) // Adjust spacing due to overlap above
+                .padding(horizontal = 20.dp)
+                .offset(y = (-45).dp)
         ) {
             Text(
-                text = "Pengaturan",
+                text = "Pengaturan & Aktivitas",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.padding(bottom = 12.dp, start = 8.dp)
+                color = Color(0xFF0F172A),
+                modifier = Modifier.padding(start = 4.dp, bottom = 10.dp)
             )
 
-            // Grouped Menu Card
-            ElevatedCard(
+            Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.surface),
-                elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp)
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                border = BorderStroke(1.dp, BorderSubtle),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
-                Column {
-                    ModernProfileMenuItem(
+                Column(modifier = Modifier.padding(vertical = 6.dp)) {
+                    AkunMenuItem(
                         icon = Icons.Outlined.History,
-                        title = "Riwayat & Status Laporan",
+                        title = "Riwayat Laporan Saya",
+                        subtitle = "Cek status pengaduan yang dikirim",
                         onClick = onNavigateToRiwayatLaporan
                     )
-                    Divider(color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f), thickness = 1.dp, modifier = Modifier.padding(horizontal = 16.dp))
-                    ModernProfileMenuItem(
+                    HorizontalDivider(color = BorderSubtle, thickness = 0.8.dp)
+
+                    AkunMenuItem(
                         icon = Icons.Outlined.Edit,
                         title = "Ubah Profil",
+                        subtitle = "Perbarui nomor telepon & alamat",
                         onClick = { /* TODO */ }
                     )
-                    Divider(color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f), thickness = 1.dp, modifier = Modifier.padding(horizontal = 16.dp))
-                    ModernProfileMenuItem(
-                        icon = Icons.Outlined.Lock,
-                        title = "Keamanan & Sandi",
-                        onClick = { /* TODO */ }
-                    )
-                    Divider(color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f), thickness = 1.dp, modifier = Modifier.padding(horizontal = 16.dp))
-                    ModernProfileMenuItem(
+                    HorizontalDivider(color = BorderSubtle, thickness = 0.8.dp)
+
+                    AkunMenuItem(
                         icon = Icons.Outlined.Notifications,
-                        title = "Notifikasi",
+                        title = "Pengaturan Notifikasi",
+                        subtitle = "Atur pemberitahuan aplikasi",
                         onClick = { /* TODO */ }
                     )
-                    Divider(color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f), thickness = 1.dp, modifier = Modifier.padding(horizontal = 16.dp))
-                    ModernProfileMenuItem(
+                    HorizontalDivider(color = BorderSubtle, thickness = 0.8.dp)
+
+                    AkunMenuItem(
+                        icon = Icons.Outlined.Lock,
+                        title = "Keamanan Akun",
+                        subtitle = "Ganti kata sandi & PIN",
+                        onClick = { /* TODO */ }
+                    )
+                    HorizontalDivider(color = BorderSubtle, thickness = 0.8.dp)
+
+                    AkunMenuItem(
                         icon = Icons.AutoMirrored.Filled.HelpOutline,
-                        title = "Pusat Bantuan",
+                        title = "Bantuan & Layanan Nagari",
+                        subtitle = "Pusat bantuan & kontak kantor Wali Nagari",
                         onClick = { /* TODO */ }
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             // Logout Button
-            Button(
+            OutlinedButton(
                 onClick = onLogout,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(56.dp),
+                    .height(54.dp),
                 shape = RoundedCornerShape(16.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.errorContainer,
-                    contentColor = MaterialTheme.colorScheme.onErrorContainer
-                ),
-                elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
+                border = BorderStroke(1.5.dp, UrgentRed.copy(alpha = 0.5f)),
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = UrgentRed)
             ) {
-                Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = null)
-                Spacer(modifier = Modifier.width(12.dp))
-                Text("Keluar Aplikasi", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.Logout,
+                    contentDescription = null
+                )
+                Spacer(modifier = Modifier.width(10.dp))
+                Text(
+                    text = "Keluar dari Akun Saya",
+                    fontWeight = FontWeight.Bold
+                )
             }
-            
-            Spacer(modifier = Modifier.height(40.dp))
+
+            Spacer(modifier = Modifier.height(30.dp))
         }
     }
 }
 
 @Composable
-fun ModernProfileMenuItem(
+fun AkunMenuItem(
     icon: ImageVector,
     title: String,
+    subtitle: String,
     onClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() }
-            .padding(horizontal = 20.dp, vertical = 16.dp),
+            .padding(horizontal = 16.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
             modifier = Modifier
                 .size(40.dp)
-                .background(
-                    MaterialTheme.colorScheme.primary.copy(alpha = 0.1f), 
-                    shape = RoundedCornerShape(10.dp)
-                ),
+                .clip(CircleShape)
+                .background(Color(0xFFF1F5F9)),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
+                tint = EmeraldDark,
                 modifier = Modifier.size(20.dp)
             )
         }
-        Spacer(modifier = Modifier.width(16.dp))
-        Text(
-            text = title,
-            style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.weight(1f)
-        )
+
+        Spacer(modifier = Modifier.width(14.dp))
+
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = title,
+                fontWeight = FontWeight.Bold,
+                fontSize = 13.sp,
+                color = Color(0xFF0F172A)
+            )
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(
+                text = subtitle,
+                fontSize = 11.sp,
+                color = Color(0xFF64748B)
+            )
+        }
+
         Icon(
             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant
+            tint = Color(0xFF94A3B8)
         )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun AkunModernPreview() {
-    MaterialTheme { AkunScreen({}, {}) }
+fun AkunScreenPreview() {
+    MaterialTheme {
+        AkunScreen({}, {})
+    }
 }

@@ -2,7 +2,9 @@ package com.example.aplikasinagarikkn.ui.screens
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
@@ -15,13 +17,12 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.AddAlert
 import androidx.compose.material.icons.filled.Campaign
-import androidx.compose.material.icons.filled.ChildCare
 import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.LocalHospital
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.PhoneInTalk
-import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Storefront
+import androidx.compose.material.icons.outlined.CalendarToday
+import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -45,6 +46,11 @@ import com.example.aplikasinagarikkn.model.NewsItem
 import com.example.aplikasinagarikkn.viewmodel.DashboardViewModel
 import com.example.aplikasinagarikkn.viewmodel.NewsState
 
+private val EmeraldDark = Color(0xFF064E3B)
+private val EmeraldMedium = Color(0xFF047857)
+private val BorderSubtle = Color(0xFFE2E8F0)
+private val SoftBgColor = Color(0xFFF8FAFC)
+
 @Composable
 fun UserDashboardScreen(
     onNavigateToBuatLaporan: () -> Unit,
@@ -57,8 +63,8 @@ fun UserDashboardScreen(
     Scaffold(
         topBar = {
             Surface(
-                color = MaterialTheme.colorScheme.surface,
-                tonalElevation = 2.dp
+                color = EmeraldDark,
+                shadowElevation = 4.dp
             ) {
                 Row(
                     modifier = Modifier
@@ -69,19 +75,19 @@ fun UserDashboardScreen(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        // Avatar Initial Badge
                         Box(
                             modifier = Modifier
-                                .size(42.dp)
+                                .size(44.dp)
                                 .clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.primaryContainer),
+                                .background(Color.White)
+                                .border(1.5.dp, Color.White.copy(alpha = 0.6f), CircleShape),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
                                 text = "B",
-                                fontWeight = FontWeight.Bold,
+                                fontWeight = FontWeight.ExtraBold,
                                 fontSize = 18.sp,
-                                color = MaterialTheme.colorScheme.primary
+                                color = EmeraldDark
                             )
                         }
                         Spacer(modifier = Modifier.width(12.dp))
@@ -90,24 +96,32 @@ fun UserDashboardScreen(
                                 text = "Halo, Budi Santoso 👋",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 16.sp,
-                                color = MaterialTheme.colorScheme.onSurface
+                                color = Color.White
                             )
                             Text(
                                 text = "Nagari Sako Selatan Pasia Talang",
-                                fontSize = 12.sp,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                fontSize = 11.sp,
+                                color = Color.White.copy(alpha = 0.85f)
                             )
                         }
                     }
 
                     IconButton(onClick = onNavigateToNotifikasi) {
                         BadgedBox(
-                            badge = { Badge { Text("2") } }
+                            badge = {
+                                Badge(
+                                    containerColor = Color(0xFFDC2626),
+                                    contentColor = Color.White
+                                ) {
+                                    Text("2", fontWeight = FontWeight.Bold)
+                                }
+                            }
                         ) {
                             Icon(
                                 Icons.Filled.Notifications,
-                                contentDescription = "Notifikasi",
-                                tint = MaterialTheme.colorScheme.onSurface
+                                contentDescription = "Pusat Notifikasi",
+                                tint = Color.White,
+                                modifier = Modifier.size(24.dp)
                             )
                         }
                     }
@@ -118,312 +132,250 @@ fun UserDashboardScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
+                .background(SoftBgColor)
                 .padding(paddingValues)
                 .verticalScroll(rememberScrollState())
         ) {
-            Spacer(modifier = Modifier.height(18.dp))
-
-            // --- 1. Kabar Nagari Carousel ---
-            Row(
+            // --- 1. Banner Welcome & Date Pill ---
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 20.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                EmeraldDark,
+                                EmeraldMedium
+                            )
+                        )
+                    )
+                    .padding(horizontal = 20.dp, vertical = 20.dp)
             ) {
                 Column {
                     Text(
-                        text = "Kabar Nagari",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onBackground
+                        text = "Portal Layanan Digital Nagari",
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color.White,
+                        fontSize = 20.sp
                     )
+                    Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "Informasi & Berita Terkini Nagari",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        text = "Sampaikan laporan, ajukan surat & akses info publik Nagari secara cepat",
+                        fontSize = 12.sp,
+                        color = Color.White.copy(alpha = 0.88f)
                     )
-                }
-            }
 
-            Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(14.dp))
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState())
-                    .padding(horizontal = 14.dp),
-                horizontalArrangement = Arrangement.spacedBy(14.dp)
-            ) {
-                Spacer(modifier = Modifier.width(2.dp))
-
-                when (val state = newsState) {
-                    is NewsState.Loading -> {
-                        Box(
-                            modifier = Modifier
-                                .width(280.dp)
-                                .height(150.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator()
-                        }
-                    }
-                    is NewsState.Error -> {
-                        Card(
-                            modifier = Modifier
-                                .width(280.dp)
-                                .height(150.dp),
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
-                        ) {
-                            Box(modifier = Modifier.fillMaxSize().padding(16.dp), contentAlignment = Alignment.Center) {
-                                Text(
-                                    text = "Gagal memuat kabar: ${state.message}",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onErrorContainer
-                                )
-                            }
-                        }
-                    }
-                    is NewsState.Success -> {
-                        val colors = listOf(
-                            Color(0xFF0F9D58) to Color(0xFF00695C),
-                            Color(0xFF1565C0) to Color(0xFF0D47A1),
-                            Color(0xFFE65100) to Color(0xFFBF360C),
-                            Color(0xFF6A1B9A) to Color(0xFF4A148C)
-                        )
-
-                        state.news.forEachIndexed { index, news ->
-                            val colorPair = colors[index % colors.size]
-                            AnnouncementCard(
-                                news = news,
-                                color1 = colorPair.first,
-                                color2 = colorPair.second,
-                                onClick = {
-                                    if (news.link.isNotEmpty()) {
-                                        try {
-                                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(news.link))
-                                            context.startActivity(intent)
-                                        } catch (e: Exception) {
-                                            e.printStackTrace()
-                                        }
-                                    }
-                                }
-                            )
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.width(4.dp))
-            }
-
-            Spacer(modifier = Modifier.height(22.dp))
-
-            // --- 2. Banner Utama: Lapor Cepat ---
-            Box(modifier = Modifier.padding(horizontal = 20.dp)) {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { onNavigateToBuatLaporan() },
-                    shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer
-                    ),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                ) {
                     Row(
+                        verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(20.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(Color.White.copy(alpha = 0.12f))
+                            .padding(horizontal = 12.dp, vertical = 8.dp)
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .size(54.dp)
-                                .background(
-                                    MaterialTheme.colorScheme.primary,
-                                    shape = RoundedCornerShape(16.dp)
-                                ),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.AddAlert,
-                                contentDescription = null,
-                                tint = Color.White,
-                                modifier = Modifier.size(26.dp)
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = "Lapor Cepat!",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
-                            )
-                            Spacer(modifier = Modifier.height(2.dp))
-                            Text(
-                                text = "Sampaikan laporan fasilitas, kendala, atau darurat.",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.85f)
-                            )
-                        }
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                            imageVector = Icons.Outlined.CalendarToday,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary
+                            tint = Color.White.copy(alpha = 0.9f),
+                            modifier = Modifier.size(16.dp)
                         )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // --- 3. Akses Cepat Layanan ---
-            Text(
-                text = "Akses Cepat Layanan",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.padding(horizontal = 20.dp)
-            )
-
-            Spacer(modifier = Modifier.height(14.dp))
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                QuickActionItem(icon = Icons.Filled.LocalHospital, title = "Ambulans", color = Color(0xFFE53935), onClick = {})
-                QuickActionItem(icon = Icons.Filled.Security, title = "Siaga", color = Color(0xFF1E88E5), onClick = {})
-                QuickActionItem(icon = Icons.Filled.ChildCare, title = "Posyandu", color = Color(0xFF8E24AA), onClick = {})
-                QuickActionItem(icon = Icons.Filled.Campaign, title = "Informasi", color = Color(0xFFF4511E), onClick = {})
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // --- 4. Jelajahi Layanan Nagari (2 Column Cards to fill layout) ---
-            Text(
-                text = "Jelajahi Nagari",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.padding(horizontal = 20.dp)
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp),
-                horizontalArrangement = Arrangement.spacedBy(14.dp)
-            ) {
-                // Card 1: UMKM Catalog Shortcut
-                Card(
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(115.dp),
-                    shape = RoundedCornerShape(18.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(14.dp),
-                        verticalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(36.dp)
-                                .background(Color(0xFFE8F5E9), CircleShape),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                Icons.Filled.Storefront,
-                                contentDescription = null,
-                                tint = Color(0xFF2E7D32),
-                                modifier = Modifier.size(20.dp)
-                            )
-                        }
-                        Column {
-                            Text("Katalog UMKM", fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                            Text("Beli Produk Lokal", fontSize = 11.sp, color = Color.Gray)
-                        }
-                    }
-                }
-
-                // Card 2: Surat Online Shortcut
-                Card(
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(115.dp),
-                    shape = RoundedCornerShape(18.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(14.dp),
-                        verticalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(36.dp)
-                                .background(Color(0xFFE3F2FD), CircleShape),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                Icons.Filled.Description,
-                                contentDescription = null,
-                                tint = Color(0xFF1565C0),
-                                modifier = Modifier.size(20.dp)
-                            )
-                        }
-                        Column {
-                            Text("Pengajuan Surat", fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                            Text("Domisili, SKU & SKTM", fontSize = 11.sp, color = Color.Gray)
-                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Selasa, 28 Juli 2026 • Layanan Publik Nagari Aktif",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = Color.White.copy(alpha = 0.95f)
+                        )
                     }
                 }
             }
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // --- 5. Kontak Siaga Nagari (Call Center Bar) ---
+            // --- 2. Primary Call-To-Action Card (Buat Pengaduan Warga) ---
             Box(modifier = Modifier.padding(horizontal = 20.dp)) {
                 Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(18.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFF263238))
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onNavigateToBuatLaporan() },
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = EmeraldDark),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                 ) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp),
+                            .padding(18.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Box(
                             modifier = Modifier
-                                .size(44.dp)
-                                .background(Color.White.copy(alpha = 0.15f), CircleShape),
+                                .size(50.dp)
+                                .clip(RoundedCornerShape(14.dp))
+                                .background(Color.White.copy(alpha = 0.2f)),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
-                                Icons.Filled.PhoneInTalk,
+                                imageVector = Icons.Filled.AddAlert,
                                 contentDescription = null,
                                 tint = Color.White,
-                                modifier = Modifier.size(22.dp)
+                                modifier = Modifier.size(28.dp)
                             )
                         }
-                        Spacer(modifier = Modifier.width(14.dp))
+                        Spacer(modifier = Modifier.width(16.dp))
                         Column(modifier = Modifier.weight(1f)) {
-                            Text("Layanan Siaga Wali Nagari", fontWeight = FontWeight.Bold, fontSize = 13.sp, color = Color.White)
-                            Text("0821-7489-9901 (Bantuan 24 Jam)", fontSize = 11.sp, color = Color.White.copy(alpha = 0.8f))
+                            Text(
+                                text = "Buat Pengaduan Warga",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = "Laporkan masalah jalan, fasilitas, atau keluhan nagari",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color.White.copy(alpha = 0.85f)
+                            )
+                        }
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                            contentDescription = null,
+                            tint = Color.White
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // --- 3. Quick Action Grid Menu ---
+            Column(modifier = Modifier.padding(horizontal = 20.dp)) {
+                Text(
+                    text = "Layanan & Fasilitas Nagari",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF0F172A)
+                )
+
+                Spacer(modifier = Modifier.height(14.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    QuickActionCard(
+                        title = "Surat Menyurat",
+                        desc = "Pengajuan Online",
+                        icon = Icons.Filled.Description,
+                        iconBg = Color(0xFFEFF6FF),
+                        iconTint = Color(0xFF2563EB),
+                        modifier = Modifier.weight(1f),
+                        onClick = { /* TODO */ }
+                    )
+                    QuickActionCard(
+                        title = "UMKM Nagari",
+                        desc = "Produk Lokal",
+                        icon = Icons.Filled.Storefront,
+                        iconBg = Color(0xFFECFDF5),
+                        iconTint = Color(0xFF059669),
+                        modifier = Modifier.weight(1f),
+                        onClick = { /* TODO */ }
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    QuickActionCard(
+                        title = "Kabar Nagari",
+                        desc = "Berita Terbaru",
+                        icon = Icons.Filled.Campaign,
+                        iconBg = Color(0xFFFFFBEB),
+                        iconTint = Color(0xFFD97706),
+                        modifier = Modifier.weight(1f),
+                        onClick = { /* TODO */ }
+                    )
+                    QuickActionCard(
+                        title = "Kontak Darurat",
+                        desc = "Nomor Penting",
+                        icon = Icons.Filled.PhoneInTalk,
+                        iconBg = Color(0xFFFEF2F2),
+                        iconTint = Color(0xFFDC2626),
+                        modifier = Modifier.weight(1f),
+                        onClick = { /* TODO */ }
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // --- 4. Section Kabar & Informasi Nagari (News Feed) ---
+            Column(modifier = Modifier.padding(horizontal = 20.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Kabar & Pengumuman Nagari",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF0F172A)
+                    )
+                    TextButton(onClick = { }) {
+                        Text("Lihat Semua", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = EmeraldMedium)
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                when (val state = newsState) {
+                    is NewsState.Loading -> {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(140.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(color = EmeraldMedium)
+                        }
+                    }
+
+                    is NewsState.Success -> {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .horizontalScroll(rememberScrollState()),
+                            horizontalArrangement = Arrangement.spacedBy(14.dp)
+                        ) {
+                            state.news.forEach { news ->
+                                NewsCardItem(
+                                    news = news,
+                                    onClick = {
+                                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(news.link))
+                                        context.startActivity(intent)
+                                    }
+                                )
+                            }
+                        }
+                    }
+
+                    is NewsState.Error -> {
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(containerColor = Color(0xFFFEF2F2))
+                        ) {
+                            Text(
+                                text = "Gagal memuat berita: ${state.message}",
+                                fontSize = 12.sp,
+                                color = Color(0xFFDC2626),
+                                modifier = Modifier.padding(16.dp)
+                            )
                         }
                     }
                 }
@@ -435,127 +387,139 @@ fun UserDashboardScreen(
 }
 
 @Composable
-fun AnnouncementCard(
-    news: NewsItem,
-    color1: Color,
-    color2: Color,
-    onClick: () -> Unit
+fun QuickActionCard(
+    title: String,
+    desc: String,
+    icon: ImageVector,
+    iconBg: Color,
+    iconTint: Color,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = Modifier
-            .width(280.dp)
-            .height(150.dp)
+        modifier = modifier
+            .heightIn(min = 124.dp)
             .clickable { onClick() },
         shape = RoundedCornerShape(18.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        border = BorderStroke(1.dp, BorderSubtle),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Box(
+        Column(
             modifier = Modifier
-                .fillMaxSize()
-                .background(Brush.horizontalGradient(listOf(color1, color2)))
+                .fillMaxWidth()
+                .padding(14.dp),
+            verticalArrangement = Arrangement.Top
         ) {
-            if (news.imageUrl.isNotEmpty()) {
-                AsyncImage(
-                    model = news.imageUrl,
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(38.dp)
+                        .background(iconBg, CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(imageVector = icon, contentDescription = null, tint = iconTint, modifier = Modifier.size(20.dp))
+                }
+
+                Icon(
+                    imageVector = Icons.Outlined.ChevronRight,
                     contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize(),
-                    alpha = 0.28f
+                    tint = Color(0xFF94A3B8),
+                    modifier = Modifier.size(18.dp)
                 )
             }
 
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        Brush.verticalGradient(
-                            colors = listOf(
-                                Color.Black.copy(alpha = 0.2f),
-                                Color.Black.copy(alpha = 0.65f)
-                            )
-                        )
-                    )
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Text(
+                text = title,
+                fontWeight = FontWeight.Bold,
+                fontSize = 13.sp,
+                color = Color(0xFF0F172A),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
-
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.SpaceBetween
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(28.dp)
-                            .background(Color.Black.copy(alpha = 0.35f), CircleShape),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.OpenInNew,
-                            contentDescription = "Buka Berita",
-                            tint = Color.White,
-                            modifier = Modifier.size(15.dp)
-                        )
-                    }
-                }
-
-                Column {
-                    Text(
-                        text = news.title,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = news.subtitle,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.White.copy(alpha = 0.9f),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
-            }
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(
+                text = desc,
+                fontSize = 11.sp,
+                color = Color(0xFF64748B),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
         }
     }
 }
 
 @Composable
-fun QuickActionItem(icon: ImageVector, title: String, color: Color, onClick: () -> Unit) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
+fun NewsCardItem(news: NewsItem, onClick: () -> Unit) {
+    Card(
         modifier = Modifier
-            .clickable { onClick() }
-            .width(72.dp)
+            .width(260.dp)
+            .clickable { onClick() },
+        shape = RoundedCornerShape(18.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        border = BorderStroke(1.dp, BorderSubtle),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Box(
-            modifier = Modifier
-                .size(56.dp)
-                .background(color.copy(alpha = 0.12f), shape = CircleShape),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = title,
-                tint = color,
-                modifier = Modifier.size(26.dp)
-            )
+        Column {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(120.dp)
+                    .background(Color(0xFFE2E8F0))
+            ) {
+                AsyncImage(
+                    model = news.imageUrl,
+                    contentDescription = news.title,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+
+            Column(modifier = Modifier.padding(14.dp)) {
+                Text(
+                    text = news.title,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 13.sp,
+                    color = Color(0xFF0F172A),
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = news.subtitle,
+                    fontSize = 11.sp,
+                    color = Color(0xFF64748B),
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.End,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = "Baca Selengkapnya",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = EmeraldMedium
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.OpenInNew,
+                        contentDescription = null,
+                        tint = EmeraldMedium,
+                        modifier = Modifier.size(14.dp)
+                    )
+                }
+            }
         }
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = title,
-            style = MaterialTheme.typography.labelMedium,
-            fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onBackground,
-            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
     }
 }
 
