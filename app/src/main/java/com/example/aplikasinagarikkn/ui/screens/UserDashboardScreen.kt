@@ -250,69 +250,7 @@ fun UserDashboardScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // --- 3. Quick Action Grid Menu ---
-            Column(modifier = Modifier.padding(horizontal = 20.dp)) {
-                Text(
-                    text = "Layanan & Fasilitas Nagari",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF0F172A)
-                )
 
-                Spacer(modifier = Modifier.height(14.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    QuickActionCard(
-                        title = "Surat Menyurat",
-                        desc = "Pengajuan Online",
-                        icon = Icons.Filled.Description,
-                        iconBg = Color(0xFFEFF6FF),
-                        iconTint = Color(0xFF2563EB),
-                        modifier = Modifier.weight(1f),
-                        onClick = { /* TODO */ }
-                    )
-                    QuickActionCard(
-                        title = "UMKM Nagari",
-                        desc = "Produk Lokal",
-                        icon = Icons.Filled.Storefront,
-                        iconBg = Color(0xFFECFDF5),
-                        iconTint = Color(0xFF059669),
-                        modifier = Modifier.weight(1f),
-                        onClick = { /* TODO */ }
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    QuickActionCard(
-                        title = "Kabar Nagari",
-                        desc = "Berita Terbaru",
-                        icon = Icons.Filled.Campaign,
-                        iconBg = Color(0xFFFFFBEB),
-                        iconTint = Color(0xFFD97706),
-                        modifier = Modifier.weight(1f),
-                        onClick = { /* TODO */ }
-                    )
-                    QuickActionCard(
-                        title = "Kontak Darurat",
-                        desc = "Nomor Penting",
-                        icon = Icons.Filled.PhoneInTalk,
-                        iconBg = Color(0xFFFEF2F2),
-                        iconTint = Color(0xFFDC2626),
-                        modifier = Modifier.weight(1f),
-                        onClick = { /* TODO */ }
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
 
             // --- 4. Section Kabar & Informasi Nagari (News Feed) ---
             Column(modifier = Modifier.padding(horizontal = 20.dp)) {
