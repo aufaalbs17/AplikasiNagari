@@ -54,106 +54,41 @@ data class UMKMProduct(
 val sampleProducts = listOf(
     UMKMProduct(
         id = "1",
-        name = "Teh Kayu Aro Solok Selatan",
-        category = "Kuliner",
-        price = 25000,
-        seller = "Kelompok Tani Tunas Nagari",
-        location = "Jorong Alai, Sako Selatan",
-        rating = 4.9,
-        soldCount = 140,
-        imageUrl = "https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=500&auto=format&fit=crop&q=60",
-        description = "Teh hitam pilihan khas pegunungan Solok Selatan beraroma harum alami, dipetik dari kebun teh alami lereng perbukitan Sako Selatan.",
+        name = "Telur Ayam Kampung",
+        category = "Peternakan",
+        price = 2500,
+        seller = "Peternak Nagari Sako",
+        location = "Jorong Pasia Talang",
+        rating = 5.0,
+        soldCount = 230,
+        imageUrl = "https://images.unsplash.com/photo-1516448620398-c5f44bf9f441?w=500&auto=format&fit=crop&q=60",
+        description = "Telur ayam kampung murni kualitas terbaik hasil peternakan warga Nagari Sako Selatan Pasia Talang. Sehat, segar, dan tanpa bahan pengawet.",
         phone = "6282174899901"
     ),
     UMKMProduct(
         id = "2",
-        name = "Kopi Arabika Sako (250g)",
-        category = "Kuliner",
-        price = 45000,
-        seller = "Kopi Sako Mandiri",
-        location = "Jorong Pasia Talang",
-        rating = 4.8,
-        soldCount = 95,
-        imageUrl = "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=500&auto=format&fit=crop&q=60",
-        description = "Biji kopi Arabika petik merah disangrai sempurna dengan cita rasa buah & rempah khas perbukitan Nagari Sako Selatan Pasia Talang.",
+        name = "Rental Bus BUMNag",
+        category = "Jasa",
+        price = 0,
+        seller = "BUMNag Sako Selatan",
+        location = "Kantor BUMNag Sako",
+        rating = 4.9,
+        soldCount = 45,
+        imageUrl = "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=500&auto=format&fit=crop&q=60",
+        description = "Layanan sewa bus armada BUMNag Nagari Sako Selatan Pasia Talang untuk perjalanan wisata, rombongan dinas, dan acara keluarga. Hubungi kontak untuk nego harga.",
         phone = "6282174899901"
     ),
     UMKMProduct(
         id = "3",
-        name = "Beras Organik Sako Super (5kg)",
-        category = "Pertanian",
-        price = 78000,
-        seller = "Lumbung Pangan Nagari",
-        location = "Jorong Sako",
-        rating = 4.9,
-        soldCount = 210,
-        imageUrl = "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=500&auto=format&fit=crop&q=60",
-        description = "Beras organik asli hasil sawah bertingkat irigasi alami Nagari Sako Selatan Pasia Talang, pulen, wangi dan kaya nutrisi.",
-        phone = "6282174899901"
-    ),
-    UMKMProduct(
-        id = "4",
-        name = "Kerajinan Anyaman Pandan Sako",
-        category = "Kerajinan",
-        price = 65000,
-        seller = "Sentra Ibu Kreatif Nagari",
-        location = "Jorong Alai",
-        rating = 4.7,
-        soldCount = 48,
-        imageUrl = "https://images.unsplash.com/photo-1590736969955-71cc94801759?w=500&auto=format&fit=crop&q=60",
-        description = "Tas dan dompet anyaman tangan buatan pengrajin lokal Nagari Sako terbuat dari serat daun pandan pilihan.",
-        phone = "6282174899901"
-    ),
-    UMKMProduct(
-        id = "5",
-        name = "Kripik Sanjai Balado Pedas",
-        category = "Kuliner",
-        price = 18000,
-        seller = "Dapur Ibu Rahma",
-        location = "Jorong Pasia Talang",
+        name = "Kios Datuak",
+        category = "Jasa",
+        price = 0,
+        seller = "Kios Datuak BUMNag",
+        location = "Balai Nagari Sako",
         rating = 5.0,
-        soldCount = 310,
-        imageUrl = "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=500&auto=format&fit=crop&q=60",
-        description = "Olahan singkong lokal iris tipis digoreng renyah ditaburi bumbu cabe balado gurih pedas manis khas Minang.",
-        phone = "6282174899901"
-    ),
-    UMKMProduct(
-        id = "6",
-        name = "Madu Hutan Murni Sako (350ml)",
-        category = "Kesehatan",
-        price = 95000,
-        seller = "Poktan Lebah Hutan Sako",
-        location = "Jorong Sako Barat",
-        rating = 4.9,
-        soldCount = 112,
-        imageUrl = "https://images.unsplash.com/photo-1587049352847-4a222e784d38?w=500&auto=format&fit=crop&q=60",
-        description = "Madu murni 100% dipanen langsung dari lebah liar perbukitan Solok Selatan tanpa campuran pengawet/gula.",
-        phone = "6282174899901"
-    ),
-    UMKMProduct(
-        id = "7",
-        name = "Songket Minang Tradisional",
-        category = "Kerajinan",
-        price = 350000,
-        seller = "Galeri Tenun Nagari",
-        location = "Jorong Pasia Talang",
-        rating = 4.9,
-        soldCount = 35,
-        imageUrl = "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=500&auto=format&fit=crop&q=60",
-        description = "Kain tenun songket khas Minangkabau ditenun benang emas dengan motif ukiran klasik bernilai seni tinggi.",
-        phone = "6282174899901"
-    ),
-    UMKMProduct(
-        id = "8",
-        name = "Pupuk Kompos Organik Nagari (10kg)",
-        category = "Pertanian",
-        price = 35000,
-        seller = "Poktan Sako Makmur",
-        location = "Jorong Sako",
-        rating = 4.8,
-        soldCount = 80,
-        imageUrl = "https://images.unsplash.com/photo-1592417817098-8f3d690a7865?w=500&auto=format&fit=crop&q=60",
-        description = "Pupuk kompos kaya nutrisi mikro hasil olahan organik kelompok tani Nagari Sako untuk menyuburkan tanah.",
+        soldCount = 510,
+        imageUrl = "https://images.unsplash.com/photo-1556742049-0a67e5885c39?w=500&auto=format&fit=crop&q=60",
+        description = "Layanan Merchant QRIS resmi, tarik/setor tunai murah ke 130 bank, pembelian pulsa & PPOB, transfer antar bank hemat dan cepat di Nagari Sako.",
         phone = "6282174899901"
     )
 )
@@ -166,7 +101,7 @@ fun UMKMScreen(onNavigateBack: () -> Unit) {
     var selectedCategory by remember { mutableStateOf("Semua") }
     var selectedProductForDetail by remember { mutableStateOf<UMKMProduct?>(null) }
 
-    val categories = listOf("Semua", "Kuliner", "Pertanian", "Kerajinan", "Kesehatan")
+    val categories = listOf("Semua", "Peternakan", "Jasa")
 
     val filteredProducts = sampleProducts.filter { product ->
         (selectedCategory == "Semua" || product.category.equals(selectedCategory, ignoreCase = true)) &&
