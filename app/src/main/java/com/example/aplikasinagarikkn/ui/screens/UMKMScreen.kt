@@ -58,11 +58,11 @@ val sampleProducts = listOf(
         category = "Kuliner",
         price = 25000,
         seller = "Kelompok Tani Tunas Nagari",
-        location = "Jorong Alai",
+        location = "Jorong Alai, Sako Selatan",
         rating = 4.9,
         soldCount = 140,
         imageUrl = "https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=500&auto=format&fit=crop&q=60",
-        description = "Teh hitam pilihan khas pegunungan Solok Selatan beraroma harum alami, kaya akan antioksidan.",
+        description = "Teh hitam pilihan khas pegunungan Solok Selatan beraroma harum alami, dipetik dari kebun teh alami lereng perbukitan Sako Selatan.",
         phone = "6282174899901"
     ),
     UMKMProduct(
@@ -75,7 +75,7 @@ val sampleProducts = listOf(
         rating = 4.8,
         soldCount = 95,
         imageUrl = "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=500&auto=format&fit=crop&q=60",
-        description = "Biji kopi Arabika petik merah disangrai sempurna dengan cita rasa buah & rempah khas lereng Gunung Kerinci.",
+        description = "Biji kopi Arabika petik merah disangrai sempurna dengan cita rasa buah & rempah khas perbukitan Nagari Sako Selatan Pasia Talang.",
         phone = "6282174899901"
     ),
     UMKMProduct(
@@ -88,12 +88,12 @@ val sampleProducts = listOf(
         rating = 4.9,
         soldCount = 210,
         imageUrl = "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=500&auto=format&fit=crop&q=60",
-        description = "Beras organik asli hasil sawah bertingkat irigasi alami Nagari Sako, pulen dan sehat.",
+        description = "Beras organik asli hasil sawah bertingkat irigasi alami Nagari Sako Selatan Pasia Talang, pulen, wangi dan kaya nutrisi.",
         phone = "6282174899901"
     ),
     UMKMProduct(
         id = "4",
-        name = "Kerajinan Anyaman Pandan",
+        name = "Kerajinan Anyaman Pandan Sako",
         category = "Kerajinan",
         price = 65000,
         seller = "Sentra Ibu Kreatif Nagari",
@@ -101,7 +101,7 @@ val sampleProducts = listOf(
         rating = 4.7,
         soldCount = 48,
         imageUrl = "https://images.unsplash.com/photo-1590736969955-71cc94801759?w=500&auto=format&fit=crop&q=60",
-        description = "Tas dan dompet anyaman tangan terbuat dari serat daun pandan alami berkualitas tinggi.",
+        description = "Tas dan dompet anyaman tangan buatan pengrajin lokal Nagari Sako terbuat dari serat daun pandan pilihan.",
         phone = "6282174899901"
     ),
     UMKMProduct(
@@ -114,7 +114,7 @@ val sampleProducts = listOf(
         rating = 5.0,
         soldCount = 310,
         imageUrl = "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=500&auto=format&fit=crop&q=60",
-        description = "Olahan singkong lokal iris tipis digoreng renyah ditaburi bumbu cabe balado gurih pedas manis.",
+        description = "Olahan singkong lokal iris tipis digoreng renyah ditaburi bumbu cabe balado gurih pedas manis khas Minang.",
         phone = "6282174899901"
     ),
     UMKMProduct(
@@ -127,7 +127,7 @@ val sampleProducts = listOf(
         rating = 4.9,
         soldCount = 112,
         imageUrl = "https://images.unsplash.com/photo-1587049352847-4a222e784d38?w=500&auto=format&fit=crop&q=60",
-        description = "Madu murni 100% dipanen langsung dari lebah liar perbukitan Solok Selatan tanpa campuran gula.",
+        description = "Madu murni 100% dipanen langsung dari lebah liar perbukitan Solok Selatan tanpa campuran pengawet/gula.",
         phone = "6282174899901"
     ),
     UMKMProduct(
@@ -140,12 +140,12 @@ val sampleProducts = listOf(
         rating = 4.9,
         soldCount = 35,
         imageUrl = "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=500&auto=format&fit=crop&q=60",
-        description = "Kain tenun songket khas Minangkabau ditenun benang emas dengan motif ukiran klasik yang sangat bernilai tinggi.",
+        description = "Kain tenun songket khas Minangkabau ditenun benang emas dengan motif ukiran klasik bernilai seni tinggi.",
         phone = "6282174899901"
     ),
     UMKMProduct(
         id = "8",
-        name = "Pupuk Kompos Organik (10kg)",
+        name = "Pupuk Kompos Organik Nagari (10kg)",
         category = "Pertanian",
         price = 35000,
         seller = "Poktan Sako Makmur",
@@ -153,7 +153,7 @@ val sampleProducts = listOf(
         rating = 4.8,
         soldCount = 80,
         imageUrl = "https://images.unsplash.com/photo-1592417817098-8f3d690a7865?w=500&auto=format&fit=crop&q=60",
-        description = "Pupuk kompos kaya nutrisi mikro hasil fermentasi limbah organik untuk menyuburkan kebun & sawah.",
+        description = "Pupuk kompos kaya nutrisi mikro hasil olahan organik kelompok tani Nagari Sako untuk menyuburkan tanah.",
         phone = "6282174899901"
     )
 )
