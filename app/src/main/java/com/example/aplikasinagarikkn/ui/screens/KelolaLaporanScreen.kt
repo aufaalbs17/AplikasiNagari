@@ -1,6 +1,5 @@
 package com.example.aplikasinagarikkn.ui.screens
 
-import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -13,12 +12,14 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.FileDownload
-import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.HourglassTop
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SearchOff
 import androidx.compose.material3.*
@@ -37,6 +38,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.aplikasinagarikkn.data.FirebaseRepository
 
 private val BorderSubtle = Color(0xFFE2E8F0)
 private val EmeraldDark = Color(0xFF064E3B)
@@ -51,11 +53,33 @@ fun KelolaLaporanScreen(
     var searchQuery by remember { mutableStateOf("") }
     var selectedStatusFilter by remember { mutableStateOf("Semua") }
     var showExportDialog by remember { mutableStateOf(false) }
+    var laporanList by remember { mutableStateOf(mockRiwayatLaporan) }
     val context = LocalContext.current
 
+    // Helper function to update status instantly
+    val onQuickUpdateStatus = { laporanId: Int, newStatus: String ->
+        laporanList = laporanList.map { laporan ->
+            if (laporan.id == laporanId) laporan.copy(status = newStatus) else laporan
+        }
+
+        // Sync with Firebase Firestore
+        val tanggapanAutomatis = when (newStatus) {
+            "Diproses" -> "Laporan sedang dalam pengerjaan oleh tim Perangkat Nagari Sako Selatan."
+            "Selesai" -> "Laporan telah selesai ditangani secara tuntas."
+            else -> "Laporan diterima dan menunggu verifikasi."
+        }
+        FirebaseRepository.updateStatusLaporan(laporanId, newStatus, tanggapanAutomatis) { _ -> }
+
+        Toast.makeText(
+            context,
+            "Status Laporan #${laporanId} diperbarui ➔ $newStatus",
+            Toast.LENGTH_SHORT
+        ).show()
+    }
+
     // Filter logic
-    val filteredLaporan = remember(searchQuery, selectedStatusFilter) {
-        mockRiwayatLaporan.filter { laporan ->
+    val filteredLaporan = remember(laporanList, searchQuery, selectedStatusFilter) {
+        laporanList.filter { laporan ->
             val matchesSearch = laporan.judul.contains(searchQuery, ignoreCase = true)
             
             val matchesStatus = when (selectedStatusFilter) {
@@ -70,10 +94,10 @@ fun KelolaLaporanScreen(
     }
 
     val filterOptions = listOf(
-        "Semua" to mockRiwayatLaporan.size,
-        "Menunggu" to mockRiwayatLaporan.count { it.status == "Menunggu" },
-        "Diproses" to mockRiwayatLaporan.count { it.status == "Diproses" },
-        "Selesai" to mockRiwayatLaporan.count { it.status == "Selesai" }
+        "Semua" to laporanList.size,
+        "Menunggu" to laporanList.count { it.status == "Menunggu" },
+        "Diproses" to laporanList.count { it.status == "Diproses" },
+        "Selesai" to laporanList.count { it.status == "Selesai" }
     )
 
     Scaffold(
@@ -182,7 +206,7 @@ fun KelolaLaporanScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 6.dp)
+                    .padding(horizontal = 16.dp, vertical = 4.dp)
             ) {
                 OutlinedTextField(
                     value = searchQuery,
@@ -269,7 +293,7 @@ fun KelolaLaporanScreen(
                 }
             }
 
-            // --- 4. List Laporan Warga ---
+            // --- 4. List Laporan Warga dengan Shortcut Cepat ---
             if (filteredLaporan.isEmpty()) {
                 Box(
                     modifier = Modifier
@@ -308,7 +332,10 @@ fun KelolaLaporanScreen(
                     items(filteredLaporan) { laporan ->
                         AdminLaporanCard(
                             laporan = laporan,
-                            onClick = { onNavigateToDetail(laporan.id) }
+                            onClick = { onNavigateToDetail(laporan.id) },
+                            onQuickUpdateStatus = { newStatus ->
+                                onQuickUpdateStatus(laporan.id, newStatus)
+                            }
                         )
                     }
                 }
@@ -336,7 +363,7 @@ fun KelolaLaporanScreen(
             },
             text = {
                 Text(
-                    text = "File 'Rekap_Pengaduan_Nagari_Sako_Selatan_2026.csv' berisi total 12 data laporan pengaduan warga akan diunduh ke perangkat Anda.",
+                    text = "File 'Rekap_Pengaduan_Nagari_Sako_Selatan_2026.csv' berisi data pengaduan warga akan diunduh ke perangkat Anda.",
                     fontSize = 13.sp
                 )
             },
@@ -363,7 +390,8 @@ fun KelolaLaporanScreen(
 @Composable
 fun AdminLaporanCard(
     laporan: Laporan,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onQuickUpdateStatus: (String) -> Unit
 ) {
     val (statusBg, statusTextColor) = when (laporan.status) {
         "Selesai" -> Pair(Color(0xFFECFDF5), Color(0xFF047857))
@@ -410,7 +438,7 @@ fun AdminLaporanCard(
                 }
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -445,6 +473,100 @@ fun AdminLaporanCard(
                         fontSize = 12.sp,
                         color = Color(0xFF64748B)
                     )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(14.dp))
+
+            HorizontalDivider(color = BorderSubtle, thickness = 0.8.dp)
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // --- Quick Status Update Buttons Bar ---
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Aksi Cepat Status:",
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF64748B)
+                )
+
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    if (laporan.status != "Diproses") {
+                        Button(
+                            onClick = { onQuickUpdateStatus("Diproses") },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2563EB)),
+                            shape = RoundedCornerShape(10.dp),
+                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
+                            modifier = Modifier.height(32.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.PlayArrow,
+                                contentDescription = null,
+                                modifier = Modifier.size(14.dp),
+                                tint = Color.White
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = "Diproses",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                        }
+                    }
+
+                    if (laporan.status != "Selesai") {
+                        Button(
+                            onClick = { onQuickUpdateStatus("Selesai") },
+                            colors = ButtonDefaults.buttonColors(containerColor = EmeraldDark),
+                            shape = RoundedCornerShape(10.dp),
+                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
+                            modifier = Modifier.height(32.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.CheckCircle,
+                                contentDescription = null,
+                                modifier = Modifier.size(14.dp),
+                                tint = Color.White
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = "Selesai",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                        }
+                    }
+
+                    if (laporan.status == "Selesai") {
+                        OutlinedButton(
+                            onClick = { onQuickUpdateStatus("Menunggu") },
+                            shape = RoundedCornerShape(10.dp),
+                            border = BorderStroke(1.dp, Color(0xFFD97706)),
+                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
+                            modifier = Modifier.height(32.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.HourglassTop,
+                                contentDescription = null,
+                                modifier = Modifier.size(14.dp),
+                                tint = Color(0xFFD97706)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = "Reset Status",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFFD97706)
+                            )
+                        }
+                    }
                 }
             }
         }
