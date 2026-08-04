@@ -483,61 +483,7 @@ fun AdminDashboardScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // --- 3. Primary Call-To-Action (Kelola Laporan Banner Button) ---
-            Box(modifier = Modifier.padding(horizontal = 20.dp)) {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { onNavigateToKelolaLaporan() },
-                    shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(containerColor = EmeraldDark),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(18.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(50.dp)
-                                .clip(RoundedCornerShape(14.dp))
-                                .background(Color.White.copy(alpha = 0.2f)),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.Assignment,
-                                contentDescription = null,
-                                tint = Color.White,
-                                modifier = Modifier.size(28.dp)
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = "Kelola & Respon Pengaduan Warga",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White
-                            )
-                            Spacer(modifier = Modifier.height(2.dp))
-                            Text(
-                                text = "Tinjau detail, beri tanggapan & atur status laporan",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = Color.White.copy(alpha = 0.85f)
-                            )
-                        }
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                            contentDescription = null,
-                            tint = Color.White
-                        )
-                    }
-                }
-            }
 
-            Spacer(modifier = Modifier.height(24.dp))
 
             // --- 4. Menu Layanan Pengelolaan Nagari Grid ---
             Column(modifier = Modifier.padding(horizontal = 20.dp)) {
