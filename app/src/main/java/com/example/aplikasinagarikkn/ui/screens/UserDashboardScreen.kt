@@ -2,6 +2,12 @@ package com.example.aplikasinagarikkn.ui.screens
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -165,6 +171,17 @@ fun UserDashboardScreen(
 
                         Spacer(modifier = Modifier.height(14.dp))
 
+                        val infiniteTransition = rememberInfiniteTransition(label = "pulseTransition")
+                        val dotAlpha by infiniteTransition.animateFloat(
+                            initialValue = 0.35f,
+                            targetValue = 1f,
+                            animationSpec = infiniteRepeatable(
+                                animation = tween(850, easing = FastOutSlowInEasing),
+                                repeatMode = RepeatMode.Reverse
+                            ),
+                            label = "dotAlpha"
+                        )
+
                         // Sleek Date Pill with live green dot indicator
                         Surface(
                             color = Color.White.copy(alpha = 0.15f),
@@ -176,9 +193,9 @@ fun UserDashboardScreen(
                             ) {
                                 Box(
                                     modifier = Modifier
-                                        .size(8.dp)
+                                        .size(9.dp)
                                         .clip(CircleShape)
-                                        .background(Color(0xFF10B981))
+                                        .background(Color(0xFF10B981).copy(alpha = dotAlpha))
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Icon(
