@@ -485,69 +485,7 @@ fun AdminDashboardScreen(
 
 
 
-            // --- 4. Menu Layanan Pengelolaan Nagari Grid ---
-            Column(modifier = Modifier.padding(horizontal = 20.dp)) {
-                Text(
-                    text = "Layanan Pengelolaan Nagari",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF0F172A)
-                )
 
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    ProfessionalActionCard(
-                        title = "Verifikasi Surat",
-                        desc = "8 Surat Masuk",
-                        icon = Icons.Filled.Description,
-                        iconBg = Color(0xFFEFF6FF),
-                        iconTint = Color(0xFF2563EB),
-                        modifier = Modifier.weight(1f),
-                        onClick = { /* TODO: Verifikasi Surat */ }
-                    )
-                    ProfessionalActionCard(
-                        title = "Kelola UMKM",
-                        desc = "24 Terdaftar",
-                        icon = Icons.Filled.Storefront,
-                        iconBg = Color(0xFFECFDF5),
-                        iconTint = Color(0xFF059669),
-                        modifier = Modifier.weight(1f),
-                        onClick = { /* TODO: Kelola UMKM */ }
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    ProfessionalActionCard(
-                        title = "Data Warga",
-                        desc = "3.450 Jiwa",
-                        icon = Icons.Filled.People,
-                        iconBg = Color(0xFFF3E8FF),
-                        iconTint = Color(0xFF9333EA),
-                        modifier = Modifier.weight(1f),
-                        onClick = { /* TODO: Data Warga */ }
-                    )
-                    ProfessionalActionCard(
-                        title = "Pengumuman",
-                        desc = "Kabar Nagari",
-                        icon = Icons.Filled.Campaign,
-                        iconBg = Color(0xFFFFFBEB),
-                        iconTint = Color(0xFFD97706),
-                        modifier = Modifier.weight(1f),
-                        onClick = { /* TODO: Pengumuman */ }
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
 
             // --- 5. Timeline Tracker Laporan Terbaru ---
             Column(modifier = Modifier.padding(horizontal = 20.dp)) {
