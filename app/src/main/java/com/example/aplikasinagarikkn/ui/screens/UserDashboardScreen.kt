@@ -14,13 +14,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.AddAlert
-import androidx.compose.material.icons.filled.Campaign
-import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.ArrowOutward
 import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.PhoneInTalk
-import androidx.compose.material.icons.filled.Storefront
 import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material3.*
@@ -37,11 +33,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.aplikasinagarikkn.model.NewsItem
 import com.example.aplikasinagarikkn.viewmodel.DashboardViewModel
 import com.example.aplikasinagarikkn.viewmodel.NewsState
@@ -53,9 +48,9 @@ private val SoftBgColor = Color(0xFFF8FAFC)
 
 @Composable
 fun UserDashboardScreen(
+    viewModel: DashboardViewModel = viewModel(),
     onNavigateToBuatLaporan: () -> Unit,
-    onNavigateToNotifikasi: () -> Unit,
-    viewModel: DashboardViewModel = viewModel()
+    onNavigateToNotifikasi: () -> Unit
 ) {
     val newsState by viewModel.newsState.collectAsState()
     val context = LocalContext.current
@@ -76,7 +71,7 @@ fun UserDashboardScreen(
                                 )
                             )
                         )
-                        .clip(RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp))
+                        .clip(RoundedCornerShape(bottomStart = 26.dp, bottomEnd = 26.dp))
                 ) {
                     Column(
                         modifier = Modifier
@@ -170,22 +165,29 @@ fun UserDashboardScreen(
 
                         Spacer(modifier = Modifier.height(14.dp))
 
-                        // Modern Date Pill (Without 'Layanan Publik Nagari Aktif')
+                        // Sleek Date Pill with live green dot indicator
                         Surface(
                             color = Color.White.copy(alpha = 0.15f),
-                            shape = RoundedCornerShape(12.dp)
+                            shape = RoundedCornerShape(14.dp)
                         ) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
                             ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(8.dp)
+                                        .clip(CircleShape)
+                                        .background(Color(0xFF10B981))
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
                                 Icon(
                                     imageVector = Icons.Outlined.CalendarToday,
                                     contentDescription = null,
                                     tint = Color.White.copy(alpha = 0.95f),
-                                    modifier = Modifier.size(14.dp)
+                                    modifier = Modifier.size(13.dp)
                                 )
-                                Spacer(modifier = Modifier.width(8.dp))
+                                Spacer(modifier = Modifier.width(6.dp))
                                 Text(
                                     text = "Selasa, 28 Juli 2026",
                                     fontSize = 12.sp,
@@ -214,59 +216,78 @@ fun UserDashboardScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable { onNavigateToBuatLaporan() },
-                    shape = RoundedCornerShape(20.dp),
+                    shape = RoundedCornerShape(22.dp),
                     colors = CardDefaults.cardColors(containerColor = EmeraldDark),
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                 ) {
-                    Row(
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(18.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                            .padding(20.dp)
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .size(50.dp)
-                                .clip(RoundedCornerShape(14.dp))
-                                .background(Color.White.copy(alpha = 0.2f)),
-                            contentAlignment = Alignment.Center
+                        Surface(
+                            color = Color.White.copy(alpha = 0.18f),
+                            shape = RoundedCornerShape(20.dp)
                         ) {
+                            Text(
+                                text = "⚡ Respons Cepat Wali Nagari",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(52.dp)
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .background(Color.White.copy(alpha = 0.2f)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.AddAlert,
+                                    contentDescription = null,
+                                    tint = Color.White,
+                                    modifier = Modifier.size(28.dp)
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = "Buat Pengaduan Warga",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = Color.White,
+                                    fontSize = 17.sp
+                                )
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Text(
+                                    text = "Laporkan masalah jalan, fasilitas, atau keluhan nagari",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color.White.copy(alpha = 0.88f)
+                                )
+                            }
                             Icon(
-                                imageVector = Icons.Filled.AddAlert,
+                                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                                 contentDescription = null,
                                 tint = Color.White,
-                                modifier = Modifier.size(28.dp)
+                                modifier = Modifier.size(22.dp)
                             )
                         }
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = "Buat Pengaduan Warga",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White
-                            )
-                            Spacer(modifier = Modifier.height(2.dp))
-                            Text(
-                                text = "Laporkan masalah jalan, fasilitas, atau keluhan nagari",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = Color.White.copy(alpha = 0.85f)
-                            )
-                        }
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                            contentDescription = null,
-                            tint = Color.White
-                        )
                     }
                 }
             }
 
             Spacer(modifier = Modifier.height(24.dp))
 
-
-
-            // --- 4. Section Kabar & Informasi Nagari (News Feed) ---
+            // --- 3. Section Kabar & Informasi Nagari (News Feed) ---
             Column(modifier = Modifier.padding(horizontal = 20.dp)) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -413,7 +434,7 @@ fun NewsCardItem(news: NewsItem, onClick: () -> Unit) {
         modifier = Modifier
             .width(260.dp)
             .clickable { onClick() },
-        shape = RoundedCornerShape(18.dp),
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         border = BorderStroke(1.dp, BorderSubtle),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
@@ -422,7 +443,7 @@ fun NewsCardItem(news: NewsItem, onClick: () -> Unit) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(120.dp)
+                    .height(124.dp)
                     .background(Color(0xFFE2E8F0))
             ) {
                 AsyncImage(
@@ -431,6 +452,22 @@ fun NewsCardItem(news: NewsItem, onClick: () -> Unit) {
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize()
                 )
+
+                Surface(
+                    color = EmeraldDark.copy(alpha = 0.85f),
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(10.dp)
+                ) {
+                    Text(
+                        text = "📢 Kabar Nagari",
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                    )
+                }
             }
 
             Column(modifier = Modifier.padding(14.dp)) {
@@ -450,35 +487,29 @@ fun NewsCardItem(news: NewsItem, onClick: () -> Unit) {
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
+
                 Spacer(modifier = Modifier.height(10.dp))
+
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.End,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Baca Selengkapnya",
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold,
+                        text = "Digital Desa",
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.SemiBold,
                         color = EmeraldMedium
                     )
-                    Spacer(modifier = Modifier.width(4.dp))
+
                     Icon(
-                        imageVector = Icons.AutoMirrored.Filled.OpenInNew,
-                        contentDescription = null,
+                        imageVector = Icons.Filled.ArrowOutward,
+                        contentDescription = "Buka Berita",
                         tint = EmeraldMedium,
-                        modifier = Modifier.size(14.dp)
+                        modifier = Modifier.size(16.dp)
                     )
                 }
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun UserDashboardPreview() {
-    MaterialTheme {
-        UserDashboardScreen({}, {})
     }
 }
