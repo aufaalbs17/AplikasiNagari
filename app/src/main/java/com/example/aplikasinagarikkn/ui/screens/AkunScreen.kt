@@ -483,7 +483,7 @@ fun AkunScreen(
         )
     }
 
-    // 4. Bantuan & Layanan Nagari Dialog
+    // 4. Bantuan & Layanan Nagari Dialog (Hubungi Kami)
     if (showHelpCenterDialog) {
         AlertDialog(
             onDismissRequest = { showHelpCenterDialog = false },
@@ -496,7 +496,7 @@ fun AkunScreen(
                 )
             },
             title = {
-                Text("Pusat Bantuan Nagari", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                Text("Hubungi Kami", fontWeight = FontWeight.Bold, fontSize = 18.sp)
             },
             text = {
                 Column(modifier = Modifier.fillMaxWidth()) {
@@ -517,36 +517,37 @@ fun AkunScreen(
 
                     Card(
                         modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFFF1F5F9)),
-                        shape = RoundedCornerShape(12.dp)
+                        colors = CardDefaults.cardColors(containerColor = EmeraldDark),
+                        shape = RoundedCornerShape(14.dp)
                     ) {
-                        Column(modifier = Modifier.padding(12.dp)) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(
+                                text = "Hubungi Kami",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = Color.White
+                            )
+                            Spacer(modifier = Modifier.height(12.dp))
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(Icons.Filled.Call, contentDescription = null, tint = EmeraldMedium, modifier = Modifier.size(16.dp))
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text("Layanan Telepon/WA: +62 812-3456-7890", fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+                                Icon(Icons.Filled.Call, contentDescription = null, tint = Color.White, modifier = Modifier.size(20.dp))
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Text("082174899901", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color.White)
                             }
-                            Spacer(modifier = Modifier.height(6.dp))
+                            Spacer(modifier = Modifier.height(10.dp))
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(Icons.Filled.Email, contentDescription = null, tint = EmeraldMedium, modifier = Modifier.size(16.dp))
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text("Email: info@sakoselatanpasiatalang.digitaldesa.id", fontSize = 11.sp)
-                            }
-                            Spacer(modifier = Modifier.height(6.dp))
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(Icons.Filled.Language, contentDescription = null, tint = EmeraldMedium, modifier = Modifier.size(16.dp))
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text("Website: sakoselatanpasiatalang.digitaldesa.id", fontSize = 11.sp)
+                                Icon(Icons.Filled.Email, contentDescription = null, tint = Color.White, modifier = Modifier.size(20.dp))
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Text("sakoselatan2025@gmail.com", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = Color.White)
                             }
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(14.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
                     Button(
                         onClick = {
                             try {
-                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://wa.me/6281234567890"))
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://wa.me/6282174899901"))
                                 context.startActivity(intent)
                             } catch (e: Exception) {
                                 e.printStackTrace()
@@ -556,7 +557,7 @@ fun AkunScreen(
                         shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF25D366))
                     ) {
-                        Text("Hubungi WhatsApp CS Nagari", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = Color.White)
+                        Text("Chat WhatsApp (082174899901)", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = Color.White)
                     }
                 }
             },
