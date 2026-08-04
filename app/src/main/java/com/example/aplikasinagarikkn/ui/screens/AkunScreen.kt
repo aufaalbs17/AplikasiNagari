@@ -1,5 +1,8 @@
 package com.example.aplikasinagarikkn.ui.screens
 
+import android.content.Intent
+import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -13,19 +16,29 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.filled.Call
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -41,6 +54,20 @@ fun AkunScreen(
     onLogout: () -> Unit
 ) {
     val scrollState = rememberScrollState()
+    val context = LocalContext.current
+
+    // State for user profile
+    var namaWarga by remember { mutableStateOf("Budi Santoso") }
+    var nikWarga by remember { mutableStateOf("1303012807980001") }
+    var noHpWarga by remember { mutableStateOf("0812-3456-7890") }
+    var alamatJorong by remember { mutableStateOf("Jorong Pasia, RT 02") }
+
+    // Dialog control states
+    var showEditProfileDialog by remember { mutableStateOf(false) }
+    var showNotificationDialog by remember { mutableStateOf(false) }
+    var showSecurityDialog by remember { mutableStateOf(false) }
+    var showHelpCenterDialog by remember { mutableStateOf(false) }
+    var showLogoutConfirmDialog by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -103,7 +130,7 @@ fun AkunScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "B",
+                            text = if (namaWarga.isNotBlank()) namaWarga.first().uppercase() else "W",
                             fontSize = 32.sp,
                             fontWeight = FontWeight.ExtraBold,
                             color = EmeraldDark
@@ -113,7 +140,7 @@ fun AkunScreen(
                     Spacer(modifier = Modifier.height(14.dp))
 
                     Text(
-                        text = "Budi Santoso",
+                        text = namaWarga,
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.ExtraBold,
                         color = Color(0xFF0F172A)
@@ -122,7 +149,7 @@ fun AkunScreen(
                     Spacer(modifier = Modifier.height(2.dp))
 
                     Text(
-                        text = "NIK: 1303012807980001",
+                        text = "NIK: $nikWarga",
                         fontSize = 12.sp,
                         color = Color(0xFF64748B)
                     )
@@ -180,7 +207,7 @@ fun AkunScreen(
                         icon = Icons.Outlined.Edit,
                         title = "Ubah Profil",
                         subtitle = "Perbarui nomor telepon & alamat",
-                        onClick = { /* TODO */ }
+                        onClick = { showEditProfileDialog = true }
                     )
                     HorizontalDivider(color = BorderSubtle, thickness = 0.8.dp)
 
@@ -188,7 +215,7 @@ fun AkunScreen(
                         icon = Icons.Outlined.Notifications,
                         title = "Pengaturan Notifikasi",
                         subtitle = "Atur pemberitahuan aplikasi",
-                        onClick = { /* TODO */ }
+                        onClick = { showNotificationDialog = true }
                     )
                     HorizontalDivider(color = BorderSubtle, thickness = 0.8.dp)
 
@@ -196,7 +223,7 @@ fun AkunScreen(
                         icon = Icons.Outlined.Lock,
                         title = "Keamanan Akun",
                         subtitle = "Ganti kata sandi & PIN",
-                        onClick = { /* TODO */ }
+                        onClick = { showSecurityDialog = true }
                     )
                     HorizontalDivider(color = BorderSubtle, thickness = 0.8.dp)
 
@@ -204,7 +231,7 @@ fun AkunScreen(
                         icon = Icons.AutoMirrored.Filled.HelpOutline,
                         title = "Bantuan & Layanan Nagari",
                         subtitle = "Pusat bantuan & kontak kantor Wali Nagari",
-                        onClick = { /* TODO */ }
+                        onClick = { showHelpCenterDialog = true }
                     )
                 }
             }
@@ -213,7 +240,7 @@ fun AkunScreen(
 
             // Logout Button
             OutlinedButton(
-                onClick = onLogout,
+                onClick = { showLogoutConfirmDialog = true },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(54.dp),
@@ -234,6 +261,348 @@ fun AkunScreen(
 
             Spacer(modifier = Modifier.height(30.dp))
         }
+    }
+
+    // =========================================================================
+    // 🔀 INTERACTIVE FUNCTIONAL DIALOGS
+    // =========================================================================
+
+    // 1. Ubah Profil Dialog
+    if (showEditProfileDialog) {
+        var tempNama by remember { mutableStateOf(namaWarga) }
+        var tempNoHp by remember { mutableStateOf(noHpWarga) }
+        var tempAlamat by remember { mutableStateOf(alamatJorong) }
+
+        AlertDialog(
+            onDismissRequest = { showEditProfileDialog = false },
+            title = {
+                Text("Ubah Profil Akun", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+            },
+            text = {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Text("Perbarui rincian profil warga Anda:", fontSize = 12.sp, color = Color(0xFF64748B))
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    OutlinedTextField(
+                        value = tempNama,
+                        onValueChange = { tempNama = it },
+                        label = { Text("Nama Lengkap") },
+                        singleLine = true,
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    OutlinedTextField(
+                        value = tempNoHp,
+                        onValueChange = { tempNoHp = it },
+                        label = { Text("Nomor Telepon / WA") },
+                        singleLine = true,
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    OutlinedTextField(
+                        value = tempAlamat,
+                        onValueChange = { tempAlamat = it },
+                        label = { Text("Alamat Jorong / RT") },
+                        singleLine = true,
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        if (tempNama.isNotBlank()) {
+                            namaWarga = tempNama
+                            noHpWarga = tempNoHp
+                            alamatJorong = tempAlamat
+                            showEditProfileDialog = false
+                            Toast.makeText(context, "Profil $namaWarga berhasil diperbarui!", Toast.LENGTH_SHORT).show()
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = EmeraldDark)
+                ) {
+                    Text("Simpan Perubahan", fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showEditProfileDialog = false }) {
+                    Text("Batal", color = Color.Gray)
+                }
+            }
+        )
+    }
+
+    // 2. Pengaturan Notifikasi Dialog
+    if (showNotificationDialog) {
+        var notifPengaduan by remember { mutableStateOf(true) }
+        var notifSurat by remember { mutableStateOf(true) }
+        var notifPengumuman by remember { mutableStateOf(true) }
+
+        AlertDialog(
+            onDismissRequest = { showNotificationDialog = false },
+            title = {
+                Text("Pengaturan Notifikasi", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+            },
+            text = {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Text("Atur pemberitahuan yang ingin Anda terima:", fontSize = 12.sp, color = Color(0xFF64748B))
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text("Notifikasi Status Pengaduan", fontSize = 13.sp, fontWeight = FontWeight.Medium)
+                        Switch(checked = notifPengaduan, onCheckedChange = { notifPengaduan = it })
+                    }
+
+                    HorizontalDivider(color = BorderSubtle, thickness = 0.8.dp)
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text("Notifikasi Status Surat Digital", fontSize = 13.sp, fontWeight = FontWeight.Medium)
+                        Switch(checked = notifSurat, onCheckedChange = { notifSurat = it })
+                    }
+
+                    HorizontalDivider(color = BorderSubtle, thickness = 0.8.dp)
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text("Kabar & Pengumuman Nagari", fontSize = 13.sp, fontWeight = FontWeight.Medium)
+                        Switch(checked = notifPengumuman, onCheckedChange = { notifPengumuman = it })
+                    }
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showNotificationDialog = false
+                        Toast.makeText(context, "Pengaturan Notifikasi berhasil disimpan!", Toast.LENGTH_SHORT).show()
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = EmeraldDark)
+                ) {
+                    Text("Simpan", fontWeight = FontWeight.Bold)
+                }
+            }
+        )
+    }
+
+    // 3. Keamanan Akun Dialog
+    if (showSecurityDialog) {
+        var sandiLama by remember { mutableStateOf("") }
+        var sandiBaru by remember { mutableStateOf("") }
+        var konfirmasiSandi by remember { mutableStateOf("") }
+        var securityError by remember { mutableStateOf<String?>(null) }
+
+        AlertDialog(
+            onDismissRequest = { showSecurityDialog = false },
+            title = {
+                Text("Keamanan & Kata Sandi", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+            },
+            text = {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Text("Ubah kata sandi akun Anda:", fontSize = 12.sp, color = Color(0xFF64748B))
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    OutlinedTextField(
+                        value = sandiLama,
+                        onValueChange = { sandiLama = it; securityError = null },
+                        label = { Text("Kata Sandi Saat Ini") },
+                        visualTransformation = PasswordVisualTransformation(),
+                        singleLine = true,
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    OutlinedTextField(
+                        value = sandiBaru,
+                        onValueChange = { sandiBaru = it; securityError = null },
+                        label = { Text("Kata Sandi Baru") },
+                        visualTransformation = PasswordVisualTransformation(),
+                        singleLine = true,
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    OutlinedTextField(
+                        value = konfirmasiSandi,
+                        onValueChange = { konfirmasiSandi = it; securityError = null },
+                        label = { Text("Konfirmasi Kata Sandi Baru") },
+                        visualTransformation = PasswordVisualTransformation(),
+                        singleLine = true,
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    if (securityError != null) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(securityError ?: "", color = MaterialTheme.colorScheme.error, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    }
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        if (sandiLama.isBlank() || sandiBaru.isBlank()) {
+                            securityError = "Semua bidang kata sandi wajib diisi."
+                        } else if (sandiBaru != konfirmasiSandi) {
+                            securityError = "Konfirmasi kata sandi baru tidak cocok."
+                        } else {
+                            showSecurityDialog = false
+                            Toast.makeText(context, "Kata Sandi Akun berhasil diperbarui!", Toast.LENGTH_SHORT).show()
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = EmeraldDark)
+                ) {
+                    Text("Perbarui Sandi", fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showSecurityDialog = false }) {
+                    Text("Batal", color = Color.Gray)
+                }
+            }
+        )
+    }
+
+    // 4. Bantuan & Layanan Nagari Dialog
+    if (showHelpCenterDialog) {
+        AlertDialog(
+            onDismissRequest = { showHelpCenterDialog = false },
+            icon = {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.HelpOutline,
+                    contentDescription = null,
+                    tint = EmeraldMedium,
+                    modifier = Modifier.size(44.dp)
+                )
+            },
+            title = {
+                Text("Pusat Bantuan Nagari", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+            },
+            text = {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = "Kantor Wali Nagari Sako Selatan Pasia Talang",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 13.sp,
+                        color = Color(0xFF0F172A)
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Kecamatan Sungai Pagu, Kabupaten Solok Selatan, Sumatera Barat.",
+                        fontSize = 12.sp,
+                        color = Color(0xFF64748B)
+                    )
+
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFFF1F5F9)),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(Icons.Filled.Call, contentDescription = null, tint = EmeraldMedium, modifier = Modifier.size(16.dp))
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("Layanan Telepon/WA: +62 812-3456-7890", fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+                            }
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(Icons.Filled.Email, contentDescription = null, tint = EmeraldMedium, modifier = Modifier.size(16.dp))
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("Email: info@sakoselatanpasiatalang.digitaldesa.id", fontSize = 11.sp)
+                            }
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(Icons.Filled.Language, contentDescription = null, tint = EmeraldMedium, modifier = Modifier.size(16.dp))
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("Website: sakoselatanpasiatalang.digitaldesa.id", fontSize = 11.sp)
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    Button(
+                        onClick = {
+                            try {
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://wa.me/6281234567890"))
+                                context.startActivity(intent)
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF25D366))
+                    ) {
+                        Text("Hubungi WhatsApp CS Nagari", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = Color.White)
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showHelpCenterDialog = false }) {
+                    Text("Tutup", fontWeight = FontWeight.Bold, color = EmeraldDark)
+                }
+            }
+        )
+    }
+
+    // 5. Konfirmasi Logout Dialog
+    if (showLogoutConfirmDialog) {
+        AlertDialog(
+            onDismissRequest = { showLogoutConfirmDialog = false },
+            icon = {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.Logout,
+                    contentDescription = null,
+                    tint = UrgentRed,
+                    modifier = Modifier.size(44.dp)
+                )
+            },
+            title = {
+                Text("Keluar dari Akun?", fontWeight = FontWeight.Bold, fontSize = 17.sp)
+            },
+            text = {
+                Text("Apakah Anda yakin ingin keluar dari akun Aplikasi Nagari Sako Selatan Pasia Talang?", fontSize = 13.sp)
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showLogoutConfirmDialog = false
+                        onLogout()
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = UrgentRed)
+                ) {
+                    Text("Ya, Keluar Akun", fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showLogoutConfirmDialog = false }) {
+                    Text("Batal", color = Color.Gray)
+                }
+            }
+        )
     }
 }
 
