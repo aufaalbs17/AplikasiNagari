@@ -1,5 +1,9 @@
 package com.example.aplikasinagarikkn.ui.screens
 
+import android.net.Uri
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,10 +23,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import com.example.aplikasinagarikkn.data.FirebaseRepository
 
 private val EmeraldDark = Color(0xFF064E3B)
 private val EmeraldMedium = Color(0xFF047857)
@@ -34,11 +42,22 @@ fun BuatLaporanScreen(
     onNavigateBack: () -> Unit,
     onSubmit: () -> Unit
 ) {
+    val context = LocalContext.current
     var judul by remember { mutableStateOf("") }
     var deskripsi by remember { mutableStateOf("") }
     var kategoriTerpilih by remember { mutableStateOf("Fasilitas Umum") }
-    var fotoTerpilih by remember { mutableStateOf(false) }
+    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
     var showSuccessDialog by remember { mutableStateOf(false) }
+
+    // System Image Picker Launcher
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            selectedImageUri = uri
+            Toast.makeText(context, "Foto Bukti Terpilih!", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     val kategoriList = listOf(
         "Fasilitas Umum",
@@ -186,7 +205,7 @@ fun BuatLaporanScreen(
 
                         Spacer(modifier = Modifier.height(20.dp))
 
-                        // Photo Upload Container Placeholder
+                        // Photo Upload Container (System Gallery Picker)
                         Text(
                             text = "Bukti Foto (Opsional)",
                             fontSize = 13.sp,
@@ -200,9 +219,11 @@ fun BuatLaporanScreen(
                                 .fillMaxWidth()
                                 .height(110.dp)
                                 .clip(RoundedCornerShape(14.dp))
-                                .clickable { fotoTerpilih = !fotoTerpilih },
-                            color = if (fotoTerpilih) Color(0xFFECFDF5) else Color(0xFFF8FAFC),
-                            border = BorderStroke(1.5.dp, if (fotoTerpilih) EmeraldMedium else BorderSubtle),
+                                .clickable {
+                                    imagePickerLauncher.launch("image/*")
+                                },
+                            color = if (selectedImageUri != null) Color(0xFFECFDF5) else Color(0xFFF8FAFC),
+                            border = BorderStroke(1.5.dp, if (selectedImageUri != null) EmeraldMedium else BorderSubtle),
                             shape = RoundedCornerShape(14.dp)
                         ) {
                             Row(
@@ -212,22 +233,40 @@ fun BuatLaporanScreen(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.Center
                             ) {
-                                Icon(
-                                    imageVector = if (fotoTerpilih) Icons.Filled.CheckCircle else Icons.Filled.CameraAlt,
-                                    contentDescription = null,
-                                    tint = if (fotoTerpilih) EmeraldMedium else Color.Gray,
-                                    modifier = Modifier.size(28.dp)
-                                )
+                                if (selectedImageUri != null) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(54.dp)
+                                            .clip(RoundedCornerShape(8.dp))
+                                            .background(Color.LightGray)
+                                    ) {
+                                        AsyncImage(
+                                            model = selectedImageUri,
+                                            contentDescription = "Bukti Foto",
+                                            contentScale = ContentScale.Crop,
+                                            modifier = Modifier.fillMaxSize()
+                                        )
+                                    }
+                                } else {
+                                    Icon(
+                                        imageVector = Icons.Filled.CameraAlt,
+                                        contentDescription = null,
+                                        tint = Color.Gray,
+                                        modifier = Modifier.size(28.dp)
+                                    )
+                                }
+
                                 Spacer(modifier = Modifier.width(12.dp))
+
                                 Column {
                                     Text(
-                                        text = if (fotoTerpilih) "Foto Bukti Terpilih" else "Ambil / Unggah Foto Bukti",
+                                        text = if (selectedImageUri != null) "Foto Bukti Terpilih ✓" else "Ambil / Unggah Foto Bukti",
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 13.sp,
-                                        color = if (fotoTerpilih) EmeraldDark else Color(0xFF334155)
+                                        color = if (selectedImageUri != null) EmeraldDark else Color(0xFF334155)
                                     )
                                     Text(
-                                        text = if (fotoTerpilih) "Ketuk untuk mengubah foto" else "Format: JPG, PNG (Max 5MB)",
+                                        text = if (selectedImageUri != null) "Buka Galeri HP • Ketuk untuk ubah foto" else "Format: JPG, PNG (Max 5MB)",
                                         fontSize = 11.sp,
                                         color = Color(0xFF64748B)
                                     )
@@ -241,6 +280,17 @@ fun BuatLaporanScreen(
                         Button(
                             onClick = {
                                 if (judul.isNotBlank()) {
+                                    // Save to Firebase Firestore
+                                    FirebaseRepository.tambahLaporan(
+                                        judul = judul,
+                                        kategori = kategoriTerpilih,
+                                        deskripsi = deskripsi
+                                    ) { success ->
+                                        if (success) {
+                                            Toast.makeText(context, "Laporan tersimpan di Cloud!", Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
+
                                     showSuccessDialog = true
                                 }
                             },
@@ -248,6 +298,7 @@ fun BuatLaporanScreen(
                                 .fillMaxWidth()
                                 .height(52.dp),
                             shape = RoundedCornerShape(14.dp),
+                            enabled = judul.isNotBlank(),
                             colors = ButtonDefaults.buttonColors(containerColor = EmeraldDark)
                         ) {
                             Text(
@@ -266,6 +317,14 @@ fun BuatLaporanScreen(
     if (showSuccessDialog) {
         AlertDialog(
             onDismissRequest = { showSuccessDialog = false },
+            icon = {
+                Icon(
+                    imageVector = Icons.Filled.CheckCircle,
+                    contentDescription = null,
+                    tint = EmeraldMedium,
+                    modifier = Modifier.size(48.dp)
+                )
+            },
             title = {
                 Text(
                     text = "Laporan Berhasil Dikirim!",

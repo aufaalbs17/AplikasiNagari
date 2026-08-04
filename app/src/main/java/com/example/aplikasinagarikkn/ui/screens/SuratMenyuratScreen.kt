@@ -1,12 +1,14 @@
 package com.example.aplikasinagarikkn.ui.screens
 
+import android.net.Uri
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -22,10 +24,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import com.example.aplikasinagarikkn.data.FirebaseRepository
 
 private val EmeraldDark = Color(0xFF064E3B)
 private val EmeraldMedium = Color(0xFF047857)
@@ -39,7 +45,7 @@ data class SuratAktif(
     val keterangan: String
 )
 
-val mockSuratAktifList = listOf(
+val initialSuratAktifList = mutableStateListOf(
     SuratAktif(
         id = 101,
         jenisSurat = "Surat Keterangan Usaha (SKU)",
@@ -54,11 +60,22 @@ val mockSuratAktifList = listOf(
 fun SuratMenyuratScreen(
     onNavigateBack: () -> Unit
 ) {
+    val context = LocalContext.current
     var keperluan by remember { mutableStateOf("") }
     var tipeSuratTerpilih by remember { mutableStateOf("") }
     var isDropdownExpanded by remember { mutableStateOf(false) }
-    var dokumenTerpilih by remember { mutableStateOf(false) }
+    var selectedDocumentUri by remember { mutableStateOf<Uri?>(null) }
     var showSuccessDialog by remember { mutableStateOf(false) }
+
+    // System File Picker Launcher
+    val filePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            selectedDocumentUri = uri
+            Toast.makeText(context, "Dokumen KTP/KK Terlampir!", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     val tipeSuratList = listOf(
         "Surat Keterangan Domisili",
@@ -154,7 +171,7 @@ fun SuratMenyuratScreen(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                mockSuratAktifList.forEach { surat ->
+                initialSuratAktifList.forEach { surat ->
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(18.dp),
@@ -331,7 +348,7 @@ fun SuratMenyuratScreen(
 
                         Spacer(modifier = Modifier.height(20.dp))
 
-                        // Upload Dokumen Pendukung
+                        // Upload Dokumen Pendukung (Real Launcher System Picker)
                         Text(
                             text = "Lampiran Dokumen Pendukung (KTP/KK):",
                             fontSize = 12.sp,
@@ -345,9 +362,11 @@ fun SuratMenyuratScreen(
                                 .fillMaxWidth()
                                 .height(110.dp)
                                 .clip(RoundedCornerShape(14.dp))
-                                .clickable { dokumenTerpilih = !dokumenTerpilih },
-                            color = if (dokumenTerpilih) Color(0xFFECFDF5) else Color(0xFFF8FAFC),
-                            border = BorderStroke(1.5.dp, if (dokumenTerpilih) EmeraldMedium else BorderSubtle),
+                                .clickable {
+                                    filePickerLauncher.launch("image/*")
+                                },
+                            color = if (selectedDocumentUri != null) Color(0xFFECFDF5) else Color(0xFFF8FAFC),
+                            border = BorderStroke(1.5.dp, if (selectedDocumentUri != null) EmeraldMedium else BorderSubtle),
                             shape = RoundedCornerShape(14.dp)
                         ) {
                             Row(
@@ -357,22 +376,40 @@ fun SuratMenyuratScreen(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.Center
                             ) {
-                                Icon(
-                                    imageVector = if (dokumenTerpilih) Icons.Filled.CheckCircle else Icons.Outlined.UploadFile,
-                                    contentDescription = null,
-                                    tint = if (dokumenTerpilih) EmeraldMedium else Color.Gray,
-                                    modifier = Modifier.size(28.dp)
-                                )
+                                if (selectedDocumentUri != null) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(54.dp)
+                                            .clip(RoundedCornerShape(8.dp))
+                                            .background(Color.LightGray)
+                                    ) {
+                                        AsyncImage(
+                                            model = selectedDocumentUri,
+                                            contentDescription = "Preview Lampiran",
+                                            contentScale = ContentScale.Crop,
+                                            modifier = Modifier.fillMaxSize()
+                                        )
+                                    }
+                                } else {
+                                    Icon(
+                                        imageVector = Icons.Outlined.UploadFile,
+                                        contentDescription = null,
+                                        tint = Color.Gray,
+                                        modifier = Modifier.size(28.dp)
+                                    )
+                                }
+
                                 Spacer(modifier = Modifier.width(12.dp))
+
                                 Column {
                                     Text(
-                                        text = if (dokumenTerpilih) "KTP_KK_BudiSantoso.jpg" else "Unggah Foto KTP / Kartu Keluarga",
+                                        text = if (selectedDocumentUri != null) "Dokumen KTP/KK Terlampir ✓" else "Unggah Foto KTP / Kartu Keluarga",
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 13.sp,
-                                        color = if (dokumenTerpilih) EmeraldDark else Color(0xFF334155)
+                                        color = if (selectedDocumentUri != null) EmeraldDark else Color(0xFF334155)
                                     )
                                     Text(
-                                        text = if (dokumenTerpilih) "Dokumen terlampir • Ketuk untuk ubah" else "Format: JPG, PNG, PDF (Max 5MB)",
+                                        text = if (selectedDocumentUri != null) "Buka Galeri HP • Ketuk untuk ubah" else "Format: JPG, PNG, PDF (Max 5MB)",
                                         fontSize = 11.sp,
                                         color = Color(0xFF64748B)
                                     )
@@ -383,7 +420,34 @@ fun SuratMenyuratScreen(
                         Spacer(modifier = Modifier.height(24.dp))
 
                         Button(
-                            onClick = { showSuccessDialog = true },
+                            onClick = {
+                                if (tipeSuratTerpilih.isNotBlank() && keperluan.isNotBlank()) {
+                                    // Append to live list
+                                    val newId = 100 + initialSuratAktifList.size + 1
+                                    initialSuratAktifList.add(
+                                        0,
+                                        SuratAktif(
+                                            id = newId,
+                                            jenisSurat = tipeSuratTerpilih,
+                                            tanggal = "Hari Ini",
+                                            status = "Diajukan",
+                                            keterangan = "Menunggu verifikasi berkas oleh Perangkat Nagari Sako"
+                                        )
+                                    )
+
+                                    // Save to Firebase Firestore
+                                    FirebaseRepository.tambahSurat(
+                                        jenisSurat = tipeSuratTerpilih,
+                                        keperluan = keperluan
+                                    ) { success ->
+                                        if (success) {
+                                            Toast.makeText(context, "Surat Digital tersimpan di Cloud!", Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
+
+                                    showSuccessDialog = true
+                                }
+                            },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(52.dp),
