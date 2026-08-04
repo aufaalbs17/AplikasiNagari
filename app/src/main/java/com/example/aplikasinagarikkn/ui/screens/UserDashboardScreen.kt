@@ -63,66 +63,136 @@ fun UserDashboardScreen(
     Scaffold(
         topBar = {
             Surface(
-                color = EmeraldDark,
-                shadowElevation = 4.dp
+                color = EmeraldDark
             ) {
-                Row(
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .statusBarsPadding()
-                        .padding(horizontal = 20.dp, vertical = 14.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                        .background(
+                            brush = Brush.verticalGradient(
+                                colors = listOf(
+                                    EmeraldDark,
+                                    EmeraldMedium
+                                )
+                            )
+                        )
+                        .clip(RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp))
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Box(
-                            modifier = Modifier
-                                .size(44.dp)
-                                .clip(CircleShape)
-                                .background(Color.White)
-                                .border(1.5.dp, Color.White.copy(alpha = 0.6f), CircleShape),
-                            contentAlignment = Alignment.Center
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .statusBarsPadding()
+                            .padding(horizontal = 20.dp, vertical = 18.dp)
+                    ) {
+                        // User Profile & Notification Bar
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Text(
-                                text = "B",
-                                fontWeight = FontWeight.ExtraBold,
-                                fontSize = 18.sp,
-                                color = EmeraldDark
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Column {
-                            Text(
-                                text = "Halo, Budi Santoso 👋",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 16.sp,
-                                color = Color.White
-                            )
-                            Text(
-                                text = "Nagari Sako Selatan Pasia Talang",
-                                fontSize = 11.sp,
-                                color = Color.White.copy(alpha = 0.85f)
-                            )
-                        }
-                    }
-
-                    IconButton(onClick = onNavigateToNotifikasi) {
-                        BadgedBox(
-                            badge = {
-                                Badge(
-                                    containerColor = Color(0xFFDC2626),
-                                    contentColor = Color.White
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(46.dp)
+                                        .clip(CircleShape)
+                                        .background(Color.White)
+                                        .border(2.dp, Color.White.copy(alpha = 0.4f), CircleShape),
+                                    contentAlignment = Alignment.Center
                                 ) {
-                                    Text("2", fontWeight = FontWeight.Bold)
+                                    Text(
+                                        text = "B",
+                                        fontWeight = FontWeight.ExtraBold,
+                                        fontSize = 18.sp,
+                                        color = EmeraldDark
+                                    )
+                                }
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Column {
+                                    Text(
+                                        text = "Halo, Budi Santoso 👋",
+                                        fontWeight = FontWeight.ExtraBold,
+                                        fontSize = 16.sp,
+                                        color = Color.White
+                                    )
+                                    Spacer(modifier = Modifier.height(2.dp))
+                                    Text(
+                                        text = "Nagari Sako Selatan Pasia Talang",
+                                        fontSize = 11.sp,
+                                        color = Color.White.copy(alpha = 0.85f)
+                                    )
                                 }
                             }
+
+                            IconButton(
+                                onClick = onNavigateToNotifikasi,
+                                modifier = Modifier
+                                    .size(42.dp)
+                                    .clip(CircleShape)
+                                    .background(Color.White.copy(alpha = 0.15f))
+                            ) {
+                                BadgedBox(
+                                    badge = {
+                                        Badge(
+                                            containerColor = Color(0xFFEF4444),
+                                            contentColor = Color.White
+                                        ) {
+                                            Text("2", fontWeight = FontWeight.Bold, fontSize = 10.sp)
+                                        }
+                                    }
+                                ) {
+                                    Icon(
+                                        Icons.Filled.Notifications,
+                                        contentDescription = "Pusat Notifikasi",
+                                        tint = Color.White,
+                                        modifier = Modifier.size(22.dp)
+                                    )
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(18.dp))
+
+                        // Modern Banner Headline & Date Pill
+                        Text(
+                            text = "Portal Layanan Digital Nagari",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = Color.White,
+                            fontSize = 20.sp
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "Sampaikan laporan, ajukan surat & akses info publik Nagari secara cepat",
+                            fontSize = 12.sp,
+                            color = Color.White.copy(alpha = 0.88f),
+                            lineHeight = 17.sp
+                        )
+
+                        Spacer(modifier = Modifier.height(14.dp))
+
+                        // Modern Date Pill (Without 'Layanan Publik Nagari Aktif')
+                        Surface(
+                            color = Color.White.copy(alpha = 0.15f),
+                            shape = RoundedCornerShape(12.dp)
                         ) {
-                            Icon(
-                                Icons.Filled.Notifications,
-                                contentDescription = "Pusat Notifikasi",
-                                tint = Color.White,
-                                modifier = Modifier.size(24.dp)
-                            )
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Outlined.CalendarToday,
+                                    contentDescription = null,
+                                    tint = Color.White.copy(alpha = 0.95f),
+                                    modifier = Modifier.size(14.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "Selasa, 28 Juli 2026",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
+                                )
+                            }
                         }
                     }
                 }
@@ -136,63 +206,7 @@ fun UserDashboardScreen(
                 .padding(paddingValues)
                 .verticalScroll(rememberScrollState())
         ) {
-            // --- 1. Banner Welcome & Date Pill ---
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
-                                EmeraldDark,
-                                EmeraldMedium
-                            )
-                        )
-                    )
-                    .padding(horizontal = 20.dp, vertical = 20.dp)
-            ) {
-                Column {
-                    Text(
-                        text = "Portal Layanan Digital Nagari",
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = Color.White,
-                        fontSize = 20.sp
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "Sampaikan laporan, ajukan surat & akses info publik Nagari secara cepat",
-                        fontSize = 12.sp,
-                        color = Color.White.copy(alpha = 0.88f)
-                    )
-
-                    Spacer(modifier = Modifier.height(14.dp))
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(Color.White.copy(alpha = 0.12f))
-                            .padding(horizontal = 12.dp, vertical = 8.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.CalendarToday,
-                            contentDescription = null,
-                            tint = Color.White.copy(alpha = 0.9f),
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "Selasa, 28 Juli 2026 • Layanan Publik Nagari Aktif",
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = Color.White.copy(alpha = 0.95f)
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             // --- 2. Primary Call-To-Action Card (Buat Pengaduan Warga) ---
             Box(modifier = Modifier.padding(horizontal = 20.dp)) {
