@@ -11,7 +11,9 @@ data class SuratModel(
     val jenisSurat: String = "",
     val keperluan: String = "",
     val tanggal: String = "",
-    val status: String = "Diajukan", // "Diajukan", "Ditinjau", "Disetujui", "Ditolak", "Selesai"
+    val status: String = "Diajukan", // "Diajukan", "Ditinjau Wali", "Selesai", "Disetujui", "Ditolak"
     val keterangan: String = "",
-    val lampiranUri: String? = null
+    val lampiranUri: String? = null,
+    val metodePengambilan: String = "Digital", // "Digital" (Unduh File) vs "Fisik" (Ambil di Kantor Nagari)
+    val fileHasilUri: String? = null
 )

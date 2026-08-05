@@ -256,6 +256,8 @@ object FirebaseRepository {
                         val status = doc.getString("status") ?: "Diajukan"
                         val keterangan = doc.getString("keterangan") ?: ""
                         val lampiranUri = doc.getString("lampiranUri")
+                        val metodePengambilan = doc.getString("metodePengambilan") ?: "Digital"
+                        val fileHasilUri = doc.getString("fileHasilUri")
 
                         if (id > 0 && jenisSurat.isNotBlank()) {
                             SuratModel(
@@ -268,7 +270,9 @@ object FirebaseRepository {
                                 tanggal = tanggal,
                                 status = status,
                                 keterangan = keterangan,
-                                lampiranUri = lampiranUri
+                                lampiranUri = lampiranUri,
+                                metodePengambilan = metodePengambilan,
+                                fileHasilUri = fileHasilUri
                             )
                         } else null
                     }
@@ -344,21 +348,33 @@ object FirebaseRepository {
         id: Int,
         statusBaru: String,
         keterangan: String,
+        metodePengambilan: String = "Digital",
+        fileHasilUri: String? = null,
         onComplete: (Boolean) -> Unit = {}
     ) {
         // Update local state immediately
         _suratListState.value = _suratListState.value.map { item ->
             if (item.id == id) {
-                item.copy(status = statusBaru, keterangan = keterangan)
+                item.copy(
+                    status = statusBaru,
+                    keterangan = keterangan,
+                    metodePengambilan = metodePengambilan,
+                    fileHasilUri = fileHasilUri ?: item.fileHasilUri
+                )
             } else item
         }
 
         val firestore = db
         if (firestore != null) {
-            val updates = mapOf(
+            val updates = mutableMapOf<String, Any>(
                 "status" to statusBaru,
-                "keterangan" to keterangan
+                "keterangan" to keterangan,
+                "metodePengambilan" to metodePengambilan
             )
+            if (fileHasilUri != null) {
+                updates["fileHasilUri"] = fileHasilUri
+            }
+
             firestore.collection(COLLECTION_SURAT)
                 .document(id.toString())
                 .update(updates)

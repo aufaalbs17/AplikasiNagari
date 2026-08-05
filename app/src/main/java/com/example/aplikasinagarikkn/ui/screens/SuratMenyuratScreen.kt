@@ -15,8 +15,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material.icons.filled.HourglassTop
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Storefront
 import androidx.compose.material.icons.outlined.UploadFile
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -277,6 +279,68 @@ fun SuratMenyuratScreen(
                                     StepPill(step = "2. Ditinjau Wali", active = step2Active)
                                     Text("──", fontSize = 10.sp, color = Color.Gray)
                                     StepPill(step = "3. Selesai", active = step3Active)
+                                }
+
+                                // Action Options (Unduh File Digital vs Ambil Fisik di Kantor)
+                                if (surat.status == "Selesai" || surat.status == "Disetujui") {
+                                    Spacer(modifier = Modifier.height(10.dp))
+                                    if (surat.metodePengambilan == "Digital") {
+                                        Button(
+                                            onClick = {
+                                                Toast.makeText(context, "Mengunduh file ${surat.jenisSurat} (.pdf)... Berhasil disimpan di HP!", Toast.LENGTH_LONG).show()
+                                            },
+                                            colors = ButtonDefaults.buttonColors(containerColor = EmeraldDark),
+                                            shape = RoundedCornerShape(12.dp),
+                                            modifier = Modifier.fillMaxWidth()
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Filled.FileDownload,
+                                                contentDescription = null,
+                                                tint = Color.White,
+                                                modifier = Modifier.size(16.dp)
+                                            )
+                                            Spacer(modifier = Modifier.width(8.dp))
+                                            Text(
+                                                text = "Unduh Surat Digital (.pdf)",
+                                                fontWeight = FontWeight.Bold,
+                                                fontSize = 12.sp,
+                                                color = Color.White
+                                            )
+                                        }
+                                    } else {
+                                        Surface(
+                                            color = Color(0xFFEFF6FF),
+                                            border = BorderStroke(1.dp, Color(0xFF93C5FD)),
+                                            shape = RoundedCornerShape(12.dp),
+                                            modifier = Modifier.fillMaxWidth()
+                                        ) {
+                                            Row(
+                                                modifier = Modifier.padding(12.dp),
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Filled.Storefront,
+                                                    contentDescription = null,
+                                                    tint = Color(0xFF2563EB),
+                                                    modifier = Modifier.size(22.dp)
+                                                )
+                                                Spacer(modifier = Modifier.width(10.dp))
+                                                Column {
+                                                    Text(
+                                                        text = "Siap Diambil di Kantor Nagari",
+                                                        fontWeight = FontWeight.Bold,
+                                                        fontSize = 12.sp,
+                                                        color = Color(0xFF1E40AF)
+                                                    )
+                                                    Text(
+                                                        text = "Silakan ambil berkas fisik di Kantor Nagari Sako Selatan (Jam Kerja 08.00 - 15.00 WIB)",
+                                                        fontSize = 11.sp,
+                                                        color = Color(0xFF1E3A8A)
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }

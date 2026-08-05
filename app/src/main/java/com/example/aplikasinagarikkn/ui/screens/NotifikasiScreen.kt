@@ -80,13 +80,18 @@ fun NotifikasiScreen(
         val notifJudul = when (surat.status) {
             "Diajukan" -> "📜 Permohonan Surat Baru Masuk"
             "Ditinjau Wali" -> "🔍 Surat Sedang Ditinjau Wali Nagari"
-            "Selesai", "Disetujui" -> "✅ Permohonan Surat Disetujui"
+            "Selesai", "Disetujui" -> if (surat.metodePengambilan == "Digital") "📥 Surat Selesai - File Digital Siap Diunduh" else "🏢 Surat Selesai - Siap Diambil di Kantor Nagari"
             "Ditolak" -> "⚠️ Permohonan Surat Ditolak"
             else -> "📜 Pembaruan Pengajuan Surat"
         }
 
         val notifPesan = when (surat.status) {
             "Diajukan" -> "Warga a.n ${surat.pemohonNama} (NIK: ${surat.pemohonNik}) baru saja mengajukan permohonan '${surat.jenisSurat}'."
+            "Selesai", "Disetujui" -> if (surat.metodePengambilan == "Digital") {
+                "Permohonan '${surat.jenisSurat}' a.n ${surat.pemohonNama} telah disetujui Ibu Wali Nagari. File surat digital (.pdf) sudah dapat Anda unduh langsung di menu Surat."
+            } else {
+                "Permohonan '${surat.jenisSurat}' a.n ${surat.pemohonNama} telah disetujui Ibu Wali Nagari. Silakan ambil dokumen fisik di Kantor Nagari Sako Selatan (Jam Kerja 08.00 - 15.00 WIB)."
+            }
             else -> "Permohonan '${surat.jenisSurat}' a.n ${surat.pemohonNama} statusnya kini '${surat.status}'. Keterangan: ${surat.keterangan}"
         }
 

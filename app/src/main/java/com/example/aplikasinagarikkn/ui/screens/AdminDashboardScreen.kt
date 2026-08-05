@@ -82,6 +82,7 @@ fun AdminDashboardScreen(
     var selectedSuratId by remember { mutableStateOf<Int?>(null) }
     var suratNotesInput by remember { mutableStateOf("") }
     var suratStatusInput by remember { mutableStateOf("Ditinjau Wali") }
+    var suratMetodeInput by remember { mutableStateOf("Digital") }
 
     // Dynamic Complaint Stats
     val totalLaporan = dbLaporanList.size
@@ -663,6 +664,31 @@ fun AdminDashboardScreen(
 
                             Spacer(modifier = Modifier.height(12.dp))
 
+                            if (suratStatusInput == "Selesai") {
+                                Text(
+                                    text = "Opsi Penyerahan / Pengambilan Surat:",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = Color(0xFF334155)
+                                )
+                                Spacer(modifier = Modifier.height(6.dp))
+
+                                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    FilterChip(
+                                        selected = suratMetodeInput == "Digital",
+                                        onClick = { suratMetodeInput = "Digital" },
+                                        label = { Text("📥 File Digital (Warga Unduh Surat di Aplikasi)", fontSize = 11.sp) }
+                                    )
+                                    FilterChip(
+                                        selected = suratMetodeInput == "Fisik",
+                                        onClick = { suratMetodeInput = "Fisik" },
+                                        label = { Text("🏢 Ambil Fisik di Kantor Nagari Sako Selatan", fontSize = 11.sp) }
+                                    )
+                                }
+
+                                Spacer(modifier = Modifier.height(12.dp))
+                            }
+
                             Text(
                                 text = "Catatan / Keterangan untuk Warga:",
                                 fontSize = 12.sp,
@@ -674,7 +700,7 @@ fun AdminDashboardScreen(
                             OutlinedTextField(
                                 value = suratNotesInput,
                                 onValueChange = { suratNotesInput = it },
-                                placeholder = { Text("misal: Berkas disetujui, silakan ambil di kantor Nagari", fontSize = 12.sp) },
+                                placeholder = { Text("misal: Berkas disetujui, silakan unduh file atau ambil fisik di kantor Nagari", fontSize = 12.sp) },
                                 modifier = Modifier.fillMaxWidth(),
                                 shape = RoundedCornerShape(12.dp)
                             )
@@ -683,13 +709,19 @@ fun AdminDashboardScreen(
                     confirmButton = {
                         Button(
                             onClick = {
+                                val defaultKeterangan = if (suratStatusInput == "Selesai") {
+                                    if (suratMetodeInput == "Digital") "Surat telah disetujui & disahkan. File surat digital dapat Anda unduh langsung di aplikasi."
+                                    else "Surat telah disetujui & dicetak. Silakan ambil dokumen fisik di Kantor Nagari Sako Selatan (Jam Layanan 08.00 - 15.00 WIB)."
+                                } else "Status pengajuan surat diperbarui oleh Ibu Wali Nagari."
+
                                 com.example.aplikasinagarikkn.data.FirebaseRepository.updateStatusSurat(
                                     id = suratItem.id,
                                     statusBaru = suratStatusInput,
-                                    keterangan = suratNotesInput.ifBlank { "Status pengajuan surat diperbarui oleh Ibu Wali Nagari." }
+                                    keterangan = suratNotesInput.ifBlank { defaultKeterangan },
+                                    metodePengambilan = suratMetodeInput
                                 )
                                 showSuratManageDialog = false
-                                Toast.makeText(context, "Status Surat #${suratItem.id} diperbarui!", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "Status & Opsi Surat #${suratItem.id} diperbarui!", Toast.LENGTH_SHORT).show()
                             },
                             colors = ButtonDefaults.buttonColors(containerColor = EmeraldDark)
                         ) {
