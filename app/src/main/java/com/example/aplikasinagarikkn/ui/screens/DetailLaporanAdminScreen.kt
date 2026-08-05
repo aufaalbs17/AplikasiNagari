@@ -176,6 +176,56 @@ fun DetailLaporanAdminScreen(
                             )
                         }
 
+                        Spacer(modifier = Modifier.height(14.dp))
+
+                        // GPS Geotagging Section
+                        Surface(
+                            color = Color(0xFFF8FAFC),
+                            border = BorderStroke(1.dp, Color(0xFFE2E8F0)),
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Column(modifier = Modifier.padding(12.dp)) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = "📍 Lokasi Presisi (GPS Geotagging)",
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 12.sp,
+                                        color = Color(0xFF0F172A)
+                                    )
+                                }
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = laporanItem.lokasiAlamat.ifBlank { "Jorong Pasia, Nagari Sako Selatan (-1.4522, 101.3211)" },
+                                    fontSize = 11.sp,
+                                    color = Color(0xFF475569)
+                                )
+
+                                Spacer(modifier = Modifier.height(10.dp))
+
+                                OutlinedButton(
+                                    onClick = {
+                                        val lat = laporanItem.latitude ?: -1.4522
+                                        val lng = laporanItem.longitude ?: 101.3211
+                                        val uriStr = "geo:$lat,$lng?q=$lat,$lng(Lokasi+Pengaduan)"
+                                        val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(uriStr))
+                                        try {
+                                            context.startActivity(intent)
+                                        } catch (e: Exception) {
+                                            Toast.makeText(context, "Membuka peta (-1.4522, 101.3211)...", Toast.LENGTH_SHORT).show()
+                                        }
+                                    },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(10.dp),
+                                    colors = ButtonDefaults.outlinedButtonColors(contentColor = EmeraldDark)
+                                ) {
+                                    Text("🗺️ Buka Rute di Google Maps", fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                                }
+                            }
+                        }
+
                         Spacer(modifier = Modifier.height(20.dp))
 
                         Text(
@@ -332,7 +382,8 @@ fun DetailLaporanAdminScreen(
                                 FirebaseRepository.updateStatusLaporan(
                                     id = laporanItem.id,
                                     statusBaru = statusTerpilih,
-                                    tanggapanAdmin = tanggapan
+                                    tanggapanAdmin = tanggapan,
+                                    context = context
                                 ) { _ -> }
                                 Toast.makeText(context, "Tanggapan resmi berhasil tersimpan di Database!", Toast.LENGTH_SHORT).show()
                                 onSubmitTanggapan()

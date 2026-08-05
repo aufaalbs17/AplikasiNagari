@@ -14,5 +14,8 @@ data class LaporanModel(
     val tanggal: String = "",
     val status: String = "Menunggu", // "Menunggu", "Diproses", "Selesai"
     val tanggapanAdmin: String = "",
-    val fotoUri: String? = null
+    val fotoUri: String? = null,
+    val latitude: Double? = null,
+    val longitude: Double? = null,
+    val lokasiAlamat: String = ""
 )

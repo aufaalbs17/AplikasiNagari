@@ -718,7 +718,8 @@ fun AdminDashboardScreen(
                                     id = suratItem.id,
                                     statusBaru = suratStatusInput,
                                     keterangan = suratNotesInput.ifBlank { defaultKeterangan },
-                                    metodePengambilan = suratMetodeInput
+                                    metodePengambilan = suratMetodeInput,
+                                    context = context
                                 )
                                 showSuratManageDialog = false
                                 Toast.makeText(context, "Status & Opsi Surat #${suratItem.id} diperbarui!", Toast.LENGTH_SHORT).show()

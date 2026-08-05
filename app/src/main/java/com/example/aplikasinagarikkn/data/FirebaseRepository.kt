@@ -114,6 +114,9 @@ object FirebaseRepository {
                         val status = doc.getString("status") ?: "Menunggu"
                         val tanggapanAdmin = doc.getString("tanggapanAdmin") ?: doc.getString("tanggapan") ?: ""
                         val fotoUri = doc.getString("fotoUri")
+                        val latitude = doc.getDouble("latitude")
+                        val longitude = doc.getDouble("longitude")
+                        val lokasiAlamat = doc.getString("lokasiAlamat") ?: ""
 
                         if (id > 0 && judul.isNotBlank()) {
                             LaporanModel(
@@ -127,7 +130,10 @@ object FirebaseRepository {
                                 tanggal = tanggal,
                                 status = status,
                                 tanggapanAdmin = tanggapanAdmin,
-                                fotoUri = fotoUri
+                                fotoUri = fotoUri,
+                                latitude = latitude,
+                                longitude = longitude,
+                                lokasiAlamat = lokasiAlamat
                             )
                         } else null
                     }
@@ -144,6 +150,10 @@ object FirebaseRepository {
         kategori: String,
         deskripsi: String,
         fotoUri: String? = null,
+        latitude: Double? = null,
+        longitude: Double? = null,
+        lokasiAlamat: String = "",
+        context: android.content.Context? = null,
         onComplete: (Boolean) -> Unit = {}
     ) {
         val user = _currentUserState.value
@@ -161,13 +171,26 @@ object FirebaseRepository {
             tanggal = formattedDate,
             status = "Menunggu",
             tanggapanAdmin = "",
-            fotoUri = fotoUri
+            fotoUri = fotoUri,
+            latitude = latitude,
+            longitude = longitude,
+            lokasiAlamat = lokasiAlamat
         )
 
         // Update local state immediately
         val currentList = _laporanListState.value.toMutableList()
         currentList.add(0, newLaporan)
         _laporanListState.value = currentList
+
+        // Trigger System Push Notification
+        context?.let { ctx ->
+            com.example.aplikasinagarikkn.utils.NagariNotificationHelper.showSystemNotification(
+                context = ctx,
+                notificationId = newId,
+                title = "🚨 Laporan Pengaduan Baru Terkirim",
+                message = "Pengaduan '$judul' telah diterima sistem Nagari Sako Selatan."
+            )
+        }
 
         val firestore = db
         if (firestore != null) {
@@ -182,7 +205,10 @@ object FirebaseRepository {
                 "tanggal" to formattedDate,
                 "status" to "Menunggu",
                 "tanggapanAdmin" to "",
-                "fotoUri" to fotoUri
+                "fotoUri" to fotoUri,
+                "latitude" to latitude,
+                "longitude" to longitude,
+                "lokasiAlamat" to lokasiAlamat
             )
 
             firestore.collection(COLLECTION_LAPORAN)
@@ -205,6 +231,7 @@ object FirebaseRepository {
         id: Int,
         statusBaru: String,
         tanggapanAdmin: String,
+        context: android.content.Context? = null,
         onComplete: (Boolean) -> Unit = {}
     ) {
         // Update local state immediately
@@ -212,6 +239,16 @@ object FirebaseRepository {
             if (item.id == id) {
                 item.copy(status = statusBaru, tanggapanAdmin = tanggapanAdmin)
             } else item
+        }
+
+        // Trigger System Push Notification
+        context?.let { ctx ->
+            com.example.aplikasinagarikkn.utils.NagariNotificationHelper.showSystemNotification(
+                context = ctx,
+                notificationId = id,
+                title = "📢 Status Laporan Berubah ➔ $statusBaru",
+                message = "Pengaduan ID #$id statusnya diperbarui: $tanggapanAdmin"
+            )
         }
 
         val firestore = db
@@ -288,6 +325,7 @@ object FirebaseRepository {
         jenisSurat: String,
         keperluan: String,
         lampiranUri: String? = null,
+        context: android.content.Context? = null,
         onComplete: (Boolean) -> Unit = {}
     ) {
         val user = _currentUserState.value
@@ -312,6 +350,16 @@ object FirebaseRepository {
         val currentList = _suratListState.value.toMutableList()
         currentList.add(0, newSurat)
         _suratListState.value = currentList
+
+        // Trigger System Push Notification
+        context?.let { ctx ->
+            com.example.aplikasinagarikkn.utils.NagariNotificationHelper.showSystemNotification(
+                context = ctx,
+                notificationId = newId + 1000,
+                title = "📜 Permohonan Surat Berhasil Dikirim",
+                message = "Permohonan '$jenisSurat' a.n ${user.nama} berhasil diajukan."
+            )
+        }
 
         val firestore = db
         if (firestore != null) {
@@ -350,6 +398,7 @@ object FirebaseRepository {
         keterangan: String,
         metodePengambilan: String = "Digital",
         fileHasilUri: String? = null,
+        context: android.content.Context? = null,
         onComplete: (Boolean) -> Unit = {}
     ) {
         // Update local state immediately
@@ -362,6 +411,20 @@ object FirebaseRepository {
                     fileHasilUri = fileHasilUri ?: item.fileHasilUri
                 )
             } else item
+        }
+
+        // Trigger System Push Notification
+        context?.let { ctx ->
+            val notifTitle = if (statusBaru == "Selesai" || statusBaru == "Disetujui") {
+                if (metodePengambilan == "Digital") "📥 Surat Selesai - File Siap Diunduh" else "🏢 Surat Selesai - Siap Diambil di Kantor Nagari"
+            } else "📜 Status Surat Berubah ➔ $statusBaru"
+
+            com.example.aplikasinagarikkn.utils.NagariNotificationHelper.showSystemNotification(
+                context = ctx,
+                notificationId = id + 1000,
+                title = notifTitle,
+                message = keterangan
+            )
         }
 
         val firestore = db

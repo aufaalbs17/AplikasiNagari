@@ -24,6 +24,17 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        // Initialize System Notification Channel
+        com.example.aplikasinagarikkn.utils.NagariNotificationHelper.createNotificationChannel(this)
+
+        // Request POST_NOTIFICATIONS permission for Android 13+ (API 33)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 101)
+            }
+        }
+
         setContent {
             AplikasiNagariKKNTheme {
                 Surface(

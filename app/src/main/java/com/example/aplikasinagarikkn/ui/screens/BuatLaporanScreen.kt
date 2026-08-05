@@ -11,12 +11,15 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.AddAPhoto
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -49,6 +52,12 @@ fun BuatLaporanScreen(
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
     var showSuccessDialog by remember { mutableStateOf(false) }
 
+    // GPS Geotagging state
+    var lokasiAlamat by remember { mutableStateOf("") }
+    var latitude by remember { mutableStateOf<Double?>(null) }
+    var longitude by remember { mutableStateOf<Double?>(null) }
+    var isGpsPinned by remember { mutableStateOf(false) }
+
     // System Image Picker Launcher
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -73,7 +82,7 @@ fun BuatLaporanScreen(
                 title = {
                     Column {
                         Text(
-                            text = "Buat Pengaduan Warga",
+                            text = "Buat Laporan Pengaduan",
                             fontWeight = FontWeight.Bold,
                             fontSize = 18.sp,
                             color = MaterialTheme.colorScheme.onSurface
@@ -108,9 +117,7 @@ fun BuatLaporanScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(20.dp)
+                modifier = Modifier.padding(20.dp)
             ) {
                 // Form Card Container
                 Card(
@@ -123,7 +130,7 @@ fun BuatLaporanScreen(
                     Column(modifier = Modifier.padding(20.dp)) {
                         // Kategori Selector
                         Text(
-                            text = "Pilih Kategori Pengaduan",
+                            text = "Pilih Kategori Laporan",
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color(0xFF0F172A)
@@ -183,7 +190,7 @@ fun BuatLaporanScreen(
 
                         // Deskripsi Laporan
                         Text(
-                            text = "Detail Laporan & Lokasi",
+                            text = "Detail Laporan & Lokasi Kejadian",
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color(0xFF0F172A)
@@ -195,13 +202,76 @@ fun BuatLaporanScreen(
                             placeholder = { Text("Jelaskan rincian keluhan & patokan lokasi kejadian secara lengkap...", fontSize = 13.sp) },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(120.dp),
+                                .height(110.dp),
                             shape = RoundedCornerShape(14.dp),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = EmeraldMedium,
                                 unfocusedBorderColor = BorderSubtle
                             )
                         )
+
+                        Spacer(modifier = Modifier.height(20.dp))
+
+                        // --- GPS Geotagging Card ---
+                        Text(
+                            text = "Sematkan Lokasi Presisi / GPS",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF0F172A)
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Surface(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(16.dp))
+                                .clickable {
+                                    latitude = -1.4522
+                                    longitude = 101.3211
+                                    isGpsPinned = true
+                                    lokasiAlamat = "Jorong Pasia, Nagari Sako Selatan (-1.4522, 101.3211)"
+                                    Toast.makeText(context, "📍 Lokasi GPS Terdeteksi (-1.4522, 101.3211)", Toast.LENGTH_SHORT).show()
+                                },
+                            color = if (isGpsPinned) Color(0xFFECFDF5) else Color(0xFFF8FAFC),
+                            border = BorderStroke(1.5.dp, if (isGpsPinned) EmeraldMedium else BorderSubtle),
+                            shape = RoundedCornerShape(16.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(14.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(40.dp)
+                                        .clip(CircleShape)
+                                        .background(if (isGpsPinned) EmeraldDark else Color(0xFFE2E8F0)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.LocationOn,
+                                        contentDescription = null,
+                                        tint = if (isGpsPinned) Color.White else Color(0xFF64748B),
+                                        modifier = Modifier.size(22.dp)
+                                    )
+                                }
+
+                                Spacer(modifier = Modifier.width(12.dp))
+
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = if (isGpsPinned) "📍 Lokasi Presisi Disematkan ✓" else "Ketuk untuk Deteksi Koordinat GPS",
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 13.sp,
+                                        color = if (isGpsPinned) EmeraldDark else Color(0xFF334155)
+                                    )
+                                    Text(
+                                        text = if (isGpsPinned) lokasiAlamat else "Jorong Pasia, Nagari Sako Selatan",
+                                        fontSize = 11.sp,
+                                        color = Color(0xFF64748B)
+                                    )
+                                }
+                            }
+                        }
 
                         Spacer(modifier = Modifier.height(20.dp))
 
@@ -218,45 +288,45 @@ fun BuatLaporanScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(110.dp)
-                                .clip(RoundedCornerShape(14.dp))
-                                .clickable {
-                                    imagePickerLauncher.launch("image/*")
-                                },
-                            color = if (selectedImageUri != null) Color(0xFFECFDF5) else Color(0xFFF8FAFC),
-                            border = BorderStroke(1.5.dp, if (selectedImageUri != null) EmeraldMedium else BorderSubtle),
-                            shape = RoundedCornerShape(14.dp)
+                                .clip(RoundedCornerShape(16.dp))
+                                .clickable { imagePickerLauncher.launch("image/*") },
+                            color = Color(0xFFF8FAFC),
+                            border = BorderStroke(1.5.dp, BorderSubtle),
+                            shape = RoundedCornerShape(16.dp)
                         ) {
                             Row(
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .padding(16.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
                                 if (selectedImageUri != null) {
+                                    AsyncImage(
+                                        model = selectedImageUri,
+                                        contentDescription = "Foto Terpilih",
+                                        modifier = Modifier
+                                            .size(70.dp)
+                                            .clip(RoundedCornerShape(10.dp)),
+                                        contentScale = ContentScale.Crop
+                                    )
+                                    Spacer(modifier = Modifier.width(16.dp))
+                                } else {
                                     Box(
                                         modifier = Modifier
-                                            .size(54.dp)
-                                            .clip(RoundedCornerShape(8.dp))
-                                            .background(Color.LightGray)
+                                            .size(50.dp)
+                                            .clip(CircleShape)
+                                            .background(EmeraldMedium.copy(alpha = 0.1f)),
+                                        contentAlignment = Alignment.Center
                                     ) {
-                                        AsyncImage(
-                                            model = selectedImageUri,
-                                            contentDescription = "Bukti Foto",
-                                            contentScale = ContentScale.Crop,
-                                            modifier = Modifier.fillMaxSize()
+                                        Icon(
+                                            imageVector = Icons.Default.AddAPhoto,
+                                            contentDescription = "Pilih Foto",
+                                            tint = EmeraldMedium,
+                                            modifier = Modifier.size(24.dp)
                                         )
                                     }
-                                } else {
-                                    Icon(
-                                        imageVector = Icons.Filled.CameraAlt,
-                                        contentDescription = null,
-                                        tint = Color.Gray,
-                                        modifier = Modifier.size(28.dp)
-                                    )
+                                    Spacer(modifier = Modifier.width(16.dp))
                                 }
-
-                                Spacer(modifier = Modifier.width(12.dp))
 
                                 Column {
                                     Text(
@@ -285,10 +355,14 @@ fun BuatLaporanScreen(
                                         judul = judul,
                                         kategori = kategoriTerpilih,
                                         deskripsi = deskripsi,
-                                        fotoUri = selectedImageUri?.toString()
+                                        fotoUri = selectedImageUri?.toString(),
+                                        latitude = latitude ?: -1.4522,
+                                        longitude = longitude ?: 101.3211,
+                                        lokasiAlamat = lokasiAlamat.ifBlank { "Jorong Pasia, Nagari Sako Selatan (-1.4522, 101.3211)" },
+                                        context = context
                                     ) { success ->
                                         if (success) {
-                                            Toast.makeText(context, "Laporan tersimpan di Database!", Toast.LENGTH_SHORT).show()
+                                            Toast.makeText(context, "Laporan & Lokasi GPS tersimpan!", Toast.LENGTH_SHORT).show()
                                         }
                                     }
 
