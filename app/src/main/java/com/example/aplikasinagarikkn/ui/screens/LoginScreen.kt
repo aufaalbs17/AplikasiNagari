@@ -305,6 +305,8 @@ fun LoginScreen(
                                 return@Button
                             }
 
+                            com.example.aplikasinagarikkn.data.FirebaseRepository.loginAccount(selectedRole, email)
+
                             if (selectedRole == 1 || email.contains("admin", ignoreCase = true)) {
                                 onNavigateToAdminDashboard()
                             } else {

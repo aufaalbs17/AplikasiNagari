@@ -29,6 +29,13 @@ import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+import android.widget.Toast
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -57,6 +64,8 @@ private val PendingAmberBg = Color(0xFFFFFBEB)
 private val CompletedGreen = Color(0xFF059669)
 private val CompletedGreenBg = Color(0xFFECFDF5)
 
+private data class Quadruple<A, B, C, D>(val first: A, val second: B, val third: C, val fourth: D)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdminDashboardScreen(
@@ -64,6 +73,26 @@ fun AdminDashboardScreen(
     onNavigateToNotifikasi: () -> Unit,
     onLogout: () -> Unit
 ) {
+    val context = LocalContext.current
+    val dbLaporanList by com.example.aplikasinagarikkn.data.FirebaseRepository.laporanListState.collectAsState()
+    val dbSuratList by com.example.aplikasinagarikkn.data.FirebaseRepository.suratListState.collectAsState()
+
+    // Dialog state for Admin Surat Management
+    var showSuratManageDialog by remember { mutableStateOf(false) }
+    var selectedSuratId by remember { mutableStateOf<Int?>(null) }
+    var suratNotesInput by remember { mutableStateOf("") }
+    var suratStatusInput by remember { mutableStateOf("Ditinjau Wali") }
+
+    // Dynamic Complaint Stats
+    val totalLaporan = dbLaporanList.size
+    val pendingCount = dbLaporanList.count { it.status == "Menunggu" }
+    val processingCount = dbLaporanList.count { it.status == "Diproses" }
+    val completedCount = dbLaporanList.count { it.status == "Selesai" }
+    val progressRate = if (totalLaporan > 0) (completedCount + processingCount).toFloat() / totalLaporan else 0.75f
+    val progressPercentage = (progressRate * 100).toInt()
+
+    // Dynamic Pending Letters
+    val pendingSuratCount = dbSuratList.count { it.status == "Diajukan" || it.status == "Ditinjau Wali" || it.status == "Ditinjau" }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -299,7 +328,7 @@ fun AdminDashboardScreen(
                                 )
                                 Spacer(modifier = Modifier.height(2.dp))
                                 Text(
-                                    text = "75% Tuntas Ditangani",
+                                    text = "$progressPercentage% Tuntas Ditangani",
                                     fontSize = 20.sp,
                                     fontWeight = FontWeight.ExtraBold,
                                     color = EmeraldDark
@@ -326,7 +355,7 @@ fun AdminDashboardScreen(
 
                         // Visual Linear Progress Bar
                         LinearProgressIndicator(
-                            progress = { 0.75f },
+                            progress = { progressRate.coerceIn(0f, 1f) },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(10.dp)
@@ -343,7 +372,7 @@ fun AdminDashboardScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = "9 dari 12 Laporan Selesai & Diproses",
+                                text = "${completedCount + processingCount} dari $totalLaporan Laporan Selesai & Diproses",
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.Medium,
                                 color = Color(0xFF475569)
@@ -367,21 +396,23 @@ fun AdminDashboardScreen(
                 ) {
                     ProfessionalStatCard(
                         title = "Total Masuk",
-                        count = "12",
+                        count = "$totalLaporan",
                         sub = "Semua Laporan",
                         icon = Icons.Filled.Description,
                         colorBg = Color.White,
                         colorAccent = EmeraldMedium,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
+                        onClick = onNavigateToKelolaLaporan
                     )
                     ProfessionalStatCard(
                         title = "Menunggu",
-                        count = "5",
+                        count = "$pendingCount",
                         sub = "Perlu Respon Ibu",
                         icon = Icons.Filled.HourglassTop,
                         colorBg = PendingAmberBg,
                         colorAccent = PendingAmber,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
+                        onClick = onNavigateToKelolaLaporan
                     )
                 }
 
@@ -393,21 +424,23 @@ fun AdminDashboardScreen(
                 ) {
                     ProfessionalStatCard(
                         title = "Diproses",
-                        count = "4",
+                        count = "$processingCount",
                         sub = "Sedang Dikerjakan",
                         icon = Icons.Filled.Sync,
                         colorBg = ProcessingBlueBg,
                         colorAccent = ProcessingBlue,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
+                        onClick = onNavigateToKelolaLaporan
                     )
                     ProfessionalStatCard(
                         title = "Selesai",
-                        count = "3",
+                        count = "$completedCount",
                         sub = "Tuntas Teratasi",
                         icon = Icons.Filled.CheckCircle,
                         colorBg = CompletedGreenBg,
                         colorAccent = CompletedGreen,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
+                        onClick = onNavigateToKelolaLaporan
                     )
                 }
             }
@@ -458,10 +491,10 @@ fun AdminDashboardScreen(
 
                 // Alert Notification Feed Card 1 (Urgent Complaint Report)
                 ProfessionalNotificationCard(
-                    title = "🚨 Laporan Menunggu Tanggapan Ibu",
-                    desc = "Lampu jalan mati di Jorong Pasia sudah 2 hari belum direspon.",
-                    timeAgo = "10 mnt lalu",
-                    category = "Pengaduan Darurat",
+                    title = "🚨 Laporan Menunggu Tanggapan Ibu ($pendingCount Baru)",
+                    desc = if (pendingCount > 0) "Terdapat $pendingCount pengaduan warga yang belum ditanggapi." else "Semua laporan warga telah ditanggapi.",
+                    timeAgo = "Terbaru",
+                    category = "Pengaduan Warga",
                     colorAccent = UrgentRed,
                     bgAccent = UrgentRedBg,
                     onActionClick = onNavigateToKelolaLaporan
@@ -471,21 +504,27 @@ fun AdminDashboardScreen(
 
                 // Alert Notification Feed Card 2 (Surat Request)
                 ProfessionalNotificationCard(
-                    title = "📜 Permohonan Surat Domisili Baru",
-                    desc = "Warga a.n Budi Santoso mengajukan Surat Keterangan Domisili.",
-                    timeAgo = "35 mnt lalu",
+                    title = "📜 Permohonan Surat Digital ($pendingSuratCount Masuk)",
+                    desc = if (pendingSuratCount > 0) "Terdapat $pendingSuratCount permohonan surat warga yang perlu ditinjau & diverifikasi." else "Tidak ada permohonan surat tertunda.",
+                    timeAgo = "Terbaru",
                     category = "Layanan Surat",
                     colorAccent = ProcessingBlue,
                     bgAccent = ProcessingBlueBg,
-                    onActionClick = { /* Verifikasi Surat */ }
+                    onActionClick = {
+                        val firstPending = dbSuratList.firstOrNull { it.status != "Selesai" && it.status != "Disetujui" } ?: dbSuratList.firstOrNull()
+                        if (firstPending != null) {
+                            selectedSuratId = firstPending.id
+                            suratStatusInput = "Ditinjau Wali"
+                            suratNotesInput = firstPending.keterangan
+                            showSuratManageDialog = true
+                        } else {
+                            Toast.makeText(context, "Belum ada pengajuan surat warga.", Toast.LENGTH_SHORT).show()
+                        }
+                    }
                 )
             }
 
             Spacer(modifier = Modifier.height(24.dp))
-
-
-
-
 
             // --- 5. Timeline Tracker Laporan Terbaru ---
             Column(modifier = Modifier.padding(horizontal = 20.dp)) {
@@ -510,31 +549,26 @@ fun AdminDashboardScreen(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                // Item 1: Lampu Jalan
-                ProfessionalReportProgressCard(
-                    judul = "Lampu Jalan Mati di Jorong Pasia",
-                    pelapor = "Budi Santoso (Warga)",
-                    tanggal = "28 Juli 2026",
-                    currentStep = 1, // 1: Menunggu, 2: Diproses, 3: Selesai
-                    statusText = "Menunggu Tanggapan Ibu Wali",
-                    statusBg = PendingAmberBg,
-                    statusColor = PendingAmber,
-                    onClick = onNavigateToKelolaLaporan
-                )
+                dbLaporanList.take(2).forEach { laporan ->
+                    val (step, statusText, statusBg, statusColor) = when (laporan.status) {
+                        "Selesai" -> Quadruple(3, "Tuntas Ditangani", CompletedGreenBg, CompletedGreen)
+                        "Diproses" -> Quadruple(2, "Sedang Dikerjakan Petugas", ProcessingBlueBg, ProcessingBlue)
+                        else -> Quadruple(1, "Menunggu Tanggapan Ibu Wali", PendingAmberBg, PendingAmber)
+                    }
 
-                Spacer(modifier = Modifier.height(12.dp))
-
-                // Item 2: Saluran Air
-                ProfessionalReportProgressCard(
-                    judul = "Saluran Air Tersumbat Sampah",
-                    pelapor = "Rahmat Hidayat (Warga)",
-                    tanggal = "27 Juli 2026",
-                    currentStep = 2, // 2: Diproses
-                    statusText = "Sedang Dikerjakan Petugas",
-                    statusBg = ProcessingBlueBg,
-                    statusColor = ProcessingBlue,
-                    onClick = onNavigateToKelolaLaporan
-                )
+                    ProfessionalReportProgressCard(
+                        judul = laporan.judul,
+                        pelapor = "${laporan.pelaporNama} (Warga)",
+                        tanggal = laporan.tanggal,
+                        currentStep = step,
+                        statusText = statusText,
+                        statusBg = statusBg,
+                        statusColor = statusColor,
+                        onClick = onNavigateToKelolaLaporan
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+                }
+            }
             }
 
             Spacer(modifier = Modifier.height(28.dp))
@@ -560,8 +594,117 @@ fun AdminDashboardScreen(
 
             Spacer(modifier = Modifier.height(36.dp))
         }
+
+        // --- Admin Surat Management Dialog ---
+        if (showSuratManageDialog && selectedSuratId != null) {
+            val suratItem = dbSuratList.find { it.id == selectedSuratId }
+            if (suratItem != null) {
+                AlertDialog(
+                    onDismissRequest = { showSuratManageDialog = false },
+                    title = {
+                        Text(
+                            text = "Kelola Pengajuan Surat Warga",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp
+                        )
+                    },
+                    text = {
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            Text(
+                                text = "Pemohon: ${suratItem.pemohonNama} (NIK: ${suratItem.pemohonNik})",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF0F172A)
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = "Jenis Surat: ${suratItem.jenisSurat}",
+                                fontSize = 12.sp,
+                                color = EmeraldDark,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = "Keperluan: ${suratItem.keperluan}",
+                                fontSize = 11.sp,
+                                color = Color(0xFF64748B)
+                            )
+
+                            Spacer(modifier = Modifier.height(14.dp))
+
+                            Text(
+                                text = "Status Verifikasi Ibu Wali:",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color(0xFF334155)
+                            )
+                            Spacer(modifier = Modifier.height(6.dp))
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
+                                FilterChip(
+                                    selected = suratStatusInput == "Ditinjau Wali",
+                                    onClick = { suratStatusInput = "Ditinjau Wali" },
+                                    label = { Text("Ditinjau", fontSize = 11.sp) }
+                                )
+                                FilterChip(
+                                    selected = suratStatusInput == "Selesai",
+                                    onClick = { suratStatusInput = "Selesai" },
+                                    label = { Text("Disetujui / Selesai", fontSize = 11.sp) }
+                                )
+                                FilterChip(
+                                    selected = suratStatusInput == "Ditolak",
+                                    onClick = { suratStatusInput = "Ditolak" },
+                                    label = { Text("Ditolak", fontSize = 11.sp) }
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(12.dp))
+
+                            Text(
+                                text = "Catatan / Keterangan untuk Warga:",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color(0xFF334155)
+                            )
+                            Spacer(modifier = Modifier.height(6.dp))
+
+                            OutlinedTextField(
+                                value = suratNotesInput,
+                                onValueChange = { suratNotesInput = it },
+                                placeholder = { Text("misal: Berkas disetujui, silakan ambil di kantor Nagari", fontSize = 12.sp) },
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(12.dp)
+                            )
+                        }
+                    },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                com.example.aplikasinagarikkn.data.FirebaseRepository.updateStatusSurat(
+                                    id = suratItem.id,
+                                    statusBaru = suratStatusInput,
+                                    keterangan = suratNotesInput.ifBlank { "Status pengajuan surat diperbarui oleh Ibu Wali Nagari." }
+                                )
+                                showSuratManageDialog = false
+                                Toast.makeText(context, "Status Surat #${suratItem.id} diperbarui!", Toast.LENGTH_SHORT).show()
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = EmeraldDark)
+                        ) {
+                            Text("Simpan Status Surat", fontWeight = FontWeight.Bold)
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showSuratManageDialog = false }) {
+                            Text("Batal", color = Color.Gray)
+                        }
+                    }
+                )
+            }
+        }
     }
-}
 
 // =========================================================================
 // EXECUTIVE HELPER COMPOSABLES WITH STRICT NO-CLIPPING & CLEAN SPACING
@@ -575,10 +718,13 @@ fun ProfessionalStatCard(
     icon: ImageVector,
     colorBg: Color,
     colorAccent: Color,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null
 ) {
     Card(
-        modifier = modifier.heightIn(min = 124.dp),
+        modifier = modifier
+            .heightIn(min = 124.dp)
+            .then(if (onClick != null) Modifier.clickable { onClick() } else Modifier),
         shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(containerColor = colorBg),
         border = BorderStroke(1.dp, BorderSubtle),

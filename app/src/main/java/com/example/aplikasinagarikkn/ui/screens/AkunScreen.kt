@@ -56,11 +56,13 @@ fun AkunScreen(
     val scrollState = rememberScrollState()
     val context = LocalContext.current
 
-    // State for user profile
-    var namaWarga by remember { mutableStateOf("Budi Santoso") }
-    var nikWarga by remember { mutableStateOf("1303012807980001") }
-    var noHpWarga by remember { mutableStateOf("0812-3456-7890") }
-    var alamatJorong by remember { mutableStateOf("Jorong Pasia, RT 02") }
+    // Real-time state from Database Repository
+    val currentUser by com.example.aplikasinagarikkn.data.FirebaseRepository.currentUserState.collectAsState()
+    val laporanList by com.example.aplikasinagarikkn.data.FirebaseRepository.laporanListState.collectAsState()
+    val suratList by com.example.aplikasinagarikkn.data.FirebaseRepository.suratListState.collectAsState()
+
+    val totalLaporanSaya = laporanList.count { it.userId == currentUser.id || currentUser.role == "admin" }
+    val totalSuratSaya = suratList.count { it.userId == currentUser.id || currentUser.role == "admin" }
 
     // Dialog control states
     var showEditProfileDialog by remember { mutableStateOf(false) }
@@ -92,7 +94,7 @@ fun AkunScreen(
             contentAlignment = Alignment.TopCenter
         ) {
             Text(
-                text = "Profil Akun Warga",
+                text = if (currentUser.role == "admin") "Profil Panel Admin" else "Profil Akun Warga",
                 style = MaterialTheme.typography.titleLarge,
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
@@ -130,7 +132,7 @@ fun AkunScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = if (namaWarga.isNotBlank()) namaWarga.first().uppercase() else "W",
+                            text = if (currentUser.nama.isNotBlank()) currentUser.nama.first().uppercase() else "W",
                             fontSize = 32.sp,
                             fontWeight = FontWeight.ExtraBold,
                             color = EmeraldDark
@@ -140,7 +142,7 @@ fun AkunScreen(
                     Spacer(modifier = Modifier.height(14.dp))
 
                     Text(
-                        text = namaWarga,
+                        text = currentUser.nama,
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.ExtraBold,
                         color = Color(0xFF0F172A)
@@ -149,9 +151,17 @@ fun AkunScreen(
                     Spacer(modifier = Modifier.height(2.dp))
 
                     Text(
-                        text = "NIK: $nikWarga",
+                        text = "NIK: ${currentUser.nik}",
                         fontSize = 12.sp,
                         color = Color(0xFF64748B)
+                    )
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    Text(
+                        text = "📱 ${currentUser.noHp}  •  📍 ${currentUser.alamatJorong}",
+                        fontSize = 11.sp,
+                        color = Color(0xFF475569)
                     )
 
                     Spacer(modifier = Modifier.height(10.dp))
@@ -161,12 +171,72 @@ fun AkunScreen(
                         shape = RoundedCornerShape(20.dp)
                     ) {
                         Text(
-                            text = "Warga Nagari Sako Selatan Pasia Talang",
+                            text = if (currentUser.role == "admin") "Ibu Wali / Perangkat Nagari Sako Selatan" else "Warga Nagari Sako Selatan Pasia Talang",
                             fontSize = 11.sp,
                             fontWeight = FontWeight.Bold,
                             color = EmeraldDark,
                             modifier = Modifier.padding(horizontal = 12.dp, vertical = 5.dp)
                         )
+                    }
+
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    // Summary Stats Badges (Laporan & Surat)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Card(
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(14.dp),
+                            colors = CardDefaults.cardColors(containerColor = Color(0xFFF1F5F9))
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(10.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = "$totalLaporanSaya",
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = EmeraldDark
+                                )
+                                Text(
+                                    text = "Pengaduan Saya",
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    color = Color(0xFF64748B)
+                                )
+                            }
+                        }
+
+                        Card(
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(14.dp),
+                            colors = CardDefaults.cardColors(containerColor = Color(0xFFF1F5F9))
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(10.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = "$totalSuratSaya",
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = EmeraldDark
+                                )
+                                Text(
+                                    text = "Surat Diajukan",
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    color = Color(0xFF64748B)
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -269,9 +339,9 @@ fun AkunScreen(
 
     // 1. Ubah Profil Dialog
     if (showEditProfileDialog) {
-        var tempNama by remember { mutableStateOf(namaWarga) }
-        var tempNoHp by remember { mutableStateOf(noHpWarga) }
-        var tempAlamat by remember { mutableStateOf(alamatJorong) }
+        var tempNama by remember { mutableStateOf(currentUser.nama) }
+        var tempNoHp by remember { mutableStateOf(currentUser.noHp) }
+        var tempAlamat by remember { mutableStateOf(currentUser.alamatJorong) }
 
         AlertDialog(
             onDismissRequest = { showEditProfileDialog = false },
@@ -319,11 +389,13 @@ fun AkunScreen(
                 Button(
                     onClick = {
                         if (tempNama.isNotBlank()) {
-                            namaWarga = tempNama
-                            noHpWarga = tempNoHp
-                            alamatJorong = tempAlamat
+                            com.example.aplikasinagarikkn.data.FirebaseRepository.updateProfile(
+                                tempNama,
+                                tempNoHp,
+                                tempAlamat
+                            )
                             showEditProfileDialog = false
-                            Toast.makeText(context, "Profil $namaWarga berhasil diperbarui!", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Profil $tempNama berhasil diperbarui!", Toast.LENGTH_SHORT).show()
                         }
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = EmeraldDark)

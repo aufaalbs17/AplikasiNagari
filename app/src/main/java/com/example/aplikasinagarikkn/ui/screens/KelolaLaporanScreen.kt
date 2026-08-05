@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SearchOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,6 +40,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.aplikasinagarikkn.data.FirebaseRepository
+import com.example.aplikasinagarikkn.model.LaporanModel
 
 private val BorderSubtle = Color(0xFFE2E8F0)
 private val EmeraldDark = Color(0xFF064E3B)
@@ -53,16 +55,12 @@ fun KelolaLaporanScreen(
     var searchQuery by remember { mutableStateOf("") }
     var selectedStatusFilter by remember { mutableStateOf("Semua") }
     var showExportDialog by remember { mutableStateOf(false) }
-    var laporanList by remember { mutableStateOf(mockRiwayatLaporan) }
+
+    val dbLaporanList by FirebaseRepository.laporanListState.collectAsState()
     val context = LocalContext.current
 
     // Helper function to update status instantly
     val onQuickUpdateStatus = { laporanId: Int, newStatus: String ->
-        laporanList = laporanList.map { laporan ->
-            if (laporan.id == laporanId) laporan.copy(status = newStatus) else laporan
-        }
-
-        // Sync with Firebase Firestore
         val tanggapanAutomatis = when (newStatus) {
             "Diproses" -> "Laporan sedang dalam pengerjaan oleh tim Perangkat Nagari Sako Selatan."
             "Selesai" -> "Laporan telah selesai ditangani secara tuntas."
@@ -78,9 +76,9 @@ fun KelolaLaporanScreen(
     }
 
     // Filter logic
-    val filteredLaporan = remember(laporanList, searchQuery, selectedStatusFilter) {
-        laporanList.filter { laporan ->
-            val matchesSearch = laporan.judul.contains(searchQuery, ignoreCase = true)
+    val filteredLaporan = remember(dbLaporanList, searchQuery, selectedStatusFilter) {
+        dbLaporanList.filter { laporan ->
+            val matchesSearch = laporan.judul.contains(searchQuery, ignoreCase = true) || laporan.pelaporNama.contains(searchQuery, ignoreCase = true)
             
             val matchesStatus = when (selectedStatusFilter) {
                 "Menunggu" -> laporan.status == "Menunggu"
@@ -94,10 +92,10 @@ fun KelolaLaporanScreen(
     }
 
     val filterOptions = listOf(
-        "Semua" to laporanList.size,
-        "Menunggu" to laporanList.count { it.status == "Menunggu" },
-        "Diproses" to laporanList.count { it.status == "Diproses" },
-        "Selesai" to laporanList.count { it.status == "Selesai" }
+        "Semua" to dbLaporanList.size,
+        "Menunggu" to dbLaporanList.count { it.status == "Menunggu" },
+        "Diproses" to dbLaporanList.count { it.status == "Diproses" },
+        "Selesai" to dbLaporanList.count { it.status == "Selesai" }
     )
 
     Scaffold(
@@ -389,7 +387,7 @@ fun KelolaLaporanScreen(
 
 @Composable
 fun AdminLaporanCard(
-    laporan: Laporan,
+    laporan: LaporanModel,
     onClick: () -> Unit,
     onQuickUpdateStatus: (String) -> Unit
 ) {
@@ -454,7 +452,7 @@ fun AdminLaporanCard(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "Pelapor: Budi Santoso",
+                        text = "Pelapor: ${laporan.pelaporNama.ifBlank { "Warga" }}",
                         fontSize = 12.sp,
                         color = Color(0xFF64748B)
                     )

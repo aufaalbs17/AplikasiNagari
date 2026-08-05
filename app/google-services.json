@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "219120186209",
+    "project_id": "aplikasinagarikkn",
+    "storage_bucket": "aplikasinagarikkn.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:219120186209:android:f89fcf7748732a71b28b20",
+        "android_client_info": {
+          "package_name": "com.example.aplikasinagarikkn"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCMHui4-XPs0jsCyhNaqCcX-fL6IOZHjGs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

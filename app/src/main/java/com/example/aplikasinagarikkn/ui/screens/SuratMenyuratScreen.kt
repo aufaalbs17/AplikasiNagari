@@ -61,6 +61,14 @@ fun SuratMenyuratScreen(
     onNavigateBack: () -> Unit
 ) {
     val context = LocalContext.current
+    val suratList by FirebaseRepository.suratListState.collectAsState()
+    val currentUser by FirebaseRepository.currentUserState.collectAsState()
+
+    // Filter user's active letters
+    val userSuratList = suratList.filter {
+        currentUser.role == "admin" || it.userId == currentUser.id || it.pemohonNama == currentUser.nama
+    }
+
     var keperluan by remember { mutableStateOf("") }
     var tipeSuratTerpilih by remember { mutableStateOf("") }
     var isDropdownExpanded by remember { mutableStateOf(false) }
@@ -171,81 +179,105 @@ fun SuratMenyuratScreen(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                initialSuratAktifList.forEach { surat ->
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(18.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
-                        border = BorderStroke(1.dp, BorderSubtle),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = surat.jenisSurat,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 14.sp,
-                                    color = Color(0xFF0F172A)
-                                )
-                                Surface(
-                                    color = Color(0xFFFFFBEB),
-                                    shape = RoundedCornerShape(8.dp)
+                if (userSuratList.isEmpty()) {
+                    Text(
+                        text = "Belum ada pengajuan surat aktif.",
+                        fontSize = 12.sp,
+                        color = Color.Gray,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+                } else {
+                    userSuratList.forEach { surat ->
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 10.dp),
+                            shape = RoundedCornerShape(18.dp),
+                            colors = CardDefaults.cardColors(containerColor = Color.White),
+                            border = BorderStroke(1.dp, BorderSubtle),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Row(
-                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                                        verticalAlignment = Alignment.CenterVertically
+                                    Text(
+                                        text = surat.jenisSurat,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 14.sp,
+                                        color = Color(0xFF0F172A)
+                                    )
+                                    val (badgeBg, badgeText) = when (surat.status) {
+                                        "Selesai", "Disetujui" -> Pair(Color(0xFFECFDF5), Color(0xFF047857))
+                                        "Ditinjau", "Ditinjau Wali" -> Pair(Color(0xFFFFFBEB), Color(0xFFD97706))
+                                        "Ditolak" -> Pair(Color(0xFFFEF2F2), Color(0xFFDC2626))
+                                        else -> Pair(Color(0xFFEFF6FF), Color(0xFF2563EB))
+                                    }
+
+                                    Surface(
+                                        color = badgeBg,
+                                        shape = RoundedCornerShape(8.dp)
                                     ) {
-                                        Icon(
-                                            imageVector = Icons.Filled.HourglassTop,
-                                            contentDescription = null,
-                                            tint = Color(0xFFD97706),
-                                            modifier = Modifier.size(12.dp)
-                                        )
-                                        Spacer(modifier = Modifier.width(4.dp))
-                                        Text(
-                                            text = surat.status,
-                                            fontSize = 11.sp,
-                                            fontWeight = FontWeight.Bold,
-                                            color = Color(0xFFD97706)
-                                        )
+                                        Row(
+                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Filled.HourglassTop,
+                                                contentDescription = null,
+                                                tint = badgeText,
+                                                modifier = Modifier.size(12.dp)
+                                            )
+                                            Spacer(modifier = Modifier.width(4.dp))
+                                            Text(
+                                                text = surat.status,
+                                                fontSize = 11.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                color = badgeText
+                                            )
+                                        }
                                     }
                                 }
-                            }
 
-                            Spacer(modifier = Modifier.height(6.dp))
+                                Spacer(modifier = Modifier.height(6.dp))
 
-                            Text(
-                                text = "Diajukan: ${surat.tanggal}",
-                                fontSize = 11.sp,
-                                color = Color(0xFF64748B)
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                text = surat.keterangan,
-                                fontSize = 12.sp,
-                                color = Color(0xFF334155)
-                            )
+                                Text(
+                                    text = "Diajukan: ${surat.tanggal}",
+                                    fontSize = 11.sp,
+                                    color = Color(0xFF64748B)
+                                )
+                                if (surat.keterangan.isNotBlank()) {
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Text(
+                                        text = surat.keterangan,
+                                        fontSize = 12.sp,
+                                        color = Color(0xFF334155)
+                                    )
+                                }
 
-                            Spacer(modifier = Modifier.height(12.dp))
+                                Spacer(modifier = Modifier.height(12.dp))
 
-                            // Step Timeline Indicator
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .background(Color(0xFFF8FAFC), RoundedCornerShape(10.dp))
-                                    .padding(8.dp),
-                                horizontalArrangement = Arrangement.SpaceEvenly,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                StepPill(step = "1. Diajukan", active = true)
-                                Text("──", fontSize = 10.sp, color = Color.Gray)
-                                StepPill(step = "2. Ditinjau Wali", active = true)
-                                Text("──", fontSize = 10.sp, color = Color.Gray)
-                                StepPill(step = "3. Selesai", active = false)
+                                // Step Timeline Indicator
+                                val step1Active = true
+                                val step2Active = surat.status == "Ditinjau" || surat.status == "Ditinjau Wali" || surat.status == "Selesai" || surat.status == "Disetujui"
+                                val step3Active = surat.status == "Selesai" || surat.status == "Disetujui"
+
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .background(Color(0xFFF8FAFC), RoundedCornerShape(10.dp))
+                                        .padding(8.dp),
+                                    horizontalArrangement = Arrangement.SpaceEvenly,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    StepPill(step = "1. Diajukan", active = step1Active)
+                                    Text("──", fontSize = 10.sp, color = Color.Gray)
+                                    StepPill(step = "2. Ditinjau Wali", active = step2Active)
+                                    Text("──", fontSize = 10.sp, color = Color.Gray)
+                                    StepPill(step = "3. Selesai", active = step3Active)
+                                }
                             }
                         }
                     }
@@ -422,26 +454,14 @@ fun SuratMenyuratScreen(
                         Button(
                             onClick = {
                                 if (tipeSuratTerpilih.isNotBlank() && keperluan.isNotBlank()) {
-                                    // Append to live list
-                                    val newId = 100 + initialSuratAktifList.size + 1
-                                    initialSuratAktifList.add(
-                                        0,
-                                        SuratAktif(
-                                            id = newId,
-                                            jenisSurat = tipeSuratTerpilih,
-                                            tanggal = "Hari Ini",
-                                            status = "Diajukan",
-                                            keterangan = "Menunggu verifikasi berkas oleh Perangkat Nagari Sako"
-                                        )
-                                    )
-
-                                    // Save to Firebase Firestore
+                                    // Save to Firebase Firestore / Database Repository
                                     FirebaseRepository.tambahSurat(
                                         jenisSurat = tipeSuratTerpilih,
-                                        keperluan = keperluan
+                                        keperluan = keperluan,
+                                        lampiranUri = selectedDocumentUri?.toString()
                                     ) { success ->
                                         if (success) {
-                                            Toast.makeText(context, "Surat Digital tersimpan di Cloud!", Toast.LENGTH_SHORT).show()
+                                            Toast.makeText(context, "Surat Digital tersimpan di Database!", Toast.LENGTH_SHORT).show()
                                         }
                                     }
 

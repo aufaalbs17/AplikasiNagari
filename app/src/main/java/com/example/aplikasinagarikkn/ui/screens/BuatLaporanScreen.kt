@@ -280,14 +280,15 @@ fun BuatLaporanScreen(
                         Button(
                             onClick = {
                                 if (judul.isNotBlank()) {
-                                    // Save to Firebase Firestore
+                                    // Save to Firebase Firestore / Repository
                                     FirebaseRepository.tambahLaporan(
                                         judul = judul,
                                         kategori = kategoriTerpilih,
-                                        deskripsi = deskripsi
+                                        deskripsi = deskripsi,
+                                        fotoUri = selectedImageUri?.toString()
                                     ) { success ->
                                         if (success) {
-                                            Toast.makeText(context, "Laporan tersimpan di Cloud!", Toast.LENGTH_SHORT).show()
+                                            Toast.makeText(context, "Laporan tersimpan di Database!", Toast.LENGTH_SHORT).show()
                                         }
                                     }
 

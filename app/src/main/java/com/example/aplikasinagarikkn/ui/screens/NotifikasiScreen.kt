@@ -12,6 +12,8 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,17 +23,18 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.aplikasinagarikkn.data.FirebaseRepository
 
 private val EmeraldDark = Color(0xFF064E3B)
 private val EmeraldMedium = Color(0xFF047857)
 private val BorderSubtle = Color(0xFFE2E8F0)
 
-data class Notifikasi(val id: Int, val judul: String, val pesan: String, val waktu: String, val kategori: String = "Sistem")
-
-val mockNotifikasi = listOf(
-    Notifikasi(1, "Status Laporan Berubah", "Laporan 'Jalan Berlubang di RT 02' telah selesai diproses oleh perangkat nagari.", "1 jam lalu", "Pengaduan"),
-    Notifikasi(2, "Laporan Baru Masuk", "Ada pengaduan baru 'Lampu Jalan Mati' dari warga a.n Budi.", "2 jam lalu", "Urgent"),
-    Notifikasi(3, "Pengajuan Surat Disetujui", "Permohonan Surat Domisili a.n Budi Santoso telah disetujui Ibu Wali Nagari.", "5 jam lalu", "Surat")
+data class Notifikasi(
+    val id: Int,
+    val judul: String,
+    val pesan: String,
+    val waktu: String,
+    val kategori: String = "Sistem"
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,6 +42,65 @@ val mockNotifikasi = listOf(
 fun NotifikasiScreen(
     onNavigateBack: () -> Unit
 ) {
+    val dbLaporanList by FirebaseRepository.laporanListState.collectAsState()
+    val dbSuratList by FirebaseRepository.suratListState.collectAsState()
+
+    // Generate real-time dynamic notifications list from Database State
+    val dynamicNotifikasiList = mutableListOf<Notifikasi>()
+
+    // 1. Convert Laporan items into notifications
+    dbLaporanList.forEach { laporan ->
+        val notifJudul = when (laporan.status) {
+            "Menunggu" -> "🚨 Laporan Pengaduan Baru Masuk"
+            "Diproses" -> "🔄 Status Laporan: Sedang Diproses"
+            "Selesai" -> "✅ Status Laporan: Tuntas Selesai"
+            else -> "📢 Pembaruan Laporan Pengaduan"
+        }
+
+        val notifPesan = when (laporan.status) {
+            "Menunggu" -> "Laporan '${laporan.judul}' dari warga a.n ${laporan.pelaporNama} telah diterima sistem dan menunggu tindakan Ibu Wali Nagari."
+            else -> "Laporan '${laporan.judul}' (Pelapor: ${laporan.pelaporNama}) statusnya kini '${laporan.status}'. Tanggapan: ${laporan.tanggapanAdmin.ifBlank { "Tanggapan resmi tercatat di sistem." }}"
+        }
+
+        val kategori = if (laporan.status == "Menunggu") "Urgent" else "Pengaduan"
+
+        dynamicNotifikasiList.add(
+            Notifikasi(
+                id = laporan.id,
+                judul = notifJudul,
+                pesan = notifPesan,
+                waktu = laporan.tanggal.ifBlank { "Baru saja" },
+                kategori = kategori
+            )
+        )
+    }
+
+    // 2. Convert Surat items into notifications
+    dbSuratList.forEach { surat ->
+        val notifJudul = when (surat.status) {
+            "Diajukan" -> "📜 Permohonan Surat Baru Masuk"
+            "Ditinjau Wali" -> "🔍 Surat Sedang Ditinjau Wali Nagari"
+            "Selesai", "Disetujui" -> "✅ Permohonan Surat Disetujui"
+            "Ditolak" -> "⚠️ Permohonan Surat Ditolak"
+            else -> "📜 Pembaruan Pengajuan Surat"
+        }
+
+        val notifPesan = when (surat.status) {
+            "Diajukan" -> "Warga a.n ${surat.pemohonNama} (NIK: ${surat.pemohonNik}) baru saja mengajukan permohonan '${surat.jenisSurat}'."
+            else -> "Permohonan '${surat.jenisSurat}' a.n ${surat.pemohonNama} statusnya kini '${surat.status}'. Keterangan: ${surat.keterangan}"
+        }
+
+        dynamicNotifikasiList.add(
+            Notifikasi(
+                id = surat.id + 100000,
+                judul = notifJudul,
+                pesan = notifPesan,
+                waktu = surat.tanggal.ifBlank { "Baru saja" },
+                kategori = "Surat"
+            )
+        )
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -72,16 +134,31 @@ fun NotifikasiScreen(
             )
         }
     ) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color(0xFFF8FAFC))
-                .padding(paddingValues)
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            items(mockNotifikasi) { notif ->
-                ExecutiveNotifikasiCard(notif)
+        if (dynamicNotifikasiList.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "Belum ada pemberitahuan notifikasi.",
+                    fontSize = 13.sp,
+                    color = Color.Gray
+                )
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0xFFF8FAFC))
+                    .padding(paddingValues)
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(dynamicNotifikasiList) { notif ->
+                    ExecutiveNotifikasiCard(notif)
+                }
             }
         }
     }
@@ -193,4 +270,3 @@ fun NotifikasiPreview() {
         NotifikasiScreen({})
     }
 }
-
