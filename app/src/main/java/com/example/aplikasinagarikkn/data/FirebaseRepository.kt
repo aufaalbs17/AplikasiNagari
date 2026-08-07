@@ -336,12 +336,13 @@ object FirebaseRepository {
         jenisSurat: String,
         keperluan: String,
         lampiranUri: String? = null,
+        metodePengambilan: String = "Digital",
         context: android.content.Context? = null,
         onComplete: (Boolean) -> Unit = {}
     ) {
         val user = _currentUserState.value
         val newId = (System.currentTimeMillis() % 100000).toInt()
-        val formattedDate = SimpleDateFormat("dd MMM yyyy", Locale.forLanguageTag("id-ID")).format(Date())
+        val formattedDate = SimpleDateFormat("dd MMM yyyy, HH:mm 'WIB'", Locale.forLanguageTag("id-ID")).format(Date())
         val initialKeterangan = "Diterima sistem • Menunggu peninjauan Ibu Wali Nagari Sako Selatan"
 
         val newSurat = SuratModel(
@@ -354,7 +355,8 @@ object FirebaseRepository {
             tanggal = formattedDate,
             status = "Diajukan",
             keterangan = initialKeterangan,
-            lampiranUri = lampiranUri
+            lampiranUri = lampiranUri,
+            metodePengambilan = metodePengambilan
         )
 
         // Update local state immediately
@@ -384,7 +386,8 @@ object FirebaseRepository {
                 "tanggal" to formattedDate,
                 "status" to "Diajukan",
                 "keterangan" to initialKeterangan,
-                "lampiranUri" to lampiranUri
+                "lampiranUri" to lampiranUri,
+                "metodePengambilan" to metodePengambilan
             )
 
             firestore.collection(COLLECTION_SURAT)

@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.Campaign
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material.icons.filled.HourglassTop
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.PendingActions
@@ -898,30 +899,40 @@ fun AdminDashboardScreen(
 
                             Spacer(modifier = Modifier.height(12.dp))
 
-                            if (suratStatusInput == "Selesai") {
-                                Text(
-                                    text = "Opsi Penyerahan / Pengambilan Surat:",
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = Color(0xFF334155)
-                                )
-                                Spacer(modifier = Modifier.height(6.dp))
+                            Text(
+                                text = "Metode Pengambilan Terpilih oleh Warga:",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color(0xFF334155)
+                            )
+                            Spacer(modifier = Modifier.height(6.dp))
 
-                                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                                    FilterChip(
-                                        selected = suratMetodeInput == "Digital",
-                                        onClick = { suratMetodeInput = "Digital" },
-                                        label = { Text("📥 File Digital (Warga Unduh Surat di Aplikasi)", fontSize = 11.sp) }
+                            Surface(
+                                color = Color(0xFFF1F5F9),
+                                shape = RoundedCornerShape(10.dp),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Row(
+                                    modifier = Modifier.padding(10.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        imageVector = if (suratItem.metodePengambilan == "Digital") Icons.Filled.FileDownload else Icons.Filled.Storefront,
+                                        contentDescription = null,
+                                        tint = if (suratItem.metodePengambilan == "Digital") EmeraldDark else ProcessingBlue,
+                                        modifier = Modifier.size(20.dp)
                                     )
-                                    FilterChip(
-                                        selected = suratMetodeInput == "Fisik",
-                                        onClick = { suratMetodeInput = "Fisik" },
-                                        label = { Text("🏢 Ambil Fisik di Kantor Nagari Sako Selatan", fontSize = 11.sp) }
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(
+                                        text = if (suratItem.metodePengambilan == "Digital") "📥 File Digital (.pdf) - Warga Unduh di Aplikasi" else "🏢 Dokumen Fisik - Warga Ambil di Kantor Nagari",
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color(0xFF0F172A)
                                     )
                                 }
-
-                                Spacer(modifier = Modifier.height(12.dp))
                             }
+
+                            Spacer(modifier = Modifier.height(12.dp))
 
                             Text(
                                 text = "Catatan / Keterangan untuk Warga:",
@@ -944,7 +955,7 @@ fun AdminDashboardScreen(
                         Button(
                             onClick = {
                                 val defaultKeterangan = if (suratStatusInput == "Selesai") {
-                                    if (suratMetodeInput == "Digital") "Surat telah disetujui & disahkan. File surat digital dapat Anda unduh langsung di aplikasi."
+                                    if (suratItem.metodePengambilan == "Digital") "Surat telah disetujui & disahkan. File surat digital dapat Anda unduh langsung di aplikasi."
                                     else "Surat telah disetujui & dicetak. Silakan ambil dokumen fisik di Kantor Nagari Sako Selatan (Jam Layanan 08.00 - 15.00 WIB)."
                                 } else "Status pengajuan surat diperbarui oleh Ibu Wali Nagari."
 
@@ -952,7 +963,7 @@ fun AdminDashboardScreen(
                                     id = suratItem.id,
                                     statusBaru = suratStatusInput,
                                     keterangan = suratNotesInput.ifBlank { defaultKeterangan },
-                                    metodePengambilan = suratMetodeInput,
+                                    metodePengambilan = suratItem.metodePengambilan,
                                     context = context
                                 )
                                 showSuratManageDialog = false

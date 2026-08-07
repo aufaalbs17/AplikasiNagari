@@ -75,6 +75,7 @@ fun SuratMenyuratScreen(
     var tipeSuratTerpilih by remember { mutableStateOf("") }
     var isDropdownExpanded by remember { mutableStateOf(false) }
     var selectedDocumentUri by remember { mutableStateOf<Uri?>(null) }
+    var metodePengambilanWarga by remember { mutableStateOf("Digital") }
     var showSuccessDialog by remember { mutableStateOf(false) }
 
     // System File Picker Launcher
@@ -513,6 +514,30 @@ fun SuratMenyuratScreen(
                             }
                         }
 
+                        Spacer(modifier = Modifier.height(20.dp))
+
+                        // Pilihan Metode Pengambilan oleh Warga
+                        Text(
+                            text = "Metode Pengambilan Hasil Surat:",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color(0xFF64748B)
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                            FilterChip(
+                                selected = metodePengambilanWarga == "Digital",
+                                onClick = { metodePengambilanWarga = "Digital" },
+                                label = { Text("📥 File Digital (.pdf) - Unduh via Aplikasi", fontSize = 12.sp) }
+                            )
+                            FilterChip(
+                                selected = metodePengambilanWarga == "Fisik",
+                                onClick = { metodePengambilanWarga = "Fisik" },
+                                label = { Text("🏢 Dokumen Fisik - Ambil di Kantor Nagari", fontSize = 12.sp) }
+                            )
+                        }
+
                         Spacer(modifier = Modifier.height(24.dp))
 
                         Button(
@@ -522,7 +547,8 @@ fun SuratMenyuratScreen(
                                     FirebaseRepository.tambahSurat(
                                         jenisSurat = tipeSuratTerpilih,
                                         keperluan = keperluan,
-                                        lampiranUri = selectedDocumentUri?.toString()
+                                        lampiranUri = selectedDocumentUri?.toString(),
+                                        metodePengambilan = metodePengambilanWarga
                                     ) { success ->
                                         if (success) {
                                             Toast.makeText(context, "Surat Digital tersimpan di Database!", Toast.LENGTH_SHORT).show()
