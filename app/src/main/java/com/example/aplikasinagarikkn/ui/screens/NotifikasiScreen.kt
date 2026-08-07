@@ -74,101 +74,155 @@ fun NotifikasiScreen(
     // Generate real-time dynamic notifications list from Database State
     val dynamicNotifikasiList = mutableListOf<Notifikasi>()
 
-    // 1. Convert Laporan items into notifications
-    filteredLaporanList.forEach { laporan ->
-        val notifJudul = if (isAdmin) {
-            when (laporan.status) {
-                "Menunggu" -> "🚨 Laporan Pengaduan Baru Masuk"
-                "Diproses" -> "🔄 Status Laporan: Sedang Diproses"
-                "Selesai" -> "✅ Status Laporan: Tuntas Selesai"
-                else -> "📢 Pembaruan Laporan Pengaduan"
-            }
+    // 1. Convert Laporan items into multi-stage notifications
+    dbLaporanList.forEach { laporan ->
+        // Stage 1: Always add "Laporan Pengaduan Baru Masuk"
+        val stage1Judul = if (isAdmin) "🚨 Laporan Pengaduan Baru Masuk" else "🚨 Laporan Anda Berhasil Dikirim"
+        val stage1Pesan = if (isAdmin) {
+            "Laporan '${laporan.judul}' dari warga a.n ${laporan.pelaporNama} telah diterima sistem dan menunggu tindakan Ibu Wali Nagari."
         } else {
-            when (laporan.status) {
-                "Menunggu" -> "🚨 Laporan Anda Berhasil Dikirim"
-                "Diproses" -> "🔄 Laporan Anda Sedang Diproses"
-                "Selesai" -> "✅ Laporan Anda Tuntas Selesai"
-                else -> "📢 Pembaruan Status Laporan Anda"
-            }
+            "Laporan Anda '${laporan.judul}' telah diterima sistem dan sedang menunggu tindakan Ibu Wali Nagari."
         }
-
-        val notifPesan = if (isAdmin) {
-            when (laporan.status) {
-                "Menunggu" -> "Laporan '${laporan.judul}' dari warga a.n ${laporan.pelaporNama} telah diterima sistem dan menunggu tindakan Ibu Wali Nagari."
-                else -> "Laporan '${laporan.judul}' (Pelapor: ${laporan.pelaporNama}) statusnya kini '${laporan.status}'. Tanggapan: ${laporan.tanggapanAdmin.ifBlank { "Tanggapan resmi tercatat di sistem." }}"
-            }
-        } else {
-            when (laporan.status) {
-                "Menunggu" -> "Laporan Anda '${laporan.judul}' telah diterima sistem dan sedang menunggu tindakan Ibu Wali Nagari."
-                "Diproses" -> "Laporan Anda '${laporan.judul}' sedang ditindaklanjuti oleh Perangkat Nagari. Tanggapan: ${laporan.tanggapanAdmin.ifBlank { "Sedang dalam proses penanganan di lapangan." }}"
-                "Selesai" -> "Laporan Anda '${laporan.judul}' telah selesai ditangani. Tanggapan Resmi: ${laporan.tanggapanAdmin.ifBlank { "Masalah telah dituntaskan di lapangan." }}"
-                else -> "Laporan Anda '${laporan.judul}' statusnya kini '${laporan.status}'."
-            }
-        }
-
-        val kategori = if (laporan.status == "Menunggu") "Urgent" else "Pengaduan"
 
         dynamicNotifikasiList.add(
             Notifikasi(
-                id = laporan.id,
-                judul = notifJudul,
-                pesan = notifPesan,
-                waktu = laporan.tanggal.ifBlank { "Baru saja" },
-                kategori = kategori
+                id = laporan.id * 10 + 1,
+                judul = stage1Judul,
+                pesan = stage1Pesan,
+                waktu = laporan.tanggal.ifBlank { "05 Agu 2026" },
+                kategori = "Urgent"
             )
         )
-    }
 
-    // 2. Convert Surat items into notifications
-    filteredSuratList.forEach { surat ->
-        val notifJudul = if (isAdmin) {
-            when (surat.status) {
-                "Diajukan" -> "📜 Permohonan Surat Baru Masuk"
-                "Ditinjau Wali" -> "🔍 Surat Sedang Ditinjau Wali Nagari"
-                "Selesai", "Disetujui" -> if (surat.metodePengambilan == "Digital") "📥 Surat Selesai - File Digital Siap Diunduh" else "🏢 Surat Selesai - Siap Diambil di Kantor Nagari"
-                "Ditolak" -> "⚠️ Permohonan Surat Ditolak"
-                else -> "📜 Pembaruan Pengajuan Surat"
+        // Stage 2: If status is "Diproses" or "Selesai", add "Sedang Diproses" notification
+        if (laporan.status == "Diproses" || laporan.status == "Selesai") {
+            val stage2Judul = if (isAdmin) "🔄 Status Laporan: Sedang Diproses" else "🔄 Laporan Anda Sedang Diproses"
+            val stage2Pesan = if (isAdmin) {
+                "Laporan '${laporan.judul}' (Pelapor: ${laporan.pelaporNama}) statusnya kini 'Diproses'. Tanggapan: ${laporan.tanggapanAdmin.ifBlank { "Sedang ditindaklanjuti Perangkat Nagari di lapangan." }}"
+            } else {
+                "Laporan Anda '${laporan.judul}' sedang ditindaklanjuti Perangkat Nagari. Tanggapan: ${laporan.tanggapanAdmin.ifBlank { "Sedang dalam proses penanganan di lapangan." }}"
             }
-        } else {
-            when (surat.status) {
-                "Diajukan" -> "📜 Permohonan Surat Anda Diterima"
-                "Ditinjau Wali" -> "🔍 Surat Anda Sedang Ditinjau"
-                "Selesai", "Disetujui" -> if (surat.metodePengambilan == "Digital") "📥 Surat Selesai - File Digital Siap Diunduh" else "🏢 Surat Selesai - Siap Diambil di Kantor Nagari"
-                "Ditolak" -> "⚠️ Permohonan Surat Anda Ditolak"
-                else -> "📜 Pembaruan Pengajuan Surat Anda"
-            }
+
+            dynamicNotifikasiList.add(
+                Notifikasi(
+                    id = laporan.id * 10 + 2,
+                    judul = stage2Judul,
+                    pesan = stage2Pesan,
+                    waktu = laporan.tanggal.ifBlank { "05 Agu 2026" },
+                    kategori = "Pengaduan"
+                )
+            )
         }
 
-        val notifPesan = if (isAdmin) {
-            when (surat.status) {
-                "Diajukan" -> "Warga a.n ${surat.pemohonNama} (NIK: ${surat.pemohonNik}) baru saja mengajukan permohonan '${surat.jenisSurat}'."
-                "Selesai", "Disetujui" -> "Permohonan '${surat.jenisSurat}' a.n ${surat.pemohonNama} telah disetujui (${if (surat.metodePengambilan == "Digital") "Opsi: Unduh File Digital" else "Opsi: Ambil Fisik di Kantor Nagari"})."
-                else -> "Permohonan '${surat.jenisSurat}' a.n ${surat.pemohonNama} statusnya kini '${surat.status}'. Keterangan: ${surat.keterangan}"
+        // Stage 3: If status is "Selesai", add "Tuntas Selesai" notification
+        if (laporan.status == "Selesai") {
+            val stage3Judul = if (isAdmin) "✅ Status Laporan: Tuntas Selesai" else "✅ Laporan Anda Tuntas Selesai"
+            val stage3Pesan = if (isAdmin) {
+                "Laporan '${laporan.judul}' (Pelapor: ${laporan.pelaporNama}) statusnya kini 'Selesai'. Tanggapan Resmi: ${laporan.tanggapanAdmin.ifBlank { "Masalah telah dituntaskan di lapangan." }}"
+            } else {
+                "Laporan Anda '${laporan.judul}' telah selesai ditangani. Tanggapan Resmi: ${laporan.tanggapanAdmin.ifBlank { "Masalah telah dituntaskan di lapangan." }}"
             }
+
+            dynamicNotifikasiList.add(
+                Notifikasi(
+                    id = laporan.id * 10 + 3,
+                    judul = stage3Judul,
+                    pesan = stage3Pesan,
+                    waktu = laporan.tanggal.ifBlank { "05 Agu 2026" },
+                    kategori = "Pengaduan"
+                )
+            )
+        }
+    }
+
+    // 2. Convert Surat items into multi-stage notifications
+    dbSuratList.forEach { surat ->
+        // Stage 1: Always add "Permohonan Surat Baru Masuk"
+        val stage1Judul = if (isAdmin) "📜 Permohonan Surat Baru Masuk" else "📜 Permohonan Surat Anda Diterima"
+        val stage1Pesan = if (isAdmin) {
+            "Warga a.n ${surat.pemohonNama} (NIK: ${surat.pemohonNik}) baru saja mengajukan permohonan '${surat.jenisSurat}'."
         } else {
-            when (surat.status) {
-                "Diajukan" -> "Permohonan '${surat.jenisSurat}' Anda telah dikirim ke sistem dan sedang menunggu verifikasi Ibu Wali Nagari."
-                "Ditinjau Wali" -> "Permohonan '${surat.jenisSurat}' Anda kini dalam proses peninjauan & verifikasi oleh Ibu Wali Nagari."
-                "Selesai", "Disetujui" -> if (surat.metodePengambilan == "Digital") {
+            "Permohonan '${surat.jenisSurat}' Anda telah dikirim ke sistem dan sedang menunggu verifikasi Ibu Wali Nagari."
+        }
+
+        dynamicNotifikasiList.add(
+            Notifikasi(
+                id = (surat.id + 10000) * 10 + 1,
+                judul = stage1Judul,
+                pesan = stage1Pesan,
+                waktu = surat.tanggal.ifBlank { "26 Juli 2026" },
+                kategori = "Surat"
+            )
+        )
+
+        // Stage 2: If status is "Ditinjau Wali", "Disetujui", or "Selesai", add "Ditinjau" notification
+        if (surat.status == "Ditinjau Wali" || surat.status == "Disetujui" || surat.status == "Selesai") {
+            val stage2Judul = if (isAdmin) "🔍 Surat Sedang Ditinjau Wali Nagari" else "🔍 Surat Anda Sedang Ditinjau"
+            val stage2Pesan = if (isAdmin) {
+                "Permohonan '${surat.jenisSurat}' a.n ${surat.pemohonNama} statusnya kini 'Ditinjau Wali'. Keterangan: ${surat.keterangan.ifBlank { "Sedang verifikasi kelengkapan berkas." }}"
+            } else {
+                "Permohonan '${surat.jenisSurat}' Anda kini dalam proses peninjauan & verifikasi oleh Ibu Wali Nagari."
+            }
+
+            dynamicNotifikasiList.add(
+                Notifikasi(
+                    id = (surat.id + 10000) * 10 + 2,
+                    judul = stage2Judul,
+                    pesan = stage2Pesan,
+                    waktu = surat.tanggal.ifBlank { "27 Juli 2026" },
+                    kategori = "Surat"
+                )
+            )
+        }
+
+        // Stage 3: If status is "Selesai" or "Disetujui", add "Selesai" notification
+        if (surat.status == "Selesai" || surat.status == "Disetujui") {
+            val isDigital = surat.metodePengambilan == "Digital"
+            val stage3Judul = if (isDigital) "📥 Surat Selesai - File Digital Siap Diunduh" else "🏢 Surat Selesai - Siap Diambil di Kantor Nagari"
+            val stage3Pesan = if (isAdmin) {
+                "Permohonan '${surat.jenisSurat}' a.n ${surat.pemohonNama} telah disetujui Ibu Wali Nagari (${if (isDigital) "Opsi: Unduh File Digital" else "Opsi: Ambil Fisik di Kantor Nagari"})."
+            } else {
+                if (isDigital) {
                     "Permohonan '${surat.jenisSurat}' Anda telah disetujui Ibu Wali Nagari. File surat digital (.pdf) sudah dapat Anda unduh langsung di menu Surat."
                 } else {
                     "Permohonan '${surat.jenisSurat}' Anda telah disetujui Ibu Wali Nagari. Silakan ambil berkas fisik dokumen di Kantor Nagari Sako Selatan (Jam Kerja 08.00 - 15.00 WIB)."
                 }
-                "Ditolak" -> "Permohonan '${surat.jenisSurat}' Anda belum dapat disetujui. Catatan: ${surat.keterangan}"
-                else -> "Permohonan '${surat.jenisSurat}' Anda statusnya kini '${surat.status}'."
             }
+
+            dynamicNotifikasiList.add(
+                Notifikasi(
+                    id = (surat.id + 10000) * 10 + 3,
+                    judul = stage3Judul,
+                    pesan = stage3Pesan,
+                    waktu = surat.tanggal.ifBlank { "05 Agu 2026" },
+                    kategori = "Surat"
+                )
+            )
         }
 
-        dynamicNotifikasiList.add(
-            Notifikasi(
-                id = surat.id + 100000,
-                judul = notifJudul,
-                pesan = notifPesan,
-                waktu = surat.tanggal.ifBlank { "Baru saja" },
-                kategori = "Surat"
+        // Stage 3 Alt: If status is "Ditolak"
+        if (surat.status == "Ditolak") {
+            val stage3AltJudul = if (isAdmin) "⚠️ Permohonan Surat Ditolak" else "⚠️ Permohonan Surat Anda Ditolak"
+            val stage3AltPesan = if (isAdmin) {
+                "Permohonan '${surat.jenisSurat}' a.n ${surat.pemohonNama} statusnya kini 'Ditolak'. Catatan: ${surat.keterangan}"
+            } else {
+                "Permohonan '${surat.jenisSurat}' Anda belum dapat disetujui. Catatan: ${surat.keterangan}"
+            }
+
+            dynamicNotifikasiList.add(
+                Notifikasi(
+                    id = (surat.id + 10000) * 10 + 3,
+                    judul = stage3AltJudul,
+                    pesan = stage3AltPesan,
+                    waktu = surat.tanggal.ifBlank { "05 Agu 2026" },
+                    kategori = "Surat"
+                )
             )
-        )
+        }
     }
+
+    // Sort notifications so newest event ID is on top
+    dynamicNotifikasiList.sortByDescending { it.id }
 
     Scaffold(
         topBar = {
