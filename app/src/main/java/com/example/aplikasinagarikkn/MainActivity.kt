@@ -96,7 +96,7 @@ fun NagariApp() {
         composable("admin_dashboard") {
             AdminDashboardScreen(
                 onNavigateToKelolaLaporan = { navController.navigate("kelola_laporan") },
-                onNavigateToNotifikasi = { navController.navigate("notifikasi") },
+                onNavigateToNotifikasi = { navController.navigate("admin_notifikasi") },
                 onLogout = { 
                     navController.navigate("login") {
                         popUpTo(0)
@@ -121,9 +121,17 @@ fun NagariApp() {
             )
         }
         
+        composable("admin_notifikasi") {
+            NotifikasiScreen(
+                onNavigateBack = { navController.popBackStack() },
+                isAdminMode = true
+            )
+        }
+
         composable("notifikasi") {
             NotifikasiScreen(
-                onNavigateBack = { navController.popBackStack() }
+                onNavigateBack = { navController.popBackStack() },
+                isAdminMode = false
             )
         }
     }

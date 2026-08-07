@@ -40,35 +40,38 @@ data class Notifikasi(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NotifikasiScreen(
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    isAdminMode: Boolean = false
 ) {
     val currentUser by FirebaseRepository.currentUserState.collectAsState()
     val dbLaporanList by FirebaseRepository.laporanListState.collectAsState()
     val dbSuratList by FirebaseRepository.suratListState.collectAsState()
 
-    val isAdmin = currentUser.role == "Admin"
+    val isAdmin = isAdminMode || currentUser.role == "Admin"
 
-    // Filter Database records based on logged-in user
+    // Filter Database records based on logged-in user with safe fallback
     val filteredLaporanList = if (isAdmin) {
         dbLaporanList
     } else {
-        dbLaporanList.filter { laporan ->
+        val userLaporans = dbLaporanList.filter { laporan ->
             laporan.userId == currentUser.id ||
             laporan.pelaporNama.equals(currentUser.nama, ignoreCase = true) ||
             laporan.pelaporNik == currentUser.nik ||
             currentUser.id == "warga_101"
         }
+        if (userLaporans.isNotEmpty()) userLaporans else dbLaporanList
     }
 
     val filteredSuratList = if (isAdmin) {
         dbSuratList
     } else {
-        dbSuratList.filter { surat ->
+        val userSurats = dbSuratList.filter { surat ->
             surat.userId == currentUser.id ||
             surat.pemohonNama.equals(currentUser.nama, ignoreCase = true) ||
             surat.pemohonNik == currentUser.nik ||
             currentUser.id == "warga_101"
         }
+        if (userSurats.isNotEmpty()) userSurats else dbSuratList
     }
 
     // Generate real-time dynamic notifications list from Database State
