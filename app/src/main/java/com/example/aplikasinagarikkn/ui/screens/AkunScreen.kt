@@ -267,8 +267,8 @@ fun AkunScreen(
                 Column(modifier = Modifier.padding(vertical = 6.dp)) {
                     AkunMenuItem(
                         icon = Icons.Outlined.History,
-                        title = "Riwayat Laporan Saya",
-                        subtitle = "Cek status pengaduan yang dikirim",
+                        title = "Riwayat Laporan & Surat Saya",
+                        subtitle = "Cek status pengaduan & permohonan surat",
                         onClick = onNavigateToRiwayatLaporan
                     )
                     HorizontalDivider(color = BorderSubtle, thickness = 0.8.dp)
