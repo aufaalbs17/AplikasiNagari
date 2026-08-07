@@ -456,6 +456,9 @@ fun AdminDashboardScreen(
             val suratDisetujuiCount = dbSuratList.count { it.status == "Disetujui" || it.status == "Selesai" }
             val suratDitolakCount = dbSuratList.count { it.status == "Ditolak" }
 
+            val suratProgressRate = if (totalSurat > 0) (suratDisetujuiCount + suratDitinjauCount).toFloat() / totalSurat else 0.80f
+            val suratProgressPercentage = (suratProgressRate * 100).toInt()
+
             Column(modifier = Modifier.padding(horizontal = 20.dp)) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -504,6 +507,90 @@ fun AdminDashboardScreen(
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
+
+                // Progress Resolution Rate Meter Card for Surat
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    border = BorderStroke(1.dp, BorderSubtle),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
+                    Column(modifier = Modifier.padding(18.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column {
+                                Text(
+                                    text = "Tingkat Penyelesaian Permohonan Surat",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    color = Color(0xFF64748B)
+                                )
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Text(
+                                    text = "$suratProgressPercentage% Tuntas & Verifikasi",
+                                    fontSize = 20.sp,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = ProcessingBlue
+                                )
+                            }
+
+                            Box(
+                                modifier = Modifier
+                                    .size(48.dp)
+                                    .clip(CircleShape)
+                                    .background(ProcessingBlueBg),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.Description,
+                                    contentDescription = null,
+                                    tint = ProcessingBlue,
+                                    modifier = Modifier.size(26.dp)
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(14.dp))
+
+                        // Visual Linear Progress Bar for Surat
+                        LinearProgressIndicator(
+                            progress = { suratProgressRate.coerceIn(0f, 1f) },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(10.dp)
+                                .clip(RoundedCornerShape(5.dp)),
+                            color = ProcessingBlue,
+                            trackColor = Color(0xFFE2E8F0)
+                        )
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "${suratDisetujuiCount + suratDitinjauCount} dari $totalSurat Permohonan Surat Diproses & Disetujui",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = Color(0xFF475569)
+                            )
+                            Text(
+                                text = "Target: 100%",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = ProcessingBlue
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(14.dp))
 
                 // Surat Status Breakdown Grid (4 Clean Interactive Cards)
                 Row(
