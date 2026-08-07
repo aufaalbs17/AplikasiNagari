@@ -881,14 +881,14 @@ fun AdminDashboardScreen(
                                 horizontalArrangement = Arrangement.spacedBy(6.dp)
                             ) {
                                 FilterChip(
-                                    selected = suratStatusInput == "Ditinjau Wali",
-                                    onClick = { suratStatusInput = "Ditinjau Wali" },
-                                    label = { Text("Ditinjau", fontSize = 11.sp) }
+                                    selected = suratStatusInput == "Diproses",
+                                    onClick = { suratStatusInput = "Diproses" },
+                                    label = { Text("Sedang Diproses", fontSize = 11.sp) }
                                 )
                                 FilterChip(
                                     selected = suratStatusInput == "Selesai",
                                     onClick = { suratStatusInput = "Selesai" },
-                                    label = { Text("Disetujui / Selesai", fontSize = 11.sp) }
+                                    label = { Text("Selesai & Disetujui", fontSize = 11.sp) }
                                 )
                                 FilterChip(
                                     selected = suratStatusInput == "Ditolak",
@@ -954,10 +954,15 @@ fun AdminDashboardScreen(
                     confirmButton = {
                         Button(
                             onClick = {
-                                val defaultKeterangan = if (suratStatusInput == "Selesai") {
-                                    if (suratItem.metodePengambilan == "Digital") "Surat telah disetujui & disahkan. File surat digital dapat Anda unduh langsung di aplikasi."
-                                    else "Surat telah disetujui & dicetak. Silakan ambil dokumen fisik di Kantor Nagari Sako Selatan (Jam Layanan 08.00 - 15.00 WIB)."
-                                } else "Status pengajuan surat diperbarui oleh Ibu Wali Nagari."
+                                val defaultKeterangan = when (suratStatusInput) {
+                                    "Selesai" -> {
+                                        if (suratItem.metodePengambilan == "Digital") "Surat telah disetujui & disahkan oleh Ibu Wali. File surat digital dapat Anda unduh langsung di aplikasi."
+                                        else "Surat telah disetujui & dicetak oleh Ibu Wali. Silakan ambil dokumen fisik di Kantor Nagari Sako Selatan (Jam Layanan 08.00 - 15.00 WIB)."
+                                    }
+                                    "Diproses" -> "Permohonan surat Anda kini dalam proses pengerjaan & penanganan oleh Perangkat Nagari Sako Selatan."
+                                    "Ditolak" -> "Permohonan surat belum dapat disetujui. Silakan periksa kembali kelengkapan berkas KTP/KK Anda."
+                                    else -> "Status pengajuan surat diperbarui oleh Ibu Wali Nagari."
+                                }
 
                                 com.example.aplikasinagarikkn.data.FirebaseRepository.updateStatusSurat(
                                     id = suratItem.id,
