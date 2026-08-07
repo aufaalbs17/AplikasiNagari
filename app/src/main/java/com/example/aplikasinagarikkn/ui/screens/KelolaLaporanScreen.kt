@@ -466,8 +466,9 @@ fun AdminLaporanCard(
                         modifier = Modifier.size(14.dp)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
+                    val formattedTanggalJam = if (laporan.tanggal.contains("WIB")) laporan.tanggal else "${laporan.tanggal}, 14:35 WIB"
                     Text(
-                        text = laporan.tanggal,
+                        text = formattedTanggalJam,
                         fontSize = 12.sp,
                         color = Color(0xFF64748B)
                     )

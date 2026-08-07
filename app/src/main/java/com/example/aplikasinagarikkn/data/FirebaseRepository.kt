@@ -160,7 +160,7 @@ object FirebaseRepository {
     ) {
         val user = _currentUserState.value
         val newId = (System.currentTimeMillis() % 100000).toInt()
-        val formattedDate = SimpleDateFormat("dd MMM yyyy", Locale.forLanguageTag("id-ID")).format(Date())
+        val formattedDate = SimpleDateFormat("dd MMM yyyy, HH:mm 'WIB'", Locale.forLanguageTag("id-ID")).format(Date())
 
         val newLaporan = LaporanModel(
             id = newId,
@@ -471,7 +471,7 @@ object FirebaseRepository {
                 judul = "Lampu jalan mati di Jorong Pasia",
                 kategori = "Fasilitas Umum",
                 deskripsi = "Lampu jalan utama dekat simpang Jorong Pasia tidak menyala sejak 2 hari yang lalu.",
-                tanggal = "28 Juli 2026",
+                tanggal = "07 Agu 2026, 09:15 WIB",
                 status = "Menunggu",
                 tanggapanAdmin = "Laporan diterima. Akan dicek oleh dinas terkait."
             ),
@@ -483,7 +483,7 @@ object FirebaseRepository {
                 judul = "Saluran air tersumbat sampah",
                 kategori = "Kebersihan",
                 deskripsi = "Drainase di RT 03 tersumbat tumpukan sampah sehingga meluap saat hujan deras.",
-                tanggal = "27 Juli 2026",
+                tanggal = "07 Agu 2026, 11:30 WIB",
                 status = "Diproses",
                 tanggapanAdmin = "Petugas kebersihan Nagari sedang di lokasi untuk pembersihan."
             ),
@@ -495,7 +495,7 @@ object FirebaseRepository {
                 judul = "Jalan berlubang di RT 02 Jorong Pasia",
                 kategori = "Fasilitas Umum",
                 deskripsi = "Lubang menganga cukup berbahaya untuk pengendara roda dua.",
-                tanggal = "25 Juli 2026",
+                tanggal = "05 Agu 2026, 14:20 WIB",
                 status = "Selesai",
                 tanggapanAdmin = "Perbaikan jalan berlubang telah selesai ditambal oleh tim kerja Nagari."
             )
