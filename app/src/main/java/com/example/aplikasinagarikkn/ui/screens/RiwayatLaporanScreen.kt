@@ -17,10 +17,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.aplikasinagarikkn.data.FirebaseRepository
 import com.example.aplikasinagarikkn.model.LaporanModel
 
@@ -203,6 +205,43 @@ fun LaporanCardItem(laporan: LaporanModel) {
                                 text = laporan.tanggapanAdmin,
                                 fontSize = 11.sp,
                                 color = Color(0xFF047857)
+                            )
+                        }
+                    }
+                }
+            }
+
+            if (!laporan.fotoBuktiPenangananUri.isNullOrEmpty()) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Surface(
+                    color = Color(0xFFEFF6FF),
+                    shape = RoundedCornerShape(10.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        modifier = Modifier.padding(10.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        AsyncImage(
+                            model = laporan.fotoBuktiPenangananUri,
+                            contentDescription = "Foto Hasil Lapangan",
+                            modifier = Modifier
+                                .size(55.dp)
+                                .clip(RoundedCornerShape(8.dp)),
+                            contentScale = ContentScale.Crop
+                        )
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Column {
+                            Text(
+                                text = "📸 Foto Bukti Penanganan Lapangan Nagari",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF1E40AF)
+                            )
+                            Text(
+                                text = "Perangkat Nagari telah menyelesaikan penanganan di lokasi kejadian.",
+                                fontSize = 10.sp,
+                                color = Color(0xFF1E3A8A)
                             )
                         }
                     }

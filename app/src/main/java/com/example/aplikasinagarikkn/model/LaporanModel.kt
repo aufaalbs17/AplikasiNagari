@@ -17,5 +17,6 @@ data class LaporanModel(
     val fotoUri: String? = null,
     val latitude: Double? = null,
     val longitude: Double? = null,
-    val lokasiAlamat: String = ""
+    val lokasiAlamat: String = "",
+    val fotoBuktiPenangananUri: String? = null
 )

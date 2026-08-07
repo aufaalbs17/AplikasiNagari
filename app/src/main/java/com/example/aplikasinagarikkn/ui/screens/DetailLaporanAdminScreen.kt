@@ -1,14 +1,20 @@
 package com.example.aplikasinagarikkn.ui.screens
 
+import android.net.Uri
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.AddAPhoto
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material3.*
@@ -46,6 +52,16 @@ fun DetailLaporanAdminScreen(
     var tanggapan by remember(laporanItem) { mutableStateOf(laporanItem?.tanggapanAdmin ?: "") }
     var statusTerpilih by remember(laporanItem) { mutableStateOf(laporanItem?.status ?: "Diproses") }
     var isDropdownExpanded by remember { mutableStateOf(false) }
+
+    var selectedFieldProofUri by remember { mutableStateOf<Uri?>(null) }
+    val fieldProofPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            selectedFieldProofUri = uri
+            Toast.makeText(context, "Foto Bukti Penanganan Lapangan Terpilih!", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     val statusList = listOf("Menunggu", "Diproses", "Selesai")
 
@@ -367,13 +383,85 @@ fun DetailLaporanAdminScreen(
                             placeholder = { Text("Tuliskan tanggapan atau instruksi tindak lanjut...", fontSize = 13.sp) },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(120.dp),
+                                .height(100.dp),
                             shape = RoundedCornerShape(12.dp),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = EmeraldMedium,
                                 unfocusedBorderColor = BorderSubtle
                             )
                         )
+
+                        Spacer(modifier = Modifier.height(14.dp))
+
+                        // Field Proof Photo Upload Box
+                        Text(
+                            text = "📸 Foto Bukti Penanganan (Hasil Lapangan):",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color(0xFF64748B)
+                        )
+                        Spacer(modifier = Modifier.height(6.dp))
+
+                        Surface(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(95.dp)
+                                .clip(RoundedCornerShape(14.dp))
+                                .clickable { fieldProofPickerLauncher.launch("image/*") },
+                            color = if (selectedFieldProofUri != null || !laporanItem?.fotoBuktiPenangananUri.isNull_or_empty()) Color(0xFFECFDF5) else Color(0xFFF8FAFC),
+                            border = BorderStroke(1.dp, if (selectedFieldProofUri != null) EmeraldMedium else BorderSubtle),
+                            shape = RoundedCornerShape(14.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                val currentProof = selectedFieldProofUri ?: laporanItem?.fotoBuktiPenangananUri
+                                if (currentProof != null) {
+                                    AsyncImage(
+                                        model = currentProof,
+                                        contentDescription = "Foto Bukti Hasil Lapangan",
+                                        modifier = Modifier
+                                            .size(65.dp)
+                                            .clip(RoundedCornerShape(8.dp)),
+                                        contentScale = ContentScale.Crop
+                                    )
+                                    Spacer(modifier = Modifier.width(12.dp))
+                                } else {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(44.dp)
+                                            .clip(CircleShape)
+                                            .background(EmeraldMedium.copy(alpha = 0.1f)),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.AddAPhoto,
+                                            contentDescription = "Pilih Foto Lapangan",
+                                            tint = EmeraldMedium,
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.width(12.dp))
+                                }
+
+                                Column {
+                                    Text(
+                                        text = if (selectedFieldProofUri != null || !laporanItem?.fotoBuktiPenangananUri.isNull_or_empty()) "Foto Hasil Lapangan Terlampir ✓" else "Unggah Foto Hasil Penanganan",
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 12.sp,
+                                        color = if (selectedFieldProofUri != null || !laporanItem?.fotoBuktiPenangananUri.isNull_or_empty()) EmeraldDark else Color(0xFF334155)
+                                    )
+                                    Text(
+                                        text = "Ketuk untuk memilih foto bukti dari galeri HP",
+                                        fontSize = 11.sp,
+                                        color = Color(0xFF64748B)
+                                    )
+                                }
+                            }
+                        }
 
                         Spacer(modifier = Modifier.height(20.dp))
 
@@ -383,9 +471,10 @@ fun DetailLaporanAdminScreen(
                                     id = laporanItem.id,
                                     statusBaru = statusTerpilih,
                                     tanggapanAdmin = tanggapan,
+                                    fotoBuktiPenangananUri = selectedFieldProofUri?.toString(),
                                     context = context
                                 ) { _ -> }
-                                Toast.makeText(context, "Tanggapan resmi berhasil tersimpan di Database!", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "Tanggapan & Foto Hasil Lapangan tersimpan!", Toast.LENGTH_SHORT).show()
                                 onSubmitTanggapan()
                             },
                             modifier = Modifier

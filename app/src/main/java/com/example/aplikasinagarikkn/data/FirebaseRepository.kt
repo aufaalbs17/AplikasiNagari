@@ -117,6 +117,7 @@ object FirebaseRepository {
                         val latitude = doc.getDouble("latitude")
                         val longitude = doc.getDouble("longitude")
                         val lokasiAlamat = doc.getString("lokasiAlamat") ?: ""
+                        val fotoBuktiPenangananUri = doc.getString("fotoBuktiPenangananUri")
 
                         if (id > 0 && judul.isNotBlank()) {
                             LaporanModel(
@@ -133,7 +134,8 @@ object FirebaseRepository {
                                 fotoUri = fotoUri,
                                 latitude = latitude,
                                 longitude = longitude,
-                                lokasiAlamat = lokasiAlamat
+                                lokasiAlamat = lokasiAlamat,
+                                fotoBuktiPenangananUri = fotoBuktiPenangananUri
                             )
                         } else null
                     }
@@ -231,13 +233,18 @@ object FirebaseRepository {
         id: Int,
         statusBaru: String,
         tanggapanAdmin: String,
+        fotoBuktiPenangananUri: String? = null,
         context: android.content.Context? = null,
         onComplete: (Boolean) -> Unit = {}
     ) {
         // Update local state immediately
         _laporanListState.value = _laporanListState.value.map { item ->
             if (item.id == id) {
-                item.copy(status = statusBaru, tanggapanAdmin = tanggapanAdmin)
+                item.copy(
+                    status = statusBaru,
+                    tanggapanAdmin = tanggapanAdmin,
+                    fotoBuktiPenangananUri = fotoBuktiPenangananUri ?: item.fotoBuktiPenangananUri
+                )
             } else item
         }
 
@@ -253,10 +260,14 @@ object FirebaseRepository {
 
         val firestore = db
         if (firestore != null) {
-            val updates = mapOf(
+            val updates = mutableMapOf<String, Any>(
                 "status" to statusBaru,
                 "tanggapanAdmin" to tanggapanAdmin
             )
+            if (fotoBuktiPenangananUri != null) {
+                updates["fotoBuktiPenangananUri"] = fotoBuktiPenangananUri
+            }
+
             firestore.collection(COLLECTION_LAPORAN)
                 .document(id.toString())
                 .update(updates)
