@@ -118,7 +118,7 @@ fun NotifikasiScreen(
                 judul = stage1Judul,
                 pesan = stage1Pesan,
                 waktu = laporan.tanggal.ifBlank { "05 Agu 2026" },
-                kategori = if (isAdmin) "Urgent" else "Laporan Anda",
+                kategori = if (isAdmin) "Pengaduan Masuk" else "Laporan Anda",
                 timestampMs = timeMs + 1000L
             )
         )
@@ -277,10 +277,9 @@ fun NotifikasiScreen(
     // Sort notifications strictly by most recent timestamp descending (terbaru di paling atas)
     dynamicNotifikasiList.sortByDescending { it.timestampMs }
 
-    // Apply category filter chip selection
+    // Apply category filter chip selection (Only Pengaduan & Surat)
     val displayedNotifikasiList = dynamicNotifikasiList.filter { notif ->
         when (selectedFilterCategory) {
-            "Urgent" -> notif.kategori == "Urgent"
             "Pengaduan" -> notif.type == "Laporan"
             "Surat" -> notif.type == "Surat"
             else -> true
@@ -329,14 +328,14 @@ fun NotifikasiScreen(
                 .padding(paddingValues)
                 .background(Color(0xFFF8FAFC))
         ) {
-            // Category Filter Chips
+            // Category Filter Chips (Only 3 options: Semua, Pengaduan, Surat)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                listOf("Semua", "Urgent", "Pengaduan", "Surat").forEach { category ->
+                listOf("Semua", "Pengaduan", "Surat").forEach { category ->
                     val isSelected = selectedFilterCategory == category
                     FilterChip(
                         selected = isSelected,
