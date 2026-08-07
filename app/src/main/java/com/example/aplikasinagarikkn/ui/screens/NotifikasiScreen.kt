@@ -2,6 +2,7 @@ package com.example.aplikasinagarikkn.ui.screens
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -31,6 +32,8 @@ private val BorderSubtle = Color(0xFFE2E8F0)
 
 data class Notifikasi(
     val id: Int,
+    val targetId: Int = 0,
+    val type: String = "Laporan",
     val judul: String,
     val pesan: String,
     val waktu: String,
@@ -41,6 +44,8 @@ data class Notifikasi(
 @Composable
 fun NotifikasiScreen(
     onNavigateBack: () -> Unit,
+    onNavigateToDetailLaporan: (Int) -> Unit = {},
+    onNavigateToRiwayatLaporan: () -> Unit = {},
     isAdminMode: Boolean = false
 ) {
     val currentUser by FirebaseRepository.currentUserState.collectAsState()
@@ -90,6 +95,8 @@ fun NotifikasiScreen(
         dynamicNotifikasiList.add(
             Notifikasi(
                 id = laporan.id * 10 + 1,
+                targetId = laporan.id,
+                type = "Laporan",
                 judul = stage1Judul,
                 pesan = stage1Pesan,
                 waktu = laporan.tanggal.ifBlank { "05 Agu 2026" },
@@ -109,6 +116,8 @@ fun NotifikasiScreen(
             dynamicNotifikasiList.add(
                 Notifikasi(
                     id = laporan.id * 10 + 2,
+                    targetId = laporan.id,
+                    type = "Laporan",
                     judul = stage2Judul,
                     pesan = stage2Pesan,
                     waktu = laporan.tanggal.ifBlank { "05 Agu 2026" },
@@ -129,6 +138,8 @@ fun NotifikasiScreen(
             dynamicNotifikasiList.add(
                 Notifikasi(
                     id = laporan.id * 10 + 3,
+                    targetId = laporan.id,
+                    type = "Laporan",
                     judul = stage3Judul,
                     pesan = stage3Pesan,
                     waktu = laporan.tanggal.ifBlank { "05 Agu 2026" },
@@ -151,6 +162,8 @@ fun NotifikasiScreen(
         dynamicNotifikasiList.add(
             Notifikasi(
                 id = (surat.id + 10000) * 10 + 1,
+                targetId = surat.id,
+                type = "Surat",
                 judul = stage1Judul,
                 pesan = stage1Pesan,
                 waktu = surat.tanggal.ifBlank { "26 Juli 2026" },
@@ -170,6 +183,8 @@ fun NotifikasiScreen(
             dynamicNotifikasiList.add(
                 Notifikasi(
                     id = (surat.id + 10000) * 10 + 2,
+                    targetId = surat.id,
+                    type = "Surat",
                     judul = stage2Judul,
                     pesan = stage2Pesan,
                     waktu = surat.tanggal.ifBlank { "27 Juli 2026" },
@@ -199,6 +214,8 @@ fun NotifikasiScreen(
             dynamicNotifikasiList.add(
                 Notifikasi(
                     id = (surat.id + 10000) * 10 + 3,
+                    targetId = surat.id,
+                    type = "Surat",
                     judul = stage3Judul,
                     pesan = stage3Pesan,
                     waktu = surat.tanggal.ifBlank { "05 Agu 2026" },
@@ -219,6 +236,8 @@ fun NotifikasiScreen(
             dynamicNotifikasiList.add(
                 Notifikasi(
                     id = (surat.id + 10000) * 10 + 3,
+                    targetId = surat.id,
+                    type = "Surat",
                     judul = stage3AltJudul,
                     pesan = stage3AltPesan,
                     waktu = surat.tanggal.ifBlank { "05 Agu 2026" },
@@ -290,7 +309,19 @@ fun NotifikasiScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(dynamicNotifikasiList) { notif ->
-                    ExecutiveNotifikasiCard(notif)
+                    ExecutiveNotifikasiCard(
+                        notif = notif,
+                        isAdmin = isAdmin,
+                        onClick = {
+                            if (notif.type == "Laporan" && notif.targetId > 0) {
+                                if (isAdmin) {
+                                    onNavigateToDetailLaporan(notif.targetId)
+                                } else {
+                                    onNavigateToRiwayatLaporan()
+                                }
+                            }
+                        }
+                    )
                 }
             }
         }
@@ -298,15 +329,21 @@ fun NotifikasiScreen(
 }
 
 @Composable
-fun ExecutiveNotifikasiCard(notif: Notifikasi) {
+fun ExecutiveNotifikasiCard(
+    notif: Notifikasi,
+    isAdmin: Boolean = false,
+    onClick: () -> Unit = {}
+) {
     val (accentColor, categoryBg) = when (notif.kategori) {
         "Urgent" -> Pair(Color(0xFFDC2626), Color(0xFFFEF2F2))
-        "Surat" -> Pair(Color(0xFF2563EB), Color(0xFFEFF6FF))
+        "Surat Masuk", "Surat Anda" -> Pair(Color(0xFF2563EB), Color(0xFFEFF6FF))
         else -> Pair(EmeraldMedium, Color(0xFFECFDF5))
     }
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
         shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         border = BorderStroke(1.dp, BorderSubtle),
@@ -319,7 +356,7 @@ fun ExecutiveNotifikasiCard(notif: Notifikasi) {
             Box(
                 modifier = Modifier
                     .width(6.dp)
-                    .height(110.dp)
+                    .height(125.dp)
                     .background(accentColor)
             )
 
@@ -390,6 +427,16 @@ fun ExecutiveNotifikasiCard(notif: Notifikasi) {
                         color = Color(0xFF475569),
                         lineHeight = 16.sp
                     )
+                    
+                    if (notif.type == "Laporan" && notif.targetId > 0) {
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text(
+                            text = if (isAdmin) "👉 Ketuk untuk Buka & Tanggapi Laporan Ini" else "👉 Ketuk untuk Buka Riwayat Laporan",
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = accentColor
+                        )
+                    }
                 }
             }
         }

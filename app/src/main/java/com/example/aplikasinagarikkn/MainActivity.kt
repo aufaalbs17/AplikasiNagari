@@ -124,6 +124,8 @@ fun NagariApp() {
         composable("admin_notifikasi") {
             NotifikasiScreen(
                 onNavigateBack = { navController.popBackStack() },
+                onNavigateToDetailLaporan = { id -> navController.navigate("detail_laporan/$id") },
+                onNavigateToRiwayatLaporan = { navController.navigate("riwayat_laporan") },
                 isAdminMode = true
             )
         }
@@ -131,6 +133,8 @@ fun NagariApp() {
         composable("notifikasi") {
             NotifikasiScreen(
                 onNavigateBack = { navController.popBackStack() },
+                onNavigateToDetailLaporan = { id -> navController.navigate("detail_laporan/$id") },
+                onNavigateToRiwayatLaporan = { navController.navigate("riwayat_laporan") },
                 isAdminMode = false
             )
         }
