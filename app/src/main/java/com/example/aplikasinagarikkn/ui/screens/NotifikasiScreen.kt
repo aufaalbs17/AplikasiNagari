@@ -12,9 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,8 +35,25 @@ data class Notifikasi(
     val judul: String,
     val pesan: String,
     val waktu: String,
-    val kategori: String = "Sistem"
+    val kategori: String = "Sistem",
+    val timestampMs: Long = 0L
 )
+
+private fun parseWaktuToMillis(waktu: String, stageOffsetMs: Long = 0L): Long {
+    return try {
+        val cleanWaktu = waktu.replace(" WIB", "").trim()
+        val formatFull = java.text.SimpleDateFormat("dd MMM yyyy, HH:mm", java.util.Locale.forLanguageTag("id-ID"))
+        val formatShort = java.text.SimpleDateFormat("dd MMM yyyy", java.util.Locale.forLanguageTag("id-ID"))
+        val date = try {
+            formatFull.parse(cleanWaktu)
+        } catch (e: Exception) {
+            formatShort.parse(cleanWaktu)
+        }
+        (date?.time ?: System.currentTimeMillis()) + stageOffsetMs
+    } catch (e: Exception) {
+        System.currentTimeMillis() + stageOffsetMs
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,6 +68,7 @@ fun NotifikasiScreen(
     val dbSuratList by FirebaseRepository.suratListState.collectAsState()
 
     val isAdmin = isAdminMode || currentUser.role == "Admin"
+    var selectedFilterCategory by remember { mutableStateOf("Semua") }
 
     // Filter Database records based on logged-in user with safe fallback
     val filteredLaporanList = if (isAdmin) {
@@ -84,6 +100,8 @@ fun NotifikasiScreen(
 
     // 1. Convert Laporan items into multi-stage notifications
     filteredLaporanList.forEach { laporan ->
+        val timeMs = parseWaktuToMillis(laporan.tanggal)
+
         // Stage 1: Always add "Laporan Pengaduan Baru Masuk"
         val stage1Judul = if (isAdmin) "🚨 Laporan Pengaduan Baru Masuk" else "🚨 Laporan Anda Berhasil Dikirim"
         val stage1Pesan = if (isAdmin) {
@@ -100,7 +118,8 @@ fun NotifikasiScreen(
                 judul = stage1Judul,
                 pesan = stage1Pesan,
                 waktu = laporan.tanggal.ifBlank { "05 Agu 2026" },
-                kategori = if (isAdmin) "Urgent" else "Laporan Anda"
+                kategori = if (isAdmin) "Urgent" else "Laporan Anda",
+                timestampMs = timeMs + 1000L
             )
         )
 
@@ -121,7 +140,8 @@ fun NotifikasiScreen(
                     judul = stage2Judul,
                     pesan = stage2Pesan,
                     waktu = laporan.tanggal.ifBlank { "05 Agu 2026" },
-                    kategori = if (isAdmin) "Pengaduan" else "Laporan Anda"
+                    kategori = if (isAdmin) "Pengaduan" else "Laporan Anda",
+                    timestampMs = timeMs + 60_000L
                 )
             )
         }
@@ -143,7 +163,8 @@ fun NotifikasiScreen(
                     judul = stage3Judul,
                     pesan = stage3Pesan,
                     waktu = laporan.tanggal.ifBlank { "05 Agu 2026" },
-                    kategori = if (isAdmin) "Pengaduan" else "Laporan Anda"
+                    kategori = if (isAdmin) "Pengaduan" else "Laporan Anda",
+                    timestampMs = timeMs + 120_000L
                 )
             )
         }
@@ -151,6 +172,8 @@ fun NotifikasiScreen(
 
     // 2. Convert Surat items into multi-stage notifications
     filteredSuratList.forEach { surat ->
+        val timeMs = parseWaktuToMillis(surat.tanggal)
+
         // Stage 1: Always add "Permohonan Surat Baru Masuk"
         val stage1Judul = if (isAdmin) "📜 Permohonan Surat Masuk dari Warga" else "📜 Permohonan Surat Anda Diterima"
         val stage1Pesan = if (isAdmin) {
@@ -167,7 +190,8 @@ fun NotifikasiScreen(
                 judul = stage1Judul,
                 pesan = stage1Pesan,
                 waktu = surat.tanggal.ifBlank { "26 Juli 2026" },
-                kategori = if (isAdmin) "Surat Masuk" else "Surat Anda"
+                kategori = if (isAdmin) "Surat Masuk" else "Surat Anda",
+                timestampMs = timeMs + 500L
             )
         )
 
@@ -188,7 +212,8 @@ fun NotifikasiScreen(
                     judul = stage2Judul,
                     pesan = stage2Pesan,
                     waktu = surat.tanggal.ifBlank { "27 Juli 2026" },
-                    kategori = if (isAdmin) "Surat Masuk" else "Surat Anda"
+                    kategori = if (isAdmin) "Surat Masuk" else "Surat Anda",
+                    timestampMs = timeMs + 60_000L
                 )
             )
         }
@@ -219,7 +244,8 @@ fun NotifikasiScreen(
                     judul = stage3Judul,
                     pesan = stage3Pesan,
                     waktu = surat.tanggal.ifBlank { "05 Agu 2026" },
-                    kategori = if (isAdmin) "Surat Masuk" else "Surat Anda"
+                    kategori = if (isAdmin) "Surat Masuk" else "Surat Anda",
+                    timestampMs = timeMs + 120_000L
                 )
             )
         }
@@ -241,14 +267,25 @@ fun NotifikasiScreen(
                     judul = stage3AltJudul,
                     pesan = stage3AltPesan,
                     waktu = surat.tanggal.ifBlank { "05 Agu 2026" },
-                    kategori = if (isAdmin) "Surat Masuk" else "Surat Anda"
+                    kategori = if (isAdmin) "Surat Masuk" else "Surat Anda",
+                    timestampMs = timeMs + 120_000L
                 )
             )
         }
     }
 
-    // Sort notifications so newest event ID is on top
-    dynamicNotifikasiList.sortByDescending { it.id }
+    // Sort notifications strictly by most recent timestamp descending (terbaru di paling atas)
+    dynamicNotifikasiList.sortByDescending { it.timestampMs }
+
+    // Apply category filter chip selection
+    val displayedNotifikasiList = dynamicNotifikasiList.filter { notif ->
+        when (selectedFilterCategory) {
+            "Urgent" -> notif.kategori == "Urgent"
+            "Pengaduan" -> notif.type == "Laporan"
+            "Surat" -> notif.type == "Surat"
+            else -> true
+        }
+    }
 
     val screenTitle = if (isAdmin) "Pusat Notifikasi Admin" else "Notifikasi & Pemberitahuan Warga"
     val screenSubtitle = if (isAdmin) "Panel Ibu Wali Nagari • Pengawasan Masuk" else "Layanan Warga • Progress Laporan & Surat Anda"
@@ -286,42 +323,72 @@ fun NotifikasiScreen(
             )
         }
     ) { paddingValues ->
-        if (dynamicNotifikasiList.isEmpty()) {
-            Box(
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .background(Color(0xFFF8FAFC))
+        ) {
+            // Category Filter Chips
+            Row(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "Belum ada pemberitahuan notifikasi.",
-                    fontSize = 13.sp,
-                    color = Color.Gray
-                )
-            }
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color(0xFFF8FAFC))
-                    .padding(paddingValues)
+                    .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(dynamicNotifikasiList) { notif ->
-                    ExecutiveNotifikasiCard(
-                        notif = notif,
-                        isAdmin = isAdmin,
-                        onClick = {
-                            if (notif.type == "Laporan" && notif.targetId > 0) {
-                                if (isAdmin) {
-                                    onNavigateToDetailLaporan(notif.targetId)
-                                } else {
-                                    onNavigateToRiwayatLaporan()
+                listOf("Semua", "Urgent", "Pengaduan", "Surat").forEach { category ->
+                    val isSelected = selectedFilterCategory == category
+                    FilterChip(
+                        selected = isSelected,
+                        onClick = { selectedFilterCategory = category },
+                        label = {
+                            Text(
+                                text = category,
+                                fontSize = 12.sp,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                            )
+                        },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = EmeraldDark,
+                            selectedLabelColor = Color.White
+                        )
+                    )
+                }
+            }
+
+            if (displayedNotifikasiList.isEmpty()) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Belum ada pemberitahuan notifikasi (${selectedFilterCategory}).",
+                        fontSize = 13.sp,
+                        color = Color.Gray
+                    )
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp, vertical = 4.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(displayedNotifikasiList) { notif ->
+                        ExecutiveNotifikasiCard(
+                            notif = notif,
+                            isAdmin = isAdmin,
+                            onClick = {
+                                if (notif.type == "Laporan" && notif.targetId > 0) {
+                                    if (isAdmin) {
+                                        onNavigateToDetailLaporan(notif.targetId)
+                                    } else {
+                                        onNavigateToRiwayatLaporan()
+                                    }
                                 }
                             }
-                        }
-                    )
+                        )
+                    }
                 }
             }
         }
