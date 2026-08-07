@@ -75,11 +75,11 @@ fun NotifikasiScreen(
     val dynamicNotifikasiList = mutableListOf<Notifikasi>()
 
     // 1. Convert Laporan items into multi-stage notifications
-    dbLaporanList.forEach { laporan ->
+    filteredLaporanList.forEach { laporan ->
         // Stage 1: Always add "Laporan Pengaduan Baru Masuk"
         val stage1Judul = if (isAdmin) "🚨 Laporan Pengaduan Baru Masuk" else "🚨 Laporan Anda Berhasil Dikirim"
         val stage1Pesan = if (isAdmin) {
-            "Laporan '${laporan.judul}' dari warga a.n ${laporan.pelaporNama} telah diterima sistem dan menunggu tindakan Ibu Wali Nagari."
+            "Laporan '${laporan.judul}' dari warga a.n ${laporan.pelaporNama} (NIK: ${laporan.pelaporNik}) telah masuk ke sistem dan menunggu tindakan Ibu Wali."
         } else {
             "Laporan Anda '${laporan.judul}' telah diterima sistem dan sedang menunggu tindakan Ibu Wali Nagari."
         }
@@ -90,13 +90,13 @@ fun NotifikasiScreen(
                 judul = stage1Judul,
                 pesan = stage1Pesan,
                 waktu = laporan.tanggal.ifBlank { "05 Agu 2026" },
-                kategori = "Urgent"
+                kategori = if (isAdmin) "Urgent" else "Laporan Anda"
             )
         )
 
         // Stage 2: If status is "Diproses" or "Selesai", add "Sedang Diproses" notification
         if (laporan.status == "Diproses" || laporan.status == "Selesai") {
-            val stage2Judul = if (isAdmin) "🔄 Status Laporan: Sedang Diproses" else "🔄 Laporan Anda Sedang Diproses"
+            val stage2Judul = if (isAdmin) "🔄 Laporan Warga Dalam Penanganan" else "🔄 Laporan Anda Sedang Diproses"
             val stage2Pesan = if (isAdmin) {
                 "Laporan '${laporan.judul}' (Pelapor: ${laporan.pelaporNama}) statusnya kini 'Diproses'. Tanggapan: ${laporan.tanggapanAdmin.ifBlank { "Sedang ditindaklanjuti Perangkat Nagari di lapangan." }}"
             } else {
@@ -109,14 +109,14 @@ fun NotifikasiScreen(
                     judul = stage2Judul,
                     pesan = stage2Pesan,
                     waktu = laporan.tanggal.ifBlank { "05 Agu 2026" },
-                    kategori = "Pengaduan"
+                    kategori = if (isAdmin) "Pengaduan" else "Laporan Anda"
                 )
             )
         }
 
         // Stage 3: If status is "Selesai", add "Tuntas Selesai" notification
         if (laporan.status == "Selesai") {
-            val stage3Judul = if (isAdmin) "✅ Status Laporan: Tuntas Selesai" else "✅ Laporan Anda Tuntas Selesai"
+            val stage3Judul = if (isAdmin) "✅ Laporan Warga Tuntas Selesai" else "✅ Laporan Anda Tuntas Selesai"
             val stage3Pesan = if (isAdmin) {
                 "Laporan '${laporan.judul}' (Pelapor: ${laporan.pelaporNama}) statusnya kini 'Selesai'. Tanggapan Resmi: ${laporan.tanggapanAdmin.ifBlank { "Masalah telah dituntaskan di lapangan." }}"
             } else {
@@ -129,18 +129,18 @@ fun NotifikasiScreen(
                     judul = stage3Judul,
                     pesan = stage3Pesan,
                     waktu = laporan.tanggal.ifBlank { "05 Agu 2026" },
-                    kategori = "Pengaduan"
+                    kategori = if (isAdmin) "Pengaduan" else "Laporan Anda"
                 )
             )
         }
     }
 
     // 2. Convert Surat items into multi-stage notifications
-    dbSuratList.forEach { surat ->
+    filteredSuratList.forEach { surat ->
         // Stage 1: Always add "Permohonan Surat Baru Masuk"
-        val stage1Judul = if (isAdmin) "📜 Permohonan Surat Baru Masuk" else "📜 Permohonan Surat Anda Diterima"
+        val stage1Judul = if (isAdmin) "📜 Permohonan Surat Masuk dari Warga" else "📜 Permohonan Surat Anda Diterima"
         val stage1Pesan = if (isAdmin) {
-            "Warga a.n ${surat.pemohonNama} (NIK: ${surat.pemohonNik}) baru saja mengajukan permohonan '${surat.jenisSurat}'."
+            "Warga a.n ${surat.pemohonNama} (NIK: ${surat.pemohonNik}) mengajukan permohonan '${surat.jenisSurat}'."
         } else {
             "Permohonan '${surat.jenisSurat}' Anda telah dikirim ke sistem dan sedang menunggu verifikasi Ibu Wali Nagari."
         }
@@ -151,15 +151,15 @@ fun NotifikasiScreen(
                 judul = stage1Judul,
                 pesan = stage1Pesan,
                 waktu = surat.tanggal.ifBlank { "26 Juli 2026" },
-                kategori = "Surat"
+                kategori = if (isAdmin) "Surat Masuk" else "Surat Anda"
             )
         )
 
         // Stage 2: If status is "Ditinjau Wali", "Disetujui", or "Selesai", add "Ditinjau" notification
         if (surat.status == "Ditinjau Wali" || surat.status == "Disetujui" || surat.status == "Selesai") {
-            val stage2Judul = if (isAdmin) "🔍 Surat Sedang Ditinjau Wali Nagari" else "🔍 Surat Anda Sedang Ditinjau"
+            val stage2Judul = if (isAdmin) "🔍 Permohonan Surat Dalam Peninjauan" else "🔍 Surat Anda Sedang Ditinjau"
             val stage2Pesan = if (isAdmin) {
-                "Permohonan '${surat.jenisSurat}' a.n ${surat.pemohonNama} statusnya kini 'Ditinjau Wali'. Keterangan: ${surat.keterangan.ifBlank { "Sedang verifikasi kelengkapan berkas." }}"
+                "Permohonan '${surat.jenisSurat}' a.n ${surat.pemohonNama} sedang ditinjau oleh Ibu Wali Nagari. Keterangan: ${surat.keterangan.ifBlank { "Sedang verifikasi berkas." }}"
             } else {
                 "Permohonan '${surat.jenisSurat}' Anda kini dalam proses peninjauan & verifikasi oleh Ibu Wali Nagari."
             }
@@ -170,7 +170,7 @@ fun NotifikasiScreen(
                     judul = stage2Judul,
                     pesan = stage2Pesan,
                     waktu = surat.tanggal.ifBlank { "27 Juli 2026" },
-                    kategori = "Surat"
+                    kategori = if (isAdmin) "Surat Masuk" else "Surat Anda"
                 )
             )
         }
@@ -178,7 +178,11 @@ fun NotifikasiScreen(
         // Stage 3: If status is "Selesai" or "Disetujui", add "Selesai" notification
         if (surat.status == "Selesai" || surat.status == "Disetujui") {
             val isDigital = surat.metodePengambilan == "Digital"
-            val stage3Judul = if (isDigital) "📥 Surat Selesai - File Digital Siap Diunduh" else "🏢 Surat Selesai - Siap Diambil di Kantor Nagari"
+            val stage3Judul = if (isAdmin) {
+                "✅ Permohonan Surat Warga Disetujui"
+            } else {
+                if (isDigital) "📥 Surat Selesai - File Digital Siap Diunduh" else "🏢 Surat Selesai - Siap Diambil di Kantor Nagari"
+            }
             val stage3Pesan = if (isAdmin) {
                 "Permohonan '${surat.jenisSurat}' a.n ${surat.pemohonNama} telah disetujui Ibu Wali Nagari (${if (isDigital) "Opsi: Unduh File Digital" else "Opsi: Ambil Fisik di Kantor Nagari"})."
             } else {
@@ -195,7 +199,7 @@ fun NotifikasiScreen(
                     judul = stage3Judul,
                     pesan = stage3Pesan,
                     waktu = surat.tanggal.ifBlank { "05 Agu 2026" },
-                    kategori = "Surat"
+                    kategori = if (isAdmin) "Surat Masuk" else "Surat Anda"
                 )
             )
         }
@@ -215,7 +219,7 @@ fun NotifikasiScreen(
                     judul = stage3AltJudul,
                     pesan = stage3AltPesan,
                     waktu = surat.tanggal.ifBlank { "05 Agu 2026" },
-                    kategori = "Surat"
+                    kategori = if (isAdmin) "Surat Masuk" else "Surat Anda"
                 )
             )
         }
@@ -224,19 +228,22 @@ fun NotifikasiScreen(
     // Sort notifications so newest event ID is on top
     dynamicNotifikasiList.sortByDescending { it.id }
 
+    val screenTitle = if (isAdmin) "Pusat Notifikasi Admin" else "Notifikasi & Pemberitahuan Warga"
+    val screenSubtitle = if (isAdmin) "Panel Ibu Wali Nagari • Pengawasan Masuk" else "Layanan Warga • Progress Laporan & Surat Anda"
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Column {
                         Text(
-                            text = "Notifikasi & Pemberitahuan",
+                            text = screenTitle,
                             fontWeight = FontWeight.Bold,
                             fontSize = 18.sp,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
-                            text = "Pusat Informasi Nagari Sako Selatan",
+                            text = screenSubtitle,
                             fontSize = 12.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
