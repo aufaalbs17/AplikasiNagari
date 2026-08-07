@@ -53,7 +53,6 @@ fun UserMainScreen(
     val navController = rememberNavController()
     val items = listOf(
         BottomNavItem.Home,
-        BottomNavItem.Surat,
         BottomNavItem.UMKM,
         BottomNavItem.Akun
     )
@@ -117,6 +116,7 @@ fun UserMainScreen(
             composable(BottomNavItem.Home.route) {
                 UserDashboardScreen(
                     onNavigateToBuatLaporan = onNavigateToBuatLaporan,
+                    onNavigateToSurat = { navController.navigate(BottomNavItem.Surat.route) },
                     onNavigateToNotifikasi = onNavigateToNotifikasi
                 )
             }
