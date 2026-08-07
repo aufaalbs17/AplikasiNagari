@@ -121,9 +121,9 @@ fun NotifikasiScreen(
         if (laporan.status == "Selesai") {
             val stage3Judul = if (isAdmin) "✅ Laporan Warga Tuntas Selesai" else "✅ Laporan Anda Tuntas Selesai"
             val stage3Pesan = if (isAdmin) {
-                "Laporan '${laporan.judul}' (Pelapor: ${laporan.pelaporNama}) statusnya kini 'Selesai'. Tanggapan Resmi: ${laporan.tanggapanAdmin.ifBlank { "Masalah telah dituntaskan di lapangan." }}"
+                "Laporan '${laporan.judul}' (Pelapor: ${laporan.pelaporNama}) statusnya kini 'Selesai'. Tanggapan resmi & bukti foto penanganan telah berhasil dikirim ke akun warga."
             } else {
-                "Laporan Anda '${laporan.judul}' telah selesai ditangani. Tanggapan Resmi: ${laporan.tanggapanAdmin.ifBlank { "Masalah telah dituntaskan di lapangan." }}"
+                "Laporan Anda '${laporan.judul}' telah tuntas diselesaikan oleh Perangkat Nagari. Tanggapan Resmi: ${laporan.tanggapanAdmin.ifBlank { "Masalah telah dituntaskan di lokasi." }}. Silakan buka menu Riwayat Laporan untuk melihat tanggapan Ibu Wali & foto bukti penanganan lapangan."
             }
 
             dynamicNotifikasiList.add(
