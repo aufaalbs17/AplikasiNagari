@@ -449,6 +449,153 @@ fun AdminDashboardScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             // =========================================================================
+            // 🌟 MAIN HIGHLIGHT 1.5: PUSAT MONITORING PERMOHONAN SURAT DIGITAL WARGA
+            // =========================================================================
+            val totalSurat = dbSuratList.size
+            val suratDitinjauCount = dbSuratList.count { it.status == "Diajukan" || it.status == "Ditinjau Wali" || it.status == "Ditinjau" }
+            val suratDisetujuiCount = dbSuratList.count { it.status == "Disetujui" || it.status == "Selesai" }
+            val suratDitolakCount = dbSuratList.count { it.status == "Ditolak" }
+
+            Column(modifier = Modifier.padding(horizontal = 20.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(
+                            modifier = Modifier
+                                .size(28.dp)
+                                .background(ProcessingBlueBg, CircleShape),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Description,
+                                contentDescription = null,
+                                tint = ProcessingBlue,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Layanan Surat Digital Warga",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF0F172A)
+                        )
+                    }
+
+                    TextButton(
+                        onClick = {
+                            val target = dbSuratList.firstOrNull { it.status != "Selesai" && it.status != "Disetujui" } ?: dbSuratList.firstOrNull()
+                            if (target != null) {
+                                selectedSuratId = target.id
+                                suratStatusInput = target.status
+                                suratNotesInput = target.keterangan
+                                showSuratManageDialog = true
+                            } else {
+                                Toast.makeText(context, "Belum ada permohonan surat warga.", Toast.LENGTH_SHORT).show()
+                            }
+                        },
+                        contentPadding = PaddingValues(0.dp)
+                    ) {
+                        Text("Kelola Surat Warga", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = ProcessingBlue)
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // Surat Status Breakdown Grid (4 Clean Interactive Cards)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    ProfessionalStatCard(
+                        title = "Total Surat",
+                        count = "$totalSurat",
+                        sub = "Semua Permohonan",
+                        icon = Icons.Filled.Description,
+                        colorBg = Color.White,
+                        colorAccent = ProcessingBlue,
+                        modifier = Modifier.weight(1f),
+                        onClick = {
+                            val target = dbSuratList.firstOrNull()
+                            if (target != null) {
+                                selectedSuratId = target.id
+                                suratStatusInput = target.status
+                                suratNotesInput = target.keterangan
+                                showSuratManageDialog = true
+                            }
+                        }
+                    )
+                    ProfessionalStatCard(
+                        title = "Perlu Tinjauan",
+                        count = "$suratDitinjauCount",
+                        sub = "Verifikasi Ibu Wali",
+                        icon = Icons.Filled.HourglassTop,
+                        colorBg = PendingAmberBg,
+                        colorAccent = PendingAmber,
+                        modifier = Modifier.weight(1f),
+                        onClick = {
+                            val target = dbSuratList.firstOrNull { it.status == "Diajukan" || it.status == "Ditinjau Wali" || it.status == "Ditinjau" } ?: dbSuratList.firstOrNull()
+                            if (target != null) {
+                                selectedSuratId = target.id
+                                suratStatusInput = target.status
+                                suratNotesInput = target.keterangan
+                                showSuratManageDialog = true
+                            }
+                        }
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    ProfessionalStatCard(
+                        title = "Surat Disetujui",
+                        count = "$suratDisetujuiCount",
+                        sub = "Digital & Fisik Siap",
+                        icon = Icons.Filled.CheckCircle,
+                        colorBg = CompletedGreenBg,
+                        colorAccent = CompletedGreen,
+                        modifier = Modifier.weight(1f),
+                        onClick = {
+                            val target = dbSuratList.firstOrNull { it.status == "Disetujui" || it.status == "Selesai" } ?: dbSuratList.firstOrNull()
+                            if (target != null) {
+                                selectedSuratId = target.id
+                                suratStatusInput = target.status
+                                suratNotesInput = target.keterangan
+                                showSuratManageDialog = true
+                            }
+                        }
+                    )
+                    ProfessionalStatCard(
+                        title = "Surat Ditolak",
+                        count = "$suratDitolakCount",
+                        sub = "Berkas Belum Lengkap",
+                        icon = Icons.Filled.AddAlert,
+                        colorBg = UrgentRedBg,
+                        colorAccent = UrgentRed,
+                        modifier = Modifier.weight(1f),
+                        onClick = {
+                            val target = dbSuratList.firstOrNull { it.status == "Ditolak" } ?: dbSuratList.firstOrNull()
+                            if (target != null) {
+                                selectedSuratId = target.id
+                                suratStatusInput = target.status
+                                suratNotesInput = target.keterangan
+                                showSuratManageDialog = true
+                            }
+                        }
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // =========================================================================
             // 🌟 MAIN HIGHLIGHT 2: PUSAT NOTIFIKASI & PERLU TINDAKAN REAL-TIME
             // =========================================================================
             Column(modifier = Modifier.padding(horizontal = 20.dp)) {
