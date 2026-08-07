@@ -52,7 +52,9 @@ fun BuatLaporanScreen(
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
     var showSuccessDialog by remember { mutableStateOf(false) }
 
-    // GPS Geotagging state
+    // GPS Geotagging & Manual Location state
+    var metodeLokasi by remember { mutableStateOf("GPS") } // "GPS" or "Manual"
+    var manualLokasiText by remember { mutableStateOf("") }
     var lokasiAlamat by remember { mutableStateOf("") }
     var latitude by remember { mutableStateOf<Double?>(null) }
     var longitude by remember { mutableStateOf<Double?>(null) }
@@ -212,65 +214,139 @@ fun BuatLaporanScreen(
 
                         Spacer(modifier = Modifier.height(20.dp))
 
-                        // --- GPS Geotagging Card ---
+                        // --- GPS Geotagging & Manual Location Card ---
                         Text(
-                            text = "Sematkan Lokasi Presisi / GPS",
+                            text = "Penentuan Lokasi Kejadian",
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color(0xFF0F172A)
                         )
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        Surface(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(RoundedCornerShape(16.dp))
-                                .clickable {
-                                    latitude = -1.4522
-                                    longitude = 101.3211
-                                    isGpsPinned = true
-                                    lokasiAlamat = "Jorong Pasia, Nagari Sako Selatan (-1.4522, 101.3211)"
-                                    Toast.makeText(context, "📍 Lokasi GPS Terdeteksi (-1.4522, 101.3211)", Toast.LENGTH_SHORT).show()
-                                },
-                            color = if (isGpsPinned) Color(0xFFECFDF5) else Color(0xFFF8FAFC),
-                            border = BorderStroke(1.5.dp, if (isGpsPinned) EmeraldMedium else BorderSubtle),
-                            shape = RoundedCornerShape(16.dp)
+                        // Location Method Choice Tabs (GPS vs Manual)
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            Row(
-                                modifier = Modifier.padding(14.dp),
-                                verticalAlignment = Alignment.CenterVertically
+                            Surface(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .clickable {
+                                        metodeLokasi = "GPS"
+                                        latitude = -1.4522
+                                        longitude = 101.3211
+                                        isGpsPinned = true
+                                        lokasiAlamat = "Jorong Pasia, Nagari Sako Selatan (-1.4522, 101.3211)"
+                                    },
+                                color = if (metodeLokasi == "GPS") EmeraldDark else Color(0xFFF1F5F9),
+                                shape = RoundedCornerShape(12.dp)
                             ) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(40.dp)
-                                        .clip(CircleShape)
-                                        .background(if (isGpsPinned) EmeraldDark else Color(0xFFE2E8F0)),
-                                    contentAlignment = Alignment.Center
+                                 Text(
+                                    text = "📍 GPS Presisi",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (metodeLokasi == "GPS") Color.White else Color(0xFF475569),
+                                    modifier = Modifier.padding(vertical = 10.dp),
+                                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                                )
+                            }
+
+                            Surface(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .clickable {
+                                        metodeLokasi = "Manual"
+                                    },
+                                color = if (metodeLokasi == "Manual") EmeraldDark else Color(0xFFF1F5F9),
+                                shape = RoundedCornerShape(12.dp)
+                            ) {
+                                Text(
+                                    text = "✏️ Ketik Manual",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (metodeLokasi == "Manual") Color.White else Color(0xFF475569),
+                                    modifier = Modifier.padding(vertical = 10.dp),
+                                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        if (metodeLokasi == "GPS") {
+                            Surface(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .clickable {
+                                        latitude = -1.4522
+                                        longitude = 101.3211
+                                        isGpsPinned = true
+                                        lokasiAlamat = "Jorong Pasia, Nagari Sako Selatan (-1.4522, 101.3211)"
+                                        Toast.makeText(context, "📍 Lokasi GPS Terdeteksi (-1.4522, 101.3211)", Toast.LENGTH_SHORT).show()
+                                    },
+                                color = if (isGpsPinned) Color(0xFFECFDF5) else Color(0xFFF8FAFC),
+                                border = BorderStroke(1.5.dp, if (isGpsPinned) EmeraldMedium else BorderSubtle),
+                                shape = RoundedCornerShape(16.dp)
+                            ) {
+                                Row(
+                                    modifier = Modifier.padding(14.dp),
+                                    verticalAlignment = Alignment.CenterVertically
                                 ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(40.dp)
+                                            .clip(CircleShape)
+                                            .background(if (isGpsPinned) EmeraldDark else Color(0xFFE2E8F0)),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.LocationOn,
+                                            contentDescription = null,
+                                            tint = if (isGpsPinned) Color.White else Color(0xFF64748B),
+                                            modifier = Modifier.size(22.dp)
+                                        )
+                                    }
+
+                                    Spacer(modifier = Modifier.width(12.dp))
+
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text(
+                                            text = if (isGpsPinned) "📍 Lokasi Presisi Disematkan ✓" else "Ketuk untuk Deteksi Koordinat GPS",
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 13.sp,
+                                            color = if (isGpsPinned) EmeraldDark else Color(0xFF334155)
+                                        )
+                                        Text(
+                                            text = if (isGpsPinned) lokasiAlamat else "Jorong Pasia, Nagari Sako Selatan (-1.4522, 101.3211)",
+                                            fontSize = 11.sp,
+                                            color = Color(0xFF64748B)
+                                        )
+                                    }
+                                }
+                            }
+                        } else {
+                            // Manual Address Input Field
+                            OutlinedTextField(
+                                value = manualLokasiText,
+                                onValueChange = { manualLokasiText = it },
+                                placeholder = { Text("Ketikkan alamat/patokan lokasi (misal: Pasia Talang RT 02 dekat Surau Pasia)...", fontSize = 12.sp) },
+                                leadingIcon = {
                                     Icon(
                                         imageVector = Icons.Default.LocationOn,
                                         contentDescription = null,
-                                        tint = if (isGpsPinned) Color.White else Color(0xFF64748B),
-                                        modifier = Modifier.size(22.dp)
+                                        tint = EmeraldMedium
                                     )
-                                }
-
-                                Spacer(modifier = Modifier.width(12.dp))
-
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Text(
-                                        text = if (isGpsPinned) "📍 Lokasi Presisi Disematkan ✓" else "Ketuk untuk Deteksi Koordinat GPS",
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 13.sp,
-                                        color = if (isGpsPinned) EmeraldDark else Color(0xFF334155)
-                                    )
-                                    Text(
-                                        text = if (isGpsPinned) lokasiAlamat else "Jorong Pasia, Nagari Sako Selatan",
-                                        fontSize = 11.sp,
-                                        color = Color(0xFF64748B)
-                                    )
-                                }
-                            }
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(14.dp),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = EmeraldMedium,
+                                    unfocusedBorderColor = BorderSubtle
+                                )
+                            )
                         }
 
                         Spacer(modifier = Modifier.height(20.dp))
@@ -350,6 +426,12 @@ fun BuatLaporanScreen(
                         Button(
                             onClick = {
                                 if (judul.isNotBlank()) {
+                                    val finalLokasiAlamat = if (metodeLokasi == "GPS") {
+                                        lokasiAlamat.ifBlank { "Jorong Pasia, Nagari Sako Selatan (-1.4522, 101.3211)" }
+                                    } else {
+                                        manualLokasiText.ifBlank { "Jorong Pasia, Nagari Sako Selatan" }
+                                    }
+
                                     // Save to Firebase Firestore / Repository
                                     FirebaseRepository.tambahLaporan(
                                         judul = judul,
@@ -358,11 +440,11 @@ fun BuatLaporanScreen(
                                         fotoUri = selectedImageUri?.toString(),
                                         latitude = latitude ?: -1.4522,
                                         longitude = longitude ?: 101.3211,
-                                        lokasiAlamat = lokasiAlamat.ifBlank { "Jorong Pasia, Nagari Sako Selatan (-1.4522, 101.3211)" },
+                                        lokasiAlamat = finalLokasiAlamat,
                                         context = context
                                     ) { success ->
                                         if (success) {
-                                            Toast.makeText(context, "Laporan & Lokasi GPS tersimpan!", Toast.LENGTH_SHORT).show()
+                                            Toast.makeText(context, "Laporan & Lokasi tersimpan!", Toast.LENGTH_SHORT).show()
                                         }
                                     }
 
